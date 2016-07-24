@@ -22,7 +22,38 @@
     </android.support.design.widget.AppBarLayout>
 
     <include layout="@layout/content_main" />
-
+    <TextView android:id="@+id/textView_connecting"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:layout_weight="1"
+        />
+    <TextView android:id="@+id/tv_paired_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="2"
+        android:layout_gravity="top|left"
+        android:text="@string/paired_devices_title"
+        android:textSize="12sp"
+        android:layout_marginTop="55dp"/>
+    <ListView android:id="@+id/paired_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:layout_weight="1"
+        />
+    <TextView android:id="@+id/tv_new_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:layout_weight="1"
+        />
+    <ListView android:id="@+id/new_devices"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:stackFromBottom="true"
+        android:layout_weight="1"
+        />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
