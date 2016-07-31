@@ -4,4 +4,5 @@
     <string name="blutooth_not_supported">Este dispositivo no soporta Bluetooth</string>
     <string name="connecting">Conectando...</string>
     <string name="paired_devices_title">Dispositivos emparejados</string>
+    <string name="new_devices_title">Dispositivos encontrados</string>
 </resources>
