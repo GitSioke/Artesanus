@@ -5,4 +5,7 @@
     <string name="connecting">Conectando...</string>
     <string name="paired_devices_title">Dispositivos emparejados</string>
     <string name="new_devices_title">Dispositivos encontrados</string>
+    <string name="title_activity_measurements">MeasurementsActivity</string>
+    <string name="hello_round">Hello Round World!</string>
+    <string name="hello_square">Hello Square World!</string>
 </resources>
