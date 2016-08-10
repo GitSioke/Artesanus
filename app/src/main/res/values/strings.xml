@@ -8,4 +8,6 @@
     <string name="title_activity_measurements">MeasurementsActivity</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
+    <string name="title_activity_newprocess">New Process</string>
+    <string name="new_missing_minutes">Introduzca los minutos para la cuenta regresiva</string>
 </resources>
