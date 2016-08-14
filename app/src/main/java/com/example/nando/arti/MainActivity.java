@@ -1,254 +1,309 @@
 package com.example.nando.arti;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.MenuInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.AdapterView;
+import android.view.Window;
+import android.view.inputmethod.EditorInfo;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
-
-import java.util.Set;
+import services.BluetoothMessageService;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
-    private static final int REQUEST_ENABLE_BT = 1;
-    private ArrayAdapter<String> _pairedDevicesArrayAdapter;
-    private ArrayAdapter<String> _newDevicesArrayAdapter;
-    // EXTRA string to send on to mainactivity
-    public static String EXTRA_DEVICE_ADDRESS = "device_address";
-    private BluetoothAdapter _bluetoothAdapter;
+    // Debugging
+    private static final String TAG = "BluetoothChat";
+    private static final boolean D = true;
+    // Message types sent from the BluetoothChatService Handler
+    public static final int MESSAGE_STATE_CHANGE = 1;
+    public static final int MESSAGE_READ = 2;
+    public static final int MESSAGE_WRITE = 3;
+    public static final int MESSAGE_DEVICE_NAME = 4;
+    public static final int MESSAGE_TOAST = 5;
+    // Key names received from the BluetoothChatService Handler
+    public static final String DEVICE_NAME = "device_name";
+    public static final String TOAST = "toast";
+    // Intent request codes
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    private static final int REQUEST_ENABLE_BT = 2;
+    // Layout Views
+    private TextView mTitle;
+    private ListView mConversationView;
+    private EditText mOutEditText;
+    private Button mSendButton;
 
+    // Name of the connected device
+    private String mConnectedDeviceName = null;
 
-    /*
-    OnItemClickListener for any device that appeared at ListView
-     */
-    private AdapterView.OnItemClickListener _deviceClickListener = new AdapterView.OnItemClickListener() {
-        //TODO Metodo necesita arreglos
-        public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
+    // Array adapter for the conversation thread
+    private ArrayAdapter<String> mConversationArrayAdapter;
 
-            TextView textView = (TextView) findViewById(R.id.textView_connecting);
-            textView.setText(R.string.connecting);
+    // String buffer for outgoing messages
+    private StringBuffer mOutStringBuffer;
 
-            // Get the device MAC address, which is the last 17 chars in the View
-            String info = ((TextView) v).getText().toString();
-            String address = info.substring(info.length() - 17);
+    // Local Bluetooth adapter
+    private BluetoothAdapter mBluetoothAdapter = null;
 
-            // Make an intent to start next activity while taking an extra which is the MAC address.
-            Intent i = new Intent(v.getContext(), DeviceActivity.class);
-            i.putExtra(EXTRA_DEVICE_ADDRESS, address);
-            startActivity(i);
-        }
-    };
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
-
-    /*
-    onCreate
-     */
+    // Member object for the chat services
+    private BluetoothMessageService mBTService = null;
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+    public void onCreate(Bundle savedInstanceState) {
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+        super.onCreate(savedInstanceState);
+        if(D) Log.e(TAG, "+++ ON CREATE +++");
+        // Set up the window layout
+        setContentView(R.layout.activity_main);
+        mTitle = (TextView)findViewById(R.id.main_title);
+
+        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
+        setSupportActionBar(myToolbar);
+        // Get local Bluetooth adapter
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        // If the adapter is null, then Bluetooth is not supported
+        if (mBluetoothAdapter == null) {
+            Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
+            finish();
+            return;
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        if(D) Log.e(TAG, "++ ON START ++");
+        // If BT is not on, request that it be enabled.
+        // setupMessenger() will then be called during onActivityResult
+        if (!mBluetoothAdapter.isEnabled())
+        {
+            Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+            startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
+            // Otherwise, setup the bluetooth session
+        } else
+        {
+            if (mBTService == null) setupMessenger();
+        }
+    }
+    @Override
+    public synchronized void onResume() {
+        super.onResume();
+        if(D) Log.e(TAG, "+ ON RESUME +");
+        // Performing this check in onResume() covers the case in which BT was
+        // not enabled during onStart(), so we were paused to enable it...
+        // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
+        if (mBTService != null) {
+            // Only if the state is STATE_NONE, do we know that we haven't started already
+            if (mBTService.getState() == BluetoothMessageService.STATE_NONE) {
+                // Start the Bluetooth chat services
+                mBTService.start();
+            }
+        }
+    }
+
+    private void setupMessenger()
+    {
+        Log.d(TAG, "setupMessenger()");
+        // Initialize the array adapter for the conversation thread
+
+        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
+        mConversationView = (ListView) findViewById(R.id.in);
+        mConversationView.setAdapter(mConversationArrayAdapter);
+        // Initialize the compose field with a listener for the return key
+        mOutEditText = (EditText) findViewById(R.id.edit_text_out);
+        mOutEditText.setOnEditorActionListener(mWriteListener);
+        // Initialize the send button with a listener that for click events
+        mSendButton = (Button) findViewById(R.id.button_send);
+        mSendButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                // Send a message using content of the edit text widget
+                TextView view = (TextView) findViewById(R.id.edit_text_out);
+                String message = view.getText().toString();
+                sendMessage(message);
             }
         });
+        // Initialize the BluetoothMessageService to perform bluetooth connections
+        mBTService = new BluetoothMessageService(this, mHandler);
+        // Initialize the buffer for outgoing messages
+        mOutStringBuffer = new StringBuffer("");
+    }
+    @Override
+    public synchronized void onPause() {
+        super.onPause();
+        if(D) Log.e(TAG, "- ON PAUSE -");
+    }
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(D) Log.e(TAG, "-- ON STOP --");
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        // Stop the Bluetooth messenger services
+        if (mBTService != null) mBTService.stop();
+        if(D) Log.e(TAG, "--- ON DESTROY ---");
+    }
+    private void ensureDiscoverable() {
+        if(D) Log.d(TAG, "ensure discoverable");
+        if (mBluetoothAdapter.getScanMode() !=
+                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
+            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+            startActivity(discoverableIntent);
+        }
+    }
+    /**
+     * Sends a message.
+     * @param message  A string of text to send.
+     */
+    private void sendMessage(String message)
+    {
+        // Check that we're actually connected before trying anything
+        if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
+        {
+            Toast.makeText(this, R.string.main_not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        BT();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
+        // Check that there's actually something to send
+        if (message.length() > 0) {
+            // Get the message bytes and tell the BluetoothMessageService to write
+            byte[] send = message.getBytes();
+            mBTService.write(send);
+            // Reset out string buffer to zero and clear the edit text field
+            mOutStringBuffer.setLength(0);
+            mOutEditText.setText(mOutStringBuffer);
+        }
+    }
+    // The action listener for the EditText widget, to listen for the return key
+    private TextView.OnEditorActionListener mWriteListener =
+            new TextView.OnEditorActionListener() {
+                public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+                    // If the action is a key-up event on the return key, send the message
+                    if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
+                        String message = view.getText().toString();
+                        sendMessage(message);
+                    }
+                    if(D) Log.i(TAG, "END onEditorAction");
+                    return true;
+                }
+            };
+
+    // The Handler that gets information back from the BluetoothMessageService
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_STATE_CHANGE:
+                    if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    switch (msg.arg1) {
+                        case BluetoothMessageService.STATE_CONNECTED:
+                            mTitle.setText(R.string.main_title_connected_to);
+                            mTitle.append(mConnectedDeviceName);
+                            mConversationArrayAdapter.clear();
+                            break;
+                        case BluetoothMessageService.STATE_CONNECTING:
+                            mTitle.setText(R.string.main_title_connecting);
+                            break;
+                        case BluetoothMessageService.STATE_LISTEN:
+                        case BluetoothMessageService.STATE_NONE:
+                            mTitle.setText(R.string.main_title_not_connected);
+                            break;
+                    }
+                    break;
+                case MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    break;
+                case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+                    break;
+                case MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    Toast.makeText(getApplicationContext(), "Connected to "
+                            + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    break;
+                case MESSAGE_TOAST:
+                    Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                            Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    };
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(D) Log.d(TAG, "onActivityResult " + resultCode);
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK) {
+                    // Get the device MAC address
+                    String address = data.getExtras()
+                            .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    // Get the BLuetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mBTService.connect(device);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK)
+                {
+                    // Bluetooth is now enabled, so set up a messenger session
+                    setupMessenger();
+                } else {
+                    // User did not enable Bluetooth or an error occured
+                    Log.d(TAG, "BT not enabled");
+                    Toast.makeText(this, R.string.main_bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+        }
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu_option, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (item.getItemId()) {
+            case R.id.scan:
+                // Launch the DeviceListActivity to see devices and do scan
+                Intent serverIntent = new Intent(this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
+                return true;
+            case R.id.discoverable:
+                // Ensure this device is discoverable by others
+                ensureDiscoverable();
+                return true;
         }
-
-        return super.onOptionsItemSelected(item);
-    }
-
-
-    /*
-    This method fills with paired devices
-     */
-    private void BT() {
-        // Turn on bluetooth
-        InitializeBT();
-
-        // Initialize array adapter for paired devices
-        _pairedDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
-
-        // Find and set up the ListView for paired devices
-        ListView pairedListView = (ListView) findViewById(R.id.paired_devices);
-        pairedListView.setAdapter(_pairedDevicesArrayAdapter);
-        pairedListView.setOnItemClickListener(_deviceClickListener);
-
-        // Initialize array adapter for new devices found
-        _newDevicesArrayAdapter = new ArrayAdapter<String>(this, R.layout.device_name);
-
-        //Find and set up ListView for new devices found
-        ListView newListView = (ListView) findViewById(R.id.new_devices);
-        newListView.setAdapter(_newDevicesArrayAdapter);
-        newListView.setOnItemClickListener(_deviceClickListener);
-
-        // Get a set of currently paired devices and append to 'pairedDevices'
-        if (_bluetoothAdapter != null) {
-            Set<BluetoothDevice> pairedDevices = _bluetoothAdapter.getBondedDevices();
-
-            // If there are paired devices, add each one to the ArrayAdapter
-            if (pairedDevices.size() > 0) {
-                findViewById(R.id.tv_paired_devices).setVisibility(View.VISIBLE);
-                for (BluetoothDevice device : pairedDevices) {
-                    _pairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                }
-            } else {
-                _pairedDevicesArrayAdapter.add("No paired devices");
-            }
-        }
-    }
-
-    /*
-    This methods starts bluetooth in case it is not ready for use
-     */
-    private void InitializeBT() {
-        System.out.print("Inicializando el bluetooth");
-        _bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // Register for broadcasts when a device is discovered, when it is started or when it is finished
-        IntentFilter filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
-        filter.addAction(BluetoothDevice.ACTION_FOUND);
-        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-        this.registerReceiver(mReceiver, filter);
-
-        if (_bluetoothAdapter == null) {
-            Toast.makeText(getBaseContext(), R.string.blutooth_not_supported, Toast.LENGTH_SHORT).show();
-        } else {
-            // We have to ask for enable Bluetooth if it is off
-            if (!_bluetoothAdapter.isEnabled()) {
-                Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
-            } else {
-                Log.d(TAG, "Bluetooth is already working");
-            }
-
-            //Now we start to discover BT devices. Cancel previous discovery in case there is any in progress
-            if (_bluetoothAdapter.isDiscovering()) {
-                _bluetoothAdapter.cancelDiscovery();
-            }
-            _bluetoothAdapter.startDiscovery();
-        }
-
-    }
-
-    //BroadcastReceiver where we'll handle broadcast action such as device discovering or discovery ending
-    private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @Override
-
-        public void onReceive(Context context, Intent intent) {
-            String action = intent.getAction();
-
-            // When discovery finds a device
-            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
-                // Get the BluetoothDevice object from the Intent
-                BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                // If it's already paired, skip it, because it's been listed already
-                if (device.getBondState() != BluetoothDevice.BOND_BONDED) {
-                    _newDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-                }
-                // When discovery is finished, change the Activity title
-            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-                setProgressBarIndeterminateVisibility(false);
-                setTitle("Select device");
-                if (_newDevicesArrayAdapter.getCount() == 0) {
-                    _newDevicesArrayAdapter.add("None found");
-                }
-            }
-        }
-    };
-
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.nando.arti/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.example.nando.arti/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        client.disconnect();
+        return false;
     }
 }

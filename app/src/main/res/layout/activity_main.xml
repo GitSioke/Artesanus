@@ -6,68 +6,50 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     tools:context="com.example.nando.arti.MainActivity">
-
-    <android.support.design.widget.AppBarLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/my_toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:elevation="4dp"
+        android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
+        app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay" />
-
-    </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_main" />
-<!--Prueba para grafica -->
-    <include layout="@layout/graph_view" />
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <TextView android:id="@+id/textView_connecting"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stackFromBottom="true" />
-
-        <TextView android:id="@+id/tv_paired_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-            android:layout_gravity="top|left"
-        android:text="@string/paired_devices_title"
-        android:textSize="12sp"
-        android:layout_marginTop="55dp"/>
-
-        <ListView android:id="@+id/paired_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_paired_devices"/>
-
-        <TextView android:id="@+id/tv_new_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stackFromBottom="true"
-        android:text="@string/new_devices_title"
-        android:textSize="12sp"
-        android:layout_below="@+id/paired_devices"/>
-
-       <ListView android:id="@+id/new_devices"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:stackFromBottom="true"
-           android:layout_below="@+id/tv_new_devices"/>
-    </RelativeLayout>
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@android:drawable/ic_dialog_email" />
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        >
+        <TextView
+            android:id="@+id/main_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="HOLA"
+            android:textSize="24dp"/>
+        <ListView android:id="@+id/in"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:stackFromBottom="true"
+            android:transcriptMode="alwaysScroll"
+            android:layout_weight="1"
+            />
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            >
+            <EditText android:id="@+id/edit_text_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="bottom"
+                />
+            <Button android:id="@+id/button_send"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/main_send"
+                />
+        </LinearLayout>
+    </LinearLayout>
 
 </android.support.design.widget.CoordinatorLayout>

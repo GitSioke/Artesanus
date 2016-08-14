@@ -10,4 +10,23 @@
     <string name="hello_square">Hello Square World!</string>
     <string name="title_activity_newprocess">New Process</string>
     <string name="new_missing_minutes">Introduzca los minutos para la cuenta regresiva</string>
+    <string name="monitor_time_up">Se agotó el tiempo</string>
+    <string name="notification_time_up">Se agotó el tiempo</string>
+    <string name="title_activity_device_list">DeviceListActivity</string>
+    <string name="device_list_title_paired">Dispositivos enlazados</string>
+    <string name="device_list_button_scan">Escanear</string>
+    <string name="device_list_title_other_devices">Dispositivos encontrados</string>
+    <string name="main_send">Enviar</string>
+    <string name="main_title_connected_to">Conectado con</string>
+    <string name="main_title_connecting">Conectando</string>
+    <string name="main_title_not_connected">Sin conexión</string>
+    <string name="main_bt_not_enabled_leaving">Bluetooth no está activo</string>
+    <string name="main_not_connected">Sin conexión</string>
+    <string name="main_menu_discoverable">Descubrible?</string>
+    <string name="main_menu_connect">Conectar</string>
+    <string name="device_list_select_device">device_list_select_device</string>
+    <string name="device_list_none_found">No encontrado</string>
+    <string name="device_list_scanning">Escaneando</string>
+    <string name="device_list_none_paired">No se encontró dispositivos enlazados</string>
+    <string name="monitor_not_connected">Sin conexión</string>
 </resources>
