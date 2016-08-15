@@ -12,14 +12,22 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 
 import com.example.nando.arti.MainActivity;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.OutputStream;
-import java.lang.reflect.InvocationTargetException;
+import java.io.StreamCorruptedException;
+import java.util.List;
 import java.util.UUID;
+
+import common.TransientPair;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -218,6 +226,27 @@ public class BluetoothMessageService extends Service {
      * @see ConnectedThread#write(byte[])
      */
     public void write(byte[] out)
+    {
+        // Create temporary object
+        ConnectedThread thread;
+        // Synchronize a copy of the ConnectedThread
+        synchronized (this)
+        {
+            if (mState != STATE_CONNECTED)
+                return;
+            thread = mConnectedThread;
+        }
+
+        // Perform the write unsynchronized
+        thread.write(out);
+    }
+
+    /**
+     * Write to the ConnectedThread in an unsynchronized manner
+     * @param out The Pair objects to send
+     * @see ConnectedThread#write(byte[])
+     */
+    public void write(List<Pair> out)
     {
         // Create temporary object
         ConnectedThread thread;
@@ -448,6 +477,8 @@ public class BluetoothMessageService extends Service {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
+        private ObjectInputStream objInStream;
+        private ObjectOutputStream objOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
 
@@ -465,6 +496,23 @@ public class BluetoothMessageService extends Service {
             }
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
+
+            final BufferedOutputStream bufo = new BufferedOutputStream(mmOutStream);
+            final BufferedInputStream bufi = new BufferedInputStream(mmInStream);
+
+            Log.d(TAG,"attempting to create OOS");
+
+            try {
+                objOutStream = new ObjectOutputStream(bufo);
+            } catch (StreamCorruptedException e) {
+                Log.d(TAG,"Caught Corrupted Stream Exception");
+                Log.w(TAG,e);
+
+            } catch (IOException e) {
+                Log.d(TAG,"Caught IOException");
+                Log.w(TAG,e);
+            }
+
         }
 
         public void run() {
@@ -504,13 +552,31 @@ public class BluetoothMessageService extends Service {
             }
         }
 
+        public void write(List<Pair> data) {
+
+            try {
+
+                for (Pair pair : data)
+                {
+                    TransientPair tPair = new TransientPair((String) pair.first, pair.second);
+                    objOutStream.writeObject(tPair);
+                }
+                byte[] buffer = new String("Los datos han sido enviados").getBytes();
+                // Share the sent message back to the UI Activity
+                mHandler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer)
+                        .sendToTarget();
+            } catch (IOException e) {
+                Log.e(TAG, "Exception during write", e);
+            }
+        }
+
         /**
          * Ask to the connected OutStream.
          */
         public void ask() {
 
             try {
-                String ask = "Pedir datos";
+                String ask = "ASK_DATA";
                 byte[] buffer = ask.getBytes();
                 mmOutStream.write(buffer);
 

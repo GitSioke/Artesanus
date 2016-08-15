@@ -10,6 +10,7 @@ import android.os.Message;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.MenuInflater;
 import android.view.View;
@@ -26,6 +27,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Random;
+
 import services.BluetoothMessageService;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_ASK_DATA = 6;
+    public static final int MESSAGE_ANSWER = 7;
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
@@ -257,9 +264,8 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case MESSAGE_ASK_DATA:
-                    mConversationArrayAdapter.add(mConnectedDeviceName + "Me ha pedido datos");
-                    String message = "Esto son los datos que me has pedido: Temp 40ºC, Densidad 3 gordos";
-                    sendMessage(message);
+                    mConversationArrayAdapter.add("Me: " + "He pedido datos");
+                    break;
                 case MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
@@ -270,6 +276,29 @@ public class MainActivity extends AppCompatActivity {
                     byte[] readBuf = (byte[]) msg.obj;
                     // construct a string from the valid bytes in the buffer
                     String readMessage = new String(readBuf, 0, msg.arg1);
+                    if (readMessage.equalsIgnoreCase("ASK_DATA"))
+                    {
+                        Random rand = new Random();
+
+                        // Generate temperature between Max and Min range
+                        List<Pair> dataForPump = new ArrayList<>();
+                        int tempRangeMax = 35;
+                        int tempRangeMin = 30;
+                        int randomTemp = rand.nextInt((tempRangeMax - tempRangeMin) + 1) + tempRangeMin;
+                        Pair<String, Integer> kvTemp = new Pair<>("Temperature", randomTemp);
+                        dataForPump.add(kvTemp);
+                        // Generate density between Max and Min range
+                        int densRangeMax = 25;
+                        int densRangeMin = 20;
+                        int randomDens = rand.nextInt((densRangeMax - densRangeMin) + 1) + densRangeMin;
+                        Pair<String, Integer> kvDens = new Pair<>("Density", randomTemp);
+                        dataForPump.add(kvDens);
+                        //Generate timestamp
+                        Pair<String, Date> kvTimestamp = new Pair<>("Date", new Date(System.currentTimeMillis()));
+                        dataForPump.add(kvTimestamp);
+                        String message = new String("Temp: "+randomTemp+"ºC Dens: " + randomDens + "mm3");
+                        sendMessagePair(dataForPump);
+                    }
                     mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
                     break;
                 case MESSAGE_DEVICE_NAME:
@@ -285,7 +314,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        private void sendMessage(String message) {
+        private void sendMessagePair(List<Pair> message) {
             // Check that we're actually connected before trying anything
             if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
             {
@@ -294,13 +323,9 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // Check that there's actually something to send
-            if (message.length() > 0) {
+            if (!message.isEmpty()) {
                 // Get the message bytes and tell the BluetoothMessageService to write
-                byte[] send = message.getBytes();
-                mBTService.write(send);
-                // Reset out string buffer to zero and clear the edit text field
-                mOutStringBuffer.setLength(0);
-                mOutEditText.setText(mOutStringBuffer);
+                mBTService.write(message);
             }
         }
 
