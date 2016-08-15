@@ -82,7 +82,7 @@ public class BluetoothMessageService extends Service {
     }
 
     /**
-     * Start the chat service. Specifically start AcceptThread to begin a
+     * Start the message service. Specifically start AcceptThread to begin a
      * session in listening (server) mode. Called by the Activity onResume() */
     public synchronized void start()
     {
@@ -231,6 +231,25 @@ public class BluetoothMessageService extends Service {
 
         // Perform the write unsynchronized
         thread.write(out);
+    }
+
+    /**
+     * Write to the ConnectedThread in an unsynchronized manner
+     */
+    public void ask()
+    {
+        // Create temporary object
+        ConnectedThread thread;
+        // Synchronize a copy of the ConnectedThread
+        synchronized (this)
+        {
+            if (mState != STATE_CONNECTED)
+                return;
+            thread = mConnectedThread;
+        }
+
+        // Perform the write unsynchronized
+        thread.ask();
     }
 
     /**
@@ -406,6 +425,7 @@ public class BluetoothMessageService extends Service {
             synchronized (BluetoothMessageService.this) {
                 mConnectThread = null;
             }
+
             // Start the connected thread
             connected(mmSocket, mmDevice);
         }
@@ -481,6 +501,24 @@ public class BluetoothMessageService extends Service {
                         .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
+            }
+        }
+
+        /**
+         * Ask to the connected OutStream.
+         */
+        public void ask() {
+
+            try {
+                String ask = "Pedir datos";
+                byte[] buffer = ask.getBytes();
+                mmOutStream.write(buffer);
+
+                // Share the sent message back to the UI Activity
+                mHandler.obtainMessage(MainActivity.MESSAGE_ASK_DATA, -1, -1, buffer)
+                        .sendToTarget();
+            } catch (IOException e) {
+                Log.e(TAG, "Exception during ask", e);
             }
         }
 

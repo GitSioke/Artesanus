@@ -33,6 +33,14 @@
             android:transcriptMode="alwaysScroll"
             android:layout_weight="1"
             />
+
+        <Button
+            android:id="@+id/button_ask"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/main_ask"
+            android:layout_gravity="right" />
+
         <LinearLayout
             android:orientation="horizontal"
             android:layout_width="fill_parent"
@@ -44,6 +52,7 @@
                 android:layout_weight="1"
                 android:layout_gravity="bottom"
                 />
+
             <Button android:id="@+id/button_send"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

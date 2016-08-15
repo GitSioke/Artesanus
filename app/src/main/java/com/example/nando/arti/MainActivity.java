@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int MESSAGE_ASK_DATA = 6;
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
     private ListView mConversationView;
     private EditText mOutEditText;
     private Button mSendButton;
+    private Button mAskButton;
 
     // Name of the connected device
     private String mConnectedDeviceName = null;
@@ -139,6 +141,14 @@ public class MainActivity extends AppCompatActivity {
                 sendMessage(message);
             }
         });
+
+        mAskButton = (Button) findViewById(R.id.button_ask);
+        mAskButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                // Ask for information
+                askMessage();
+            }
+        });
         // Initialize the BluetoothMessageService to perform bluetooth connections
         mBTService = new BluetoothMessageService(this, mHandler);
         // Initialize the buffer for outgoing messages
@@ -174,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
      * Sends a message.
      * @param message  A string of text to send.
      */
-    private void sendMessage(String message)
+    void sendMessage(String message)
     {
         // Check that we're actually connected before trying anything
         if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
@@ -193,6 +203,23 @@ public class MainActivity extends AppCompatActivity {
             mOutEditText.setText(mOutStringBuffer);
         }
     }
+
+    private void askMessage()
+    {
+        // Check that we're actually connected before trying anything
+        if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
+        {
+            Toast.makeText(this, R.string.main_not_connected, Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        mBTService.ask();
+        // Reset out string buffer to zero and clear the edit text field
+        mOutStringBuffer.setLength(0);
+        mOutEditText.setText(mOutStringBuffer);
+
+    }
+
     // The action listener for the EditText widget, to listen for the return key
     private TextView.OnEditorActionListener mWriteListener =
             new TextView.OnEditorActionListener() {
@@ -229,6 +256,10 @@ public class MainActivity extends AppCompatActivity {
                             break;
                     }
                     break;
+                case MESSAGE_ASK_DATA:
+                    mConversationArrayAdapter.add(mConnectedDeviceName + "Me ha pedido datos");
+                    String message = "Esto son los datos que me has pedido: Temp 40ºC, Densidad 3 gordos";
+                    sendMessage(message);
                 case MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
@@ -253,6 +284,26 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
+
+        private void sendMessage(String message) {
+            // Check that we're actually connected before trying anything
+            if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
+            {
+                Toast.makeText(getBaseContext(), R.string.main_not_connected, Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Check that there's actually something to send
+            if (message.length() > 0) {
+                // Get the message bytes and tell the BluetoothMessageService to write
+                byte[] send = message.getBytes();
+                mBTService.write(send);
+                // Reset out string buffer to zero and clear the edit text field
+                mOutStringBuffer.setLength(0);
+                mOutEditText.setText(mOutStringBuffer);
+            }
+        }
+
     };
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
