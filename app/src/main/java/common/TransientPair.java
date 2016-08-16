@@ -2,6 +2,11 @@ package common;
 
 import android.util.Pair;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 
 /**
@@ -18,6 +23,6 @@ public class TransientPair implements Serializable {
     @Override
     public String toString()
     {
-        return _pair.toString();
+        return _pair.first + " : " +_pair.second;
     }
 }

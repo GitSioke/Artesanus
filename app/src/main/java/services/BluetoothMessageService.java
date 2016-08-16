@@ -555,13 +555,16 @@ public class BluetoothMessageService extends Service {
         public void write(List<Pair> data) {
 
             try {
-
+                StringBuilder sb = new StringBuilder();
                 for (Pair pair : data)
                 {
                     TransientPair tPair = new TransientPair((String) pair.first, pair.second);
-                    objOutStream.writeObject(tPair);
+                    sb.append(tPair.toString()+ "\n");
                 }
-                byte[] buffer = new String("Los datos han sido enviados").getBytes();
+
+                byte[] buffer = sb.toString().getBytes();
+                mmOutStream.write(buffer);
+
                 // Share the sent message back to the UI Activity
                 mHandler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer)
                         .sendToTarget();
