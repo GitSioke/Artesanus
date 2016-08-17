@@ -69,6 +69,13 @@ public class BluetoothMessageService extends Service {
         mHandler = handler;
     }
 
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId)
+    {
+        //TODO Probar que el Servicio recibe el comando y sigue su ejecucion
+        return START_NOT_STICKY;
+    }
+
     /**
      * Set the current state of the chat connection
      * @param state  An integer defining the current connection state

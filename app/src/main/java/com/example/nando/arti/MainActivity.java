@@ -1,6 +1,7 @@
 package com.example.nando.arti;
 
 import android.app.Activity;
+import android.app.IntentService;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
@@ -33,6 +34,7 @@ import java.util.List;
 import java.util.Random;
 
 import services.BluetoothMessageService;
+import services.NotifierService;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -46,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
     public static final int MESSAGE_ASK_DATA = 6;
-    public static final int MESSAGE_ANSWER = 7;
+    public static final int MESSAGE_SEND_DATA = 7;
     // Key names received from the BluetoothChatService Handler
     public static final String DEVICE_NAME = "device_name";
     public static final String TOAST = "toast";
@@ -74,6 +76,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Member object for the chat services
     private BluetoothMessageService mBTService = null;
+
+    // Member object for the chat services
+    private NotifierService mNotifierService = null;
+
+    // Member object for obtain Pair with data sent by paired device
+    private List<Pair> mListPair = new ArrayList<Pair>();
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -156,8 +165,15 @@ public class MainActivity extends AppCompatActivity {
                 askMessage();
             }
         });
+
         // Initialize the BluetoothMessageService to perform bluetooth connections
         mBTService = new BluetoothMessageService(this, mHandler);
+
+        // Initialize the NotifierService to send data periodically
+        /* TODO Crear un servicio que envie datos periodicamente y que comunique con el otro servicio
+        para eso tendrá que enviar la información del Notifier al BTMessage y que este realice una operacion de escritura*/
+        mNotifierService = new NotifierService(this, mHandler, mBTService);
+
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
     }
@@ -266,6 +282,12 @@ public class MainActivity extends AppCompatActivity {
                 case MESSAGE_ASK_DATA:
                     mConversationArrayAdapter.add("Me: " + "He pedido datos");
                     break;
+                case MESSAGE_SEND_DATA:
+                    byte[] sendBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String sendMessage = new String(sendBuf);
+                    mConversationArrayAdapter.add("Me:  " + sendMessage);
+                    break;
                 case MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
@@ -278,28 +300,21 @@ public class MainActivity extends AppCompatActivity {
                     String readMessage = new String(readBuf, 0, msg.arg1);
                     if (readMessage.equalsIgnoreCase("ASK_DATA"))
                     {
-                        Random rand = new Random();
 
-                        // Generate temperature between Max and Min range
-                        List<Pair> dataForPump = new ArrayList<>();
-                        int tempRangeMax = 35;
-                        int tempRangeMin = 30;
-                        int randomTemp = rand.nextInt((tempRangeMax - tempRangeMin) + 1) + tempRangeMin;
-                        Pair<String, Integer> kvTemp = new Pair<>("Temperature", randomTemp);
-                        dataForPump.add(kvTemp);
-                        // Generate density between Max and Min range
-                        int densRangeMax = 25;
-                        int densRangeMin = 20;
-                        int randomDens = rand.nextInt((densRangeMax - densRangeMin) + 1) + densRangeMin;
-                        Pair<String, Integer> kvDens = new Pair<>("Density", randomTemp);
-                        dataForPump.add(kvDens);
-                        //Generate timestamp
-                        Pair<String, Date> kvTimestamp = new Pair<>("Date", new Date(System.currentTimeMillis()));
-                        dataForPump.add(kvTimestamp);
-                        String message = new String("Temp: "+randomTemp+"ºC Dens: " + randomDens + "mm3");
-                        sendMessagePair(dataForPump);
+                        mNotifierService.start();
+                        mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
                     }
-                    mConversationArrayAdapter.add(mConnectedDeviceName+":  " + readMessage);
+                    else
+                    {
+                        String[] data = readMessage.split("\n");
+                        for (String field :data)
+                        {
+                            String[] part = field.split(" : ");
+                            mListPair.add(new Pair(part[0], part[1]));
+                            mConversationArrayAdapter.add(mConnectedDeviceName+ ":  " + part[0] + " : " + part[1]);
+                        }
+                    }
+
                     break;
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name

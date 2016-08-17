@@ -30,4 +30,5 @@
     <string name="device_list_none_paired">No se encontró dispositivos enlazados</string>
     <string name="monitor_not_connected">Sin conexión</string>
     <string name="main_ask">Solicitar</string>
+    <string name="title_activity_splash">Splash</string>
 </resources>
