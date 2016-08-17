@@ -12,10 +12,12 @@ public class NewProcessActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_process);
 
-
+        String process = getIntent().getStringExtra("PROCESS");
+        // TODO Put this String into Toolbar title?
     }
 
     //Onclick start process button launch this method

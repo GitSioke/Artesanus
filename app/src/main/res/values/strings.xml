@@ -17,7 +17,8 @@
     <string name="device_list_button_scan">Escanear</string>
     <string name="device_list_title_other_devices">Dispositivos encontrados</string>
     <string name="main_send">Enviar</string>
-    <string name="main_title_connected_to">Conectado con</string>
+    <string name="main_title_connected_to">Conectado con </string>
+    <string name="main_messenger_user_myself">Me: </string>
     <string name="main_title_connecting">Conectando</string>
     <string name="main_title_not_connected">Sin conexión</string>
     <string name="main_bt_not_enabled_leaving">Bluetooth no está activo</string>
@@ -31,4 +32,5 @@
     <string name="monitor_not_connected">Sin conexión</string>
     <string name="main_ask">Solicitar</string>
     <string name="title_activity_splash">Splash</string>
+    <string name="main_asking_for_data">He pedido datos</string>
 </resources>

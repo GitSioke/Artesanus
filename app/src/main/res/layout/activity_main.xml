@@ -15,50 +15,14 @@
         android:theme="@style/ThemeOverlay.AppCompat.ActionBar"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:orientation="vertical"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        >
-        <TextView
-            android:id="@+id/main_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="HOLA"
-            android:textSize="24dp"/>
-        <ListView android:id="@+id/in"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:stackFromBottom="true"
-            android:transcriptMode="alwaysScroll"
-            android:layout_weight="1"
-            />
+    <include layout="@layout/content_main"></include>
 
-        <Button
-            android:id="@+id/button_ask"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/main_ask"
-            android:layout_gravity="right" />
-
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            >
-            <EditText android:id="@+id/edit_text_out"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:layout_gravity="bottom"
-                />
-
-            <Button android:id="@+id/button_send"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/main_send"
-                />
-        </LinearLayout>
-    </LinearLayout>
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/main_new_crafting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_margin="@dimen/fab_margin"
+        android:src="@android:drawable/ic_dialog_email" />
 
 </android.support.design.widget.CoordinatorLayout>

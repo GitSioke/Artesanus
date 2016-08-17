@@ -65,7 +65,8 @@ public class NotifierService extends Service
                         mBTService.write(dataForPump);
                     }
 
-                    try {
+                    try
+                    {
                         Thread.sleep(10000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();

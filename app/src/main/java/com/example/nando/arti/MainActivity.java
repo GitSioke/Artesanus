@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import common.ProcessHelper;
 import services.BluetoothMessageService;
 import services.NotifierService;
 
@@ -59,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTitle;
     private ListView mConversationView;
     private EditText mOutEditText;
-    private Button mSendButton;
     private Button mAskButton;
 
     // Name of the connected device
@@ -147,17 +147,8 @@ public class MainActivity extends AppCompatActivity {
         // Initialize the compose field with a listener for the return key
         mOutEditText = (EditText) findViewById(R.id.edit_text_out);
         mOutEditText.setOnEditorActionListener(mWriteListener);
-        // Initialize the send button with a listener that for click events
-        mSendButton = (Button) findViewById(R.id.button_send);
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                TextView view = (TextView) findViewById(R.id.edit_text_out);
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-        });
 
+        // Initialize the ask button with a listener that for click events
         mAskButton = (Button) findViewById(R.id.button_ask);
         mAskButton.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
@@ -166,12 +157,21 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        //TODO Check that this button is working
+        // Set newCraft button for start new crafting process, so start first new process
+        Button newCraft = (Button) findViewById(R.id.main_new_crafting);
+        newCraft.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                Intent intent = new Intent(getBaseContext(), NewProcessActivity.class);
+                intent.putExtra("PROCESS", ProcessHelper.PROCESS_1);
+                startActivity(intent);
+            }
+        });
+
         // Initialize the BluetoothMessageService to perform bluetooth connections
         mBTService = new BluetoothMessageService(this, mHandler);
 
         // Initialize the NotifierService to send data periodically
-        /* TODO Crear un servicio que envie datos periodicamente y que comunique con el otro servicio
-        para eso tendrá que enviar la información del Notifier al BTMessage y que este realice una operacion de escritura*/
         mNotifierService = new NotifierService(this, mHandler, mBTService);
 
         // Initialize the buffer for outgoing messages
@@ -194,6 +194,8 @@ public class MainActivity extends AppCompatActivity {
         if (mBTService != null) mBTService.stop();
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
+
+    // Method to handle Discoverable feature instiantiated by option menu
     private void ensureDiscoverable() {
         if(D) Log.d(TAG, "ensure discoverable");
         if (mBluetoothAdapter.getScanMode() !=
@@ -203,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(discoverableIntent);
         }
     }
+
     /**
      * Sends a message.
      * @param message  A string of text to send.
@@ -227,6 +230,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Ask for data button starting process
     private void askMessage()
     {
         // Check that we're actually connected before trying anything
@@ -280,19 +284,20 @@ public class MainActivity extends AppCompatActivity {
                     }
                     break;
                 case MESSAGE_ASK_DATA:
-                    mConversationArrayAdapter.add("Me: " + "He pedido datos");
+                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + ""
+                            + R.string.main_asking_for_data);
                     break;
                 case MESSAGE_SEND_DATA:
                     byte[] sendBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
                     String sendMessage = new String(sendBuf);
-                    mConversationArrayAdapter.add("Me:  " + sendMessage);
+                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + sendMessage);
                     break;
                 case MESSAGE_WRITE:
                     byte[] writeBuf = (byte[]) msg.obj;
                     // construct a string from the buffer
                     String writeMessage = new String(writeBuf);
-                    mConversationArrayAdapter.add("Me:  " + writeMessage);
+                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + writeMessage);
                     break;
                 case MESSAGE_READ:
                     byte[] readBuf = (byte[]) msg.obj;
@@ -319,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 case MESSAGE_DEVICE_NAME:
                     // save the connected device's name
                     mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    Toast.makeText(getApplicationContext(), "Connected to "
+                    Toast.makeText(getApplicationContext(), R.string.main_title_connected_to
                             + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
                     break;
                 case MESSAGE_TOAST:
@@ -328,23 +333,9 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
         }
-
-        private void sendMessagePair(List<Pair> message) {
-            // Check that we're actually connected before trying anything
-            if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
-            {
-                Toast.makeText(getBaseContext(), R.string.main_not_connected, Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Check that there's actually something to send
-            if (!message.isEmpty()) {
-                // Get the message bytes and tell the BluetoothMessageService to write
-                mBTService.write(message);
-            }
-        }
-
     };
+
+
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
         switch (requestCode) {
@@ -375,6 +366,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    // Overrided method to handle creation of Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -382,6 +374,7 @@ public class MainActivity extends AppCompatActivity {
         return true;
     }
 
+    // Overrided method to handle menu item options as Scan and Discoverable
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
