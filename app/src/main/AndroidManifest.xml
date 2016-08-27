@@ -32,17 +32,9 @@
             android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
-        <!--
         <activity
             android:name=".MonitorActivity"
-            android:label="@string/title_activity_measurements">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        -->
+            android:label="@string/monitor_title"></activity>
         <activity
             android:name=".NewProcessActivity"
             android:label="@string/title_activity_newprocess">
@@ -87,7 +79,12 @@
         <activity
             android:name=".SplashActivity"
             android:label="@string/title_activity_splash"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <service
+            android:name="services.TimerService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>

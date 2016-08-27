@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -159,11 +160,11 @@ public class MainActivity extends AppCompatActivity {
 
         //TODO Check that this button is working
         // Set newCraft button for start new crafting process, so start first new process
-        Button newCraft = (Button) findViewById(R.id.main_new_crafting);
+        FloatingActionButton newCraft = (FloatingActionButton) findViewById(R.id.main_new_crafting);
         newCraft.setOnClickListener(new OnClickListener() {
             public void onClick(View v) {
                 Intent intent = new Intent(getBaseContext(), NewProcessActivity.class);
-                intent.putExtra("PROCESS", ProcessHelper.PROCESS_1);
+                intent.putExtra("PROCESS", ProcessHelper.CRAFTING_PROCESS.ESE);
                 startActivity(intent);
             }
         });

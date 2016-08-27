@@ -8,9 +8,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Handler;
+import android.os.Message;
 import android.os.SystemClock;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
@@ -22,12 +25,16 @@ import android.widget.TextView;
 import android.webkit.JavascriptInterface;
 import android.widget.Toast;
 
+import common.ProcessHelper;
 import services.BluetoothMessageService;
+import services.TimerService;
 
 public class MonitorActivity extends Activity {
 
-    private TextView mTextView;
 
+    TextView mThird;
+    private TimerService mTimerService = null;
+private ProcessHelper.CRAFTING_PROCESS mProcess;
     // Debugging
     private static final String TAG = "MonitorActivity";
     private static final boolean D = true;
@@ -38,6 +45,8 @@ public class MonitorActivity extends Activity {
     public static final int MESSAGE_WRITE = 3;
     public static final int MESSAGE_DEVICE_NAME = 4;
     public static final int MESSAGE_TOAST = 5;
+    public static final int UPDATE_CLOCK = 6;
+    public static final int FINISH_CLOCK = 7;
 
     // Key names received from the BluetoothMessageService Handler
     public static final String DEVICE_NAME = "device_name";
@@ -66,34 +75,41 @@ public class MonitorActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if(D) Log.e(TAG, "--- ON CREATE ---");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_monitor);
+        if(D) Log.e(TAG, "Set content view");
 
-        WebView webView = (WebView)findViewById(R.id.webView);
+        //WebView webView = (WebView)findViewById(R.id.webView);
 
-        webView.addJavascriptInterface(new WebAppInterface(this), "JSInterface");
-        webView.getSettings().setJavaScriptEnabled(true);
-        webView.loadUrl("file:///android_res/raw/index.html");
+        //webView.addJavascriptInterface(new WebAppInterface(this), "JSInterface");
+        //webView.getSettings().setJavaScriptEnabled(true);
+        //webView.loadUrl("file:///android_res/raw/index.html");
 
+        mThird = (TextView) findViewById(R.id.monitor_third_value);
+        mProcess = (ProcessHelper.CRAFTING_PROCESS)getIntent().getSerializableExtra("PROCESS");
 
         // TODO Blueetooth section
 
         // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        /*mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported
         if (mBluetoothAdapter == null) {
             Toast.makeText(this, "Bluetooth is not available", Toast.LENGTH_LONG).show();
             finish();
             return;
-        }
+        }*/
 
 
+        mTimerService = new TimerService(this, mHandler);
+        mTimerService.start();
+/*
 
         //Retrieve data from NewProcessActivity
         Intent intent = getIntent();
         Integer minutes = intent.getIntExtra("Time", 0);
         final TextView text = (TextView) findViewById(R.id.monitor_third_value);
-
+*/
         // Start a service to control notifications
         //Intent serviceInt = new Intent(this, NotifierService.class);
         //serviceInt.putExtra("Minutes", minutes);
@@ -117,33 +133,13 @@ public class MonitorActivity extends Activity {
         int notifyID = 001;
 
         notificationMan.notify(notifyID, builder.build());*/
-
-
-        // TODO Countdown
-        /*
-        //Countdown with value set by user
-        new CountDownTimer(minutes*1000*60, 1000) {
-
-            public void onTick(long millisUntilFinished)
-            {
-                long remainingSeconds = millisUntilFinished/1000;
-                long remainingMinutes = millisUntilFinished/(1000*60);
-                int seconds = (int) remainingSeconds%60;
-                int minutes = (int) remainingMinutes%60;
-                text.setText( String.valueOf(minutes) + ":" + String.valueOf(seconds));
-            }
-
-            public void onFinish() {
-                //StartCountUp();
-            }
-        }.start();*/
     }
 
-    /*@Override
+    @Override
     public void onStart()
     {
         super.onStart();
-        if(D) Log.e(TAG, "++ ON START ++");
+        /*if(D) Log.e(TAG, "++ ON START ++");
 
         // If BT is not on, request that it be enabled.
         // setupChat() will then be called during onActivityResult
@@ -155,10 +151,9 @@ public class MonitorActivity extends Activity {
         }
         else
         {
-            if (mChatService == null)
-                setupChat();
-        }
-    }*/
+
+        }*/
+    }
 
     @Override
     public synchronized void onResume() {
@@ -202,83 +197,6 @@ public class MonitorActivity extends Activity {
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
-    /*private void setupChat()
-    {
-        Log.d(TAG, "setupChat()");
-        // Initialize the array adapter for the conversation thread
-        mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
-        mConversationView = (ListView) findViewById(R.id.in);
-        mConversationView.setAdapter(mConversationArrayAdapter);
-        // Initialize the compose field with a listener for the return key
-        mOutEditText = (EditText) findViewById(R.id.edit_text_out);
-        // TODO mOutEditText.setOnEditorActionListener(mWriteListener);
-        // Initialize the send button with a listener that for click events
-        mSendButton = (Button) findViewById(R.id.button_send);
-        mSendButton.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                TextView view = (TextView) findViewById(R.id.edit_text_out);
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-        });
-        // Initialize the BluetoothMessageService to perform bluetooth connections
-        mChatService = new BluetoothMessageService(this, mHandler);
-        // Initialize the buffer for outgoing messages
-        mOutStringBuffer = new StringBuffer("");
-    }*/
-
-    private void ensureDiscoverable() {
-        if(D) Log.d(TAG, "ensure discoverable");
-        if (mBluetoothAdapter.getScanMode() !=
-                BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE) {
-            Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-            discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
-            startActivity(discoverableIntent);
-        }
-    }
-
-    /**
-     * Sends a message.
-     * @param message  A string of text to send.
-     */
-    private void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
-        if (mChatService.getState() != BluetoothMessageService.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.monitor_not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothMessageService to write
-            byte[] send = message.getBytes();
-            mChatService.write(send);
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-            mOutEditText.setText(mOutStringBuffer);
-        }
-    }
-
-    public void StartCountUp()
-    {
-        Chronometer stopWatch = new Chronometer(this);
-        long startTime = SystemClock.elapsedRealtime();
-        final TextView text = (TextView) findViewById(R.id.monitor_third_value);
-
-        stopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener(){
-            @Override
-            public void onChronometerTick(Chronometer chronometer) {
-                long elapsedSeconds = (SystemClock.elapsedRealtime() - chronometer.getBase())/1000;
-                long elapsedMinutes = elapsedSeconds/60;
-
-                String chronoStr = elapsedMinutes + ":" + elapsedSeconds;
-                text.setText(chronoStr);
-            }
-        });
-
-        stopWatch.start();
-    }
-
     public class WebAppInterface
     {
         Context mContext;
@@ -306,4 +224,47 @@ public class MonitorActivity extends Activity {
         }
 
     }
+
+    // The Handler that gets information back from the TimerService
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            byte[] sendBuf = (byte[]) msg.obj;
+            // construct a string from the buffer
+            String sendMessage = new String(sendBuf);
+
+            switch (msg.what) {
+
+                case UPDATE_CLOCK:
+                    mThird.setText(sendMessage);
+                    break;
+
+                case FINISH_CLOCK:
+                    // Set text on red
+                   mThird.setText(sendMessage);
+                    mThird.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
+                    break;
+            }
+        }
+    };
+
+
+    public void EndProcess(View v)
+    {
+        ProcessHelper.CRAFTING_PROCESS nextProcess = ProcessHelper.nextProcess(mProcess);
+        Intent intent;
+        if (nextProcess.compareTo(ProcessHelper.CRAFTING_PROCESS.NONE) != 0)
+        {
+            intent = new Intent(this, NewProcessActivity.class);
+            intent.putExtra("PROCESS", nextProcess);
+        }
+        else
+        {
+            //End of monitoring
+            intent = new Intent(this, MainActivity.class);
+        }
+        startActivity(intent);
+
+    }
+
 }

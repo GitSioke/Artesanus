@@ -33,4 +33,6 @@
     <string name="main_ask">Solicitar</string>
     <string name="title_activity_splash">Splash</string>
     <string name="main_asking_for_data">He pedido datos</string>
+    <string name="monitor_title">Monitor</string>
+    <string name="monitor_end_process">Finalizar</string>
 </resources>

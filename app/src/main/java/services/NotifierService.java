@@ -20,6 +20,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+
+/**
+ * This service handle the dummy data created to simulate Arduino entrances.
+ */
 public class NotifierService extends Service
 {
     private final Handler mHandler;

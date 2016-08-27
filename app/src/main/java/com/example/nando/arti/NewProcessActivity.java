@@ -8,7 +8,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import common.ProcessHelper;
+
 public class NewProcessActivity extends AppCompatActivity {
+
+    ProcessHelper.CRAFTING_PROCESS mProcess;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -16,7 +20,7 @@ public class NewProcessActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_new_process);
 
-        String process = getIntent().getStringExtra("PROCESS");
+        mProcess = (ProcessHelper.CRAFTING_PROCESS)getIntent().getSerializableExtra("PROCESS");
         // TODO Put this String into Toolbar title?
     }
 
@@ -30,6 +34,7 @@ public class NewProcessActivity extends AppCompatActivity {
             // Get minutes and pass via Intent
             Intent intent = new Intent(this, MonitorActivity.class);
             intent.putExtra("Time", time);
+            intent.putExtra("PROCESS", mProcess);
 
             startActivity(intent);
         }
