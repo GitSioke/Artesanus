@@ -8,8 +8,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import nandroid.artesanus.common.ProcessHelper;
+import nandroid.artesanus.services.BluetoothMessageService;
 
 public class NewProcessActivity extends AppCompatActivity {
+
+    // Member object for the chat services
+    private BluetoothMessageService mBTService;
 
     ProcessHelper.CRAFTING_PROCESS mProcess;
 

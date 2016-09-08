@@ -2,12 +2,14 @@ package nandroid.artesanus.gui;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -15,6 +17,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.webkit.JavascriptInterface;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import nandroid.artesanus.common.ProcessHelper;
 import nandroid.artesanus.services.BluetoothMessageService;
@@ -29,6 +35,9 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
     // Debugging
     private static final String TAG = "MonitorActivity";
     private static final boolean D = true;
+
+    // Member object for obtain Pair with data sent by paired device
+    private List<Pair> mListPair = new ArrayList<Pair>();
 
     // Message types sent from the BluetoothMessageService Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -255,6 +264,31 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
             intent = new Intent(this, MainActivity.class);
         }
         startActivity(intent);
+
+    }
+
+    public class AlarmReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(BluetoothMessageService.ACTION_READ_DATA)) {
+                String readMessage = intent.getStringExtra("READ");
+                String[] data = readMessage.split("\n");
+                for (String field : data) {
+                    String[] part = field.split(" : ");
+                    mListPair.add(new Pair(part[0], part[1]));
+                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + part[0] + " : " + part[1]);
+                }
+            } else if (intent.getAction().equals(BluetoothMessageService.ACTION_WRITE_DATA)) {
+                Toast.makeText(MonitorActivity.this, "WRITE!", Toast.LENGTH_SHORT).show();
+                String writeMessage = intent.getStringExtra("WRITE");
+                mConversationArrayAdapter.add(R.string.main_messenger_user_myself + writeMessage);
+
+            } else if (intent.getAction().equals(BluetoothMessageService.ACTION_ASK_DATA)) {
+                Toast.makeText(MonitorActivity.this, "ASK_DATA!", Toast.LENGTH_SHORT).show();
+                mConversationArrayAdapter.add(R.string.main_messenger_user_myself + ""
+                        + R.string.main_asking_for_data);
+            }
+        }
 
     }
 

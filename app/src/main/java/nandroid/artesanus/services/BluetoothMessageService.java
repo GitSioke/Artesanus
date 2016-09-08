@@ -1,5 +1,6 @@
 package nandroid.artesanus.services;
 
+import android.app.IntentService;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -35,7 +36,7 @@ import nandroid.artesanus.common.TransientPair;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class BluetoothMessageService extends Service {
+public class BluetoothMessageService extends IntentService {
 
     // Debugging
     private static final String TAG = "BluetoothMessageService";
@@ -46,10 +47,13 @@ public class BluetoothMessageService extends Service {
 
     // Unique UUID for this application
     private static final UUID MY_UUID = UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    public static final String ACTION_WRITE_DATA = "nandroid.artesanus.intent.action.WRITE";
+    public static final String ACTION_ASK_DATA = "nandroid.artesanus.intent.action.ASK";
+    public static final String ACTION_READ_DATA = "nandroid.artesanus.intent.action.READ";
     //private static final UUID MY_UUID = UUID.randomUUID();
 
     // Member fields
-    private final BluetoothAdapter mAdapter;
+    private BluetoothAdapter mAdapter;
     private final Handler mHandler;
     private AcceptThread mAcceptThread;
     private ConnectThread mConnectThread;
@@ -64,9 +68,18 @@ public class BluetoothMessageService extends Service {
 
     public BluetoothMessageService(Context context, Handler handler)
     {
+        super("BluetoothMessageService");
         mAdapter = BluetoothAdapter.getDefaultAdapter();
         mState = STATE_NONE;
         mHandler = handler;
+    }
+
+    @Override
+    protected void onHandleIntent(Intent intent)
+    {
+        //mAdapter = BluetoothAdapter.getDefaultAdapter();
+        //mState = STATE_NONE;
+
     }
 
     @Override
@@ -511,6 +524,7 @@ public class BluetoothMessageService extends Service {
 
             try {
                 objOutStream = new ObjectOutputStream(bufo);
+                objInStream = new ObjectInputStream(bufi);
             } catch (StreamCorruptedException e) {
                 Log.d(TAG,"Caught Corrupted Stream Exception");
                 Log.w(TAG,e);
@@ -532,8 +546,13 @@ public class BluetoothMessageService extends Service {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI Activity
-                    mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
-                            .sendToTarget();
+                    // Share the sent message back to the UI Activity
+                    Intent bcIntent = new Intent();
+                    bcIntent.setAction(ACTION_READ_DATA);
+                    bcIntent.putExtra("READ", buffer.toString());
+                    sendBroadcast(bcIntent);
+                    //mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
+                      //      .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
@@ -573,8 +592,13 @@ public class BluetoothMessageService extends Service {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer)
-                        .sendToTarget();
+                Intent bcIntent = new Intent();
+                bcIntent.setAction(ACTION_WRITE_DATA);
+                bcIntent.putExtra("WRITE", sb.toString());
+                sendBroadcast(bcIntent);
+                //mHandler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer)
+                  //      .sendToTarget();
+
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
             }
@@ -591,8 +615,13 @@ public class BluetoothMessageService extends Service {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                mHandler.obtainMessage(MainActivity.MESSAGE_ASK_DATA, -1, -1, buffer)
-                        .sendToTarget();
+                Intent bcIntent = new Intent();
+                bcIntent.setAction(ACTION_ASK_DATA);
+                bcIntent.putExtra("ASK", buffer.toString());
+                sendBroadcast(bcIntent);
+                // Share the sent message back to the UI Activity
+                //mHandler.obtainMessage(MainActivity.MESSAGE_ASK_DATA, -1, -1, buffer)
+                        //.sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during ask", e);
             }

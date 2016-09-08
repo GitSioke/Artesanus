@@ -3,6 +3,8 @@ package nandroid.artesanus.gui;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -58,6 +60,8 @@ public class MainActivity extends AppCompatActivity {
     private ListView mConversationView;
     private EditText mOutEditText;
     private Button mAskButton;
+
+    private AlarmReceiver mReceiver;
 
     // Name of the connected device
     private String mConnectedDeviceName = null;
@@ -386,5 +390,43 @@ public class MainActivity extends AppCompatActivity {
                 return true;
         }
         return false;
+    }
+
+    public class AlarmReceiver extends BroadcastReceiver
+    {
+        @Override
+        public void onReceive(Context context, Intent intent)
+        {
+            if(intent.getAction().equals(BluetoothMessageService.ACTION_READ_DATA)) {
+                String readMessage = intent.getStringExtra("READ");
+                if (readMessage.equalsIgnoreCase("ASK_DATA"))
+                {
+                    mNotifierService.start();
+                    mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                }
+                else
+                {
+                    String[] data = readMessage.split("\n");
+                    for (String field :data)
+                    {
+                        String[] part = field.split(" : ");
+                        mListPair.add(new Pair(part[0], part[1]));
+                        mConversationArrayAdapter.add(mConnectedDeviceName+ ":  " + part[0] + " : " + part[1]);
+                    }
+                }
+
+            }
+            else if(intent.getAction().equals(BluetoothMessageService.ACTION_WRITE_DATA)) {
+                Toast.makeText(MainActivity.this, "WRITE!", Toast.LENGTH_SHORT).show();
+                String writeMessage = intent.getStringExtra("WRITE");
+                mConversationArrayAdapter.add(R.string.main_messenger_user_myself + writeMessage);
+
+            }else if(intent.getAction().equals(BluetoothMessageService.ACTION_ASK_DATA))
+            {
+                Toast.makeText(MainActivity.this, "ASK_DATA!", Toast.LENGTH_SHORT).show();
+                mConversationArrayAdapter.add(R.string.main_messenger_user_myself + ""
+                        + R.string.main_asking_for_data);
+            }
+        }
     }
 }
