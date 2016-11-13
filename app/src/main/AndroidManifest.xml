@@ -15,14 +15,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".MainActivity"
+            android:name="nandroid.artesanus.gui.MainActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.NoActionBar">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <!--
              ATTENTION: This was auto-generated to add Google Play services to your project for
@@ -33,10 +29,15 @@
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name=".MonitorActivity"
-            android:label="@string/monitor_title"></activity>
+            android:name=".MenuActivity"
+            android:label="@string/menu_title"
+            android:exported="true"/>
+
         <activity
-            android:name=".NewProcessActivity"
+            android:name="nandroid.artesanus.gui.MonitorActivity"
+            android:label="@string/monitor_title"/>
+        <activity
+            android:name="nandroid.artesanus.gui.NewProcessActivity"
             android:label="@string/title_activity_newprocess">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -53,26 +54,37 @@
                     android:scheme="http" />
             </intent-filter>
         </activity>
+
         <activity
-            android:name=".DeviceListActivity"
+            android:name="nandroid.artesanus.gui.DeviceListActivity"
             android:label="@string/title_activity_device_list"
             android:theme="@style/AppTheme.NoActionBar" />
 
+        <activity
+            android:name="nandroid.artesanus.gui.NewBeerCraftingActivity"
+            android:label="@string/title_activity_newcrafting">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
         <service
-            android:name="services.NotifierService"
+            android:name="nandroid.artesanus.services.NotifierService"
             android:enabled="true"
             android:exported="true" />
 
-        <receiver
-            android:name="services.AlarmReceiver"
+        <!--<receiver
+            android:name="nandroid.artesanus.services.AlarmReceiver"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.NOTIFY" />
             </intent-filter>
-        </receiver>
+        </receiver>-->
 
         <service
-            android:name="services.BluetoothMessageService"
+            android:name="nandroid.artesanus.services.BluetoothMessageService"
             android:enabled="true"
             android:exported="true" />
 
@@ -82,9 +94,9 @@
             android:theme="@style/AppTheme.NoActionBar" />
 
         <service
-            android:name="services.TimerService"
+            android:name="nandroid.artesanus.services.TimerService"
             android:enabled="true"
-            android:exported="true"></service>
+            android:exported="true"/>
     </application>
 
 </manifest>

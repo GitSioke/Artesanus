@@ -35,4 +35,35 @@
     <string name="main_asking_for_data">He pedido datos</string>
     <string name="monitor_title">Monitor</string>
     <string name="monitor_end_process">Finalizar</string>
+    <string name="menu_title">Artesanus Beer Menu</string>
+    <string name="main_menu_no_previous_crafting">
+        Wow!\n
+        No has elaborado ninguna cerveza.\n
+        ¡Empieza una ahora!\n</string>
+    <string name="unpaired_fragment_no_pair_device">Este dispositivo no está emparejado con ningún dispositivo Bluetooth. Si no lo empareja ahora no podrá continuar.\\n ¿Desea emparejarlo ahora?</string>
+    <string name="unpaired_fragment_pair_devices">Emparejar</string>
+    <string name="cancel">Cancelar</string>
+    <string name="menu_device_wasnt_paired">El dispositivo no fue emparejado. No puede iniciarse el proceso</string>
+    <string name="title_activity_newcrafting">Nueva Cerveza</string>
+    <string name="new_crafting_name">Nombre</string>
+    <string name="new_crafting_kind">Tipo</string>
+    <string name="new_crafting_cereals">Cereales</string>
+    <string name="new_crafting_hops">Lúpulos</string>
+    <string name="new_crafting_mashing">Maceración</string>
+    <string name="new_crafting_step">Escalones</string>
+    <string name="ok">OK</string>
+    <string name="title_item_picker">Escoge un tipo de cerveza</string>
+    <string name="new_crafting_litre">Litros</string>
+    <string name="add_cereal_kind">Cereal</string>
+    <string name="add_cereal_amount">Cantidad</string>
+    <string name="list_row_cereal_kilogram">Kg</string>
+    <string name="list_row_cereal_minutes">minutos</string>
+    <string name="list_row_hop_minutes">min</string>
+    <string name="temperature">Temperatura</string>
+    <string name="heat_tv_start">Iniciar en</string>
+    <string name="heat_tv_duration">Duración</string>
+    <string name="degrees_symbol">ºC</string>
+    <string name="minutes_symbol">\'</string>
+    <string name="minutes_abreviature">min</string>
+
 </resources>
