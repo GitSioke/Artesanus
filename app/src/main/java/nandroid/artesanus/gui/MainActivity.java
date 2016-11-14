@@ -89,12 +89,7 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
-        // Set up the window layout
-        setContentView(R.layout.activity_main);
-        mTitle = (TextView)findViewById(R.id.main_title);
 
-        Toolbar myToolbar = (Toolbar) findViewById(R.id.my_toolbar);
-        setSupportActionBar(myToolbar);
         // Get local Bluetooth adapter
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         // If the adapter is null, then Bluetooth is not supported
@@ -426,6 +421,41 @@ public class MainActivity extends AppCompatActivity {
                 Toast.makeText(MainActivity.this, "ASK_DATA!", Toast.LENGTH_SHORT).show();
                 mConversationArrayAdapter.add(R.string.main_messenger_user_myself + ""
                         + R.string.main_asking_for_data);
+            }
+            else if(intent.getAction().equals(BluetoothMessageService.ACTION_STATE_CHANGE))
+            {
+                int state = intent.getIntExtra("STATE_CHANGE", -1);
+
+                if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + state);
+                switch (state) {
+                    case BluetoothMessageService.STATE_CONNECTED:
+                        mTitle.setText(R.string.main_title_connected_to);
+                        mTitle.append(mConnectedDeviceName);
+                        mConversationArrayAdapter.clear();
+                        break;
+                    case BluetoothMessageService.STATE_CONNECTING:
+                        mTitle.setText(R.string.main_title_connecting);
+                        break;
+                    case BluetoothMessageService.STATE_LISTEN:
+                    case BluetoothMessageService.STATE_NONE:
+                        mTitle.setText(R.string.main_title_not_connected);
+                        break;
+                    default:
+                        if(D) Log.i(TAG, "Bad state received");
+                }
+            }
+            else if (intent.getAction().equals(BluetoothMessageService.ACTION_TOAST))
+            {
+                String toastMsg = intent.getStringExtra("TOAST_MESSAGE");
+                Toast.makeText(getApplicationContext(), toastMsg,Toast.LENGTH_SHORT).show();
+            }
+            else if (intent.getAction().equals(BluetoothMessageService.ACTION_SEND_DEVICE_NAME))
+            {
+                String deviceStr = intent.getStringExtra("DEVICE_NAME");
+                // save the connected device's name
+                mConnectedDeviceName = deviceStr;
+                Toast.makeText(getApplicationContext(), R.string.main_title_connected_to
+                        + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
             }
         }
     }
