@@ -109,4 +109,9 @@ public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnC
             dataSet.remove(position);
         }
     }
+
+    public void add(Cereal cereal)
+    {
+        dataSet.add(cereal);
+    }
 }
