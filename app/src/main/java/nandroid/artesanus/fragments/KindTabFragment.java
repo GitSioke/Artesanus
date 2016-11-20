@@ -39,9 +39,11 @@ public class KindTabFragment extends Fragment
             AddHopFragment.OnHopAddedListener
 {
     private HopAddedAdapter hopAdapter;
-    private ListView listView;
+    private ListView hopListView;
+    private CerealAddedAdapter cerealAdapter;
+    private ListView cerealListView;
 
-    private static CerealAddedAdapter cerealAdapter;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -80,49 +82,29 @@ public class KindTabFragment extends Fragment
             }
         });
 
-        Hop testHop = new Hop("hola");
+
         ArrayList<Hop> addedHopList = new ArrayList<Hop>();
-        addedHopList.add(testHop);
         hopAdapter  = new HopAddedAdapter(addedHopList, getContext());
-        ListView listView = (ListView)view.findViewById(R.id.new_crafting_hop_added_lv);
-        listView.setAdapter(hopAdapter);
+        hopListView = (ListView)view.findViewById(R.id.new_crafting_hop_added_lv);
+        hopListView.setAdapter(hopAdapter);
 
-        /*ArrayList cerealAdded = new ArrayList();
-        CerealAddedAdapter adapter = new CerealAddedAdapter(cerealAdded, getContext());
 
-        ListView
-        ListView listView = (ListView)view.findViewById(R.id.new_crafting_cereals_added_lv);
-        listView.setAdapter(adapter);
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                Hop hop = hopList.get(position);
-
-                Snackbar.make(view, hop.getName() + "\n" + hop.getName() + " API: " + hop.getAmount(), Snackbar.LENGTH_LONG)
-                        .setAction("No action", null).show();
-            }
-        });*/
+        ArrayList<Cereal> addedCerealList = new ArrayList<Cereal>();
+        cerealAdapter  = new CerealAddedAdapter(addedCerealList, getContext());
+        cerealListView = (ListView)view.findViewById(R.id.new_crafting_cereals_added_lv);
+        cerealListView.setAdapter(cerealAdapter);
 
         return view;
     }
 
     public synchronized void onResume() {
         super.onResume();
-
-        //hopAdapter.notifyDataSetChanged();
-        //listView.invalidateViews();
     }
 
     private void addHop()
     {
-        /*AddHopFragment fragment = new AddHopFragment();
-        fragment.show(getChildFragmentManager(), "AddHopFragmentDialog");*/
-        hopAdapter.add(new Hop("asdfgh"));
-        listView.setAdapter(hopAdapter);
-        //FragmentTransaction ft = getFragmentManager().beginTransaction();
-        //ft.detach(this).attach(this).commit();
-        //hopAdapter.notifyDataSetChanged();
+        AddHopFragment fragment = new AddHopFragment();
+        fragment.show(getChildFragmentManager(), "AddHopFragmentDialog");
     }
 
     private void addCereal()
@@ -171,8 +153,11 @@ public class KindTabFragment extends Fragment
     {
         for (Cereal cereal : cereals)
         {
-            Snackbar.make(getView(), cereal.getName() + ":" + cereal.getAmount(), Snackbar.LENGTH_SHORT).show();
+            cerealAdapter.add(cereal);
+            //Snackbar.make(getView(), hop.getName() + ":" + hop.getAmount(), Snackbar.LENGTH_SHORT).show();
         }
+
+        cerealListView.setAdapter(cerealAdapter);
 
     }
 
@@ -182,12 +167,9 @@ public class KindTabFragment extends Fragment
         for (Hop hop : hops)
         {
             hopAdapter.add(hop);
-
-            //hopAdapter.notifyDataSetChanged();
             //Snackbar.make(getView(), hop.getName() + ":" + hop.getAmount(), Snackbar.LENGTH_SHORT).show();
         }
 
-        listView.setAdapter(hopAdapter);
-
+        hopListView.setAdapter(hopAdapter);
     }
 }

@@ -114,7 +114,6 @@ public class HopAddedAdapter extends ArrayAdapter<Hop> implements View.OnClickLi
 
     public void add(Hop hop)
     {
-        dataSet.add(new Hop("Mami"));
-        //notifyDataSetChanged();
+        dataSet.add(hop);
     }
 }
