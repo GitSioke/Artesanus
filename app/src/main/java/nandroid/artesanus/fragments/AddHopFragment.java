@@ -15,8 +15,8 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import nandroid.artesanus.common.Hop;
-import nandroid.artesanus.gui.CerealAdapter;
-import nandroid.artesanus.gui.HopAdapter;
+import nandroid.artesanus.adapter.CerealAdapter;
+import nandroid.artesanus.adapter.HopAdapter;
 import nandroid.artesanus.gui.R;
 
 /**

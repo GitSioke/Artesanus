@@ -1,34 +1,21 @@
 package nandroid.artesanus.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Hop;
-import nandroid.artesanus.gui.CerealAdapter;
-import nandroid.artesanus.gui.CerealAddedAdapter;
-import nandroid.artesanus.gui.HopAdapter;
-import nandroid.artesanus.gui.HopAddedAdapter;
+import nandroid.artesanus.adapter.CerealAddedAdapter;
+import nandroid.artesanus.adapter.HopAddedAdapter;
 import nandroid.artesanus.gui.R;
-import nandroid.artesanus.services.BluetoothMessageService;
 
 /**
  * Created by Nando on 05/11/2016.
