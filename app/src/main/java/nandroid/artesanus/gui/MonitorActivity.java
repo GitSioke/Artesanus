@@ -80,6 +80,8 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
         setContentView(R.layout.activity_monitor);
         if(D) Log.e(TAG, "Set content view");
 
+
+
         //WebView webView = (WebView)findViewById(R.id.webView);
 
         //webView.addJavascriptInterface(new WebAppInterface(this), "JSInterface");
@@ -88,7 +90,7 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
 
         mThird = (TextView) findViewById(R.id.monitor_third_value);
         mProcess = (ProcessHelper.CRAFTING_PROCESS)getIntent().getSerializableExtra("PROCESS");
-
+        setTitle("Monitoreo: " + mProcess.toString());
         // TODO Blueetooth section
 
         // Get local Bluetooth adapter
@@ -124,7 +126,7 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
 
         // Set the icon, scrolling text and timestamp
         NotificationCompat.Builder builder = (NotificationCompat.Builder) new NotificationCompat.Builder(MonitorActivity.this)
-                .setSmallIcon(R.drawable.common_ic_googleplayservices)
+                .setSmallIcon(R.shape.common_ic_googleplayservices)
                 .setAutoCancel(true)
                 .setContentText(getResources().getString(R.string.notification_time_up))
                 .setWhen(System.currentTimeMillis() + minutes * 1000)

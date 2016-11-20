@@ -2,33 +2,36 @@ package nandroid.artesanus.gui;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+
 import nandroid.artesanus.common.Cereal;
 
-
-public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickListener
+/**
+ * Created by Nando on 15/11/2016.
+ */
+public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnClickListener
 {
     private static ArrayList<Cereal> dataSet;
     Context mContext;
 
-    public CerealAdapter(ArrayList<Cereal> data, Context context)
+    public CerealAddedAdapter(ArrayList<Cereal> data, Context context)
     {
-        super(context, R.layout.list_row_cereal, data);
+        super(context, R.layout.list_row_cereal_added, data);
         this.dataSet = data;
         this.mContext=context;
+    }
+
+    public interface OnItemRemoved
+    {
+
     }
 
     // View lookup cache
@@ -36,6 +39,7 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
     {
         TextView txtName;
         TextView txtAmount;
+        ImageView imgRemove;
     }
 
     @Override
@@ -70,10 +74,10 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
 
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_row_cereal, parent, false);
-            viewHolder.txtName = (TextView) convertView.findViewById(R.id.txtName);
-            viewHolder.txtAmount = (EditText) convertView.findViewById(R.id.cereal_amount);
-
+            convertView = inflater.inflate(R.layout.list_row_cereal_added, parent, false);
+            viewHolder.txtName = (TextView) convertView.findViewById(R.id.row_cereal_added_txtName);
+            viewHolder.txtAmount = (TextView) convertView.findViewById(R.id.row_cereal_added_amount);
+            viewHolder.imgRemove = (ImageView) convertView.findViewById(R.id.row_cereal_added_cancel_btn);
             result=convertView;
 
             convertView.setTag(viewHolder);
@@ -85,8 +89,24 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
 
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.txtAmount.setText(Integer.toString(dataModel.getAmount()));
+        viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //TODO Remove element from list
+                Integer index = (Integer) v.getTag();
+                dataSet.remove(index.intValue());
+                notifyDataSetChanged();
+            }
+        });
 
         // Return the completed view to render on screen
         return convertView;
+    }
+
+    public void remove(int position)
+    {
+        if (position >= 0 && dataSet.size() < position && dataSet.get(position) != null) {
+            dataSet.remove(position);
+        }
     }
 }

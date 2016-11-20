@@ -24,6 +24,11 @@ public class NotifierService extends Service
 
     private Thread mThread;
 
+    public NotifierService()
+    {
+        mHandler = new Handler();
+    }
+
     public NotifierService(Context context, Handler handler, BluetoothMessageService btService)
     {
         mHandler = handler;
@@ -98,7 +103,7 @@ public class NotifierService extends Service
             NotificationCompat.Builder builder = new NotificationCompat.Builder(NotifierService.this);
 
             int notifyID = 001;
-            Notification notification = new Notification(R.drawable.common_full_open_on_phone, "Test Alarm",
+            Notification notification = new Notification(R.shape.common_full_open_on_phone, "Test Alarm",
                     System.currentTimeMillis());
             //PendingIntent contentIntent = PendingIntent.getActivity(context, 0, new Intent(context, TestActivity.class), 0);
             notificationMan.notify(notifyID, builder.build());

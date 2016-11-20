@@ -23,6 +23,11 @@ public class TimerService extends Service {
 
     Context mContext;
 
+    public TimerService()
+    {
+
+    }
+
     public TimerService(Handler handler) {
 
         mHandler = handler;

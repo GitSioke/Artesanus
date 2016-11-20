@@ -24,7 +24,7 @@ public class NewProcessActivity extends AppCompatActivity {
         setContentView(R.layout.activity_new_process);
 
         mProcess = (ProcessHelper.CRAFTING_PROCESS)getIntent().getSerializableExtra("PROCESS");
-        // TODO Put this String into Toolbar title?
+        setTitle(mProcess.toString());
     }
 
     //Onclick start process button launch this method
