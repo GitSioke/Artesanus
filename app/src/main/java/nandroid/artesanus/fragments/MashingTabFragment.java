@@ -7,7 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ListView;
 
+import java.util.ArrayList;
+
+import nandroid.artesanus.adapter.CerealAddedAdapter;
+import nandroid.artesanus.adapter.HeatAddedAdapter;
+import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.gui.R;
 
@@ -15,6 +21,9 @@ import nandroid.artesanus.gui.R;
  * Created by Nando on 05/11/2016.
  */
 public class MashingTabFragment extends Fragment implements AddHeatFragment.OnHeatAddedListener{
+
+    private HeatAddedAdapter heatAdapter;
+    private ListView addedHeatListView;
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -35,13 +44,21 @@ public class MashingTabFragment extends Fragment implements AddHeatFragment.OnHe
                 fragment.show(getChildFragmentManager(), "AddHeatFragmentDialog");
             }
         });
+
+        ArrayList<Heat> addedHeatList = new ArrayList<Heat>();
+        heatAdapter  = new HeatAddedAdapter(addedHeatList, getContext());
+        addedHeatListView = (ListView)view.findViewById(R.id.new_crafting_step_added);
+        addedHeatListView.setAdapter(heatAdapter);
+
         return view;
     }
 
     @Override
     public void onHeatAdded(Heat heat)
     {
-        Snackbar.make(getView(), "Se añadió un escalón a " + ":" + heat.getTemperature(), Snackbar.LENGTH_SHORT).show();
+        heatAdapter.add(heat);
+        addedHeatListView.setAdapter(heatAdapter);
+        //Snackbar.make(getView(), "Se añadió un escalón a " + ":" + heat.getTemperature(), Snackbar.LENGTH_SHORT).show();
     }
 }
 
