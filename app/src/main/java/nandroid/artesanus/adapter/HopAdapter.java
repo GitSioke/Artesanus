@@ -1,32 +1,28 @@
-package nandroid.artesanus.gui;
+package nandroid.artesanus.adapter;
 
 import android.content.Context;
 import android.support.design.widget.Snackbar;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.widget.AbsListView;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
-import android.widget.ListAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
-import nandroid.artesanus.common.Cereal;
+
+import nandroid.artesanus.common.Hop;
+import nandroid.artesanus.gui.R;
 
 
-public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickListener
+public class HopAdapter extends ArrayAdapter<Hop> implements View.OnClickListener
 {
-    private static ArrayList<Cereal> dataSet;
+    private static ArrayList<Hop> dataSet;
     Context mContext;
 
-    public CerealAdapter(ArrayList<Cereal> data, Context context)
+    public HopAdapter(ArrayList<Hop> data, Context context)
     {
-        super(context, R.layout.list_row_cereal, data);
+        super(context, R.layout.list_row_hop, data);
         this.dataSet = data;
         this.mContext=context;
     }
@@ -36,6 +32,7 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
     {
         TextView txtName;
         TextView txtAmount;
+        TextView txtMinute;
     }
 
     @Override
@@ -43,11 +40,11 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
     {
         int position= (Integer)v.getTag();
         Object object= getItem(position);
-        Cereal dataModel= (Cereal)object;
+        Hop dataModel= (Hop)object;
 
         switch (v.getId())
         {
-            case R.id.cereal_amount:
+            case R.id.hop_amount:
                 Snackbar.make(v, "Release date " + dataModel.getName(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
                 break;
@@ -60,7 +57,7 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         // Get the data item for this position
-        Cereal dataModel = getItem(position);
+        Hop dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         final ViewHolder viewHolder; // view lookup cache stored in tag
 
@@ -70,10 +67,10 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
 
             viewHolder = new ViewHolder();
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.list_row_cereal, parent, false);
+            convertView = inflater.inflate(R.layout.list_row_hop, parent, false);
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.txtName);
-            viewHolder.txtAmount = (EditText) convertView.findViewById(R.id.cereal_amount);
-
+            viewHolder.txtAmount = (EditText) convertView.findViewById(R.id.hop_amount);
+            viewHolder.txtMinute = (EditText) convertView.findViewById(R.id.time);
             result=convertView;
 
             convertView.setTag(viewHolder);
@@ -84,7 +81,9 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
         }
 
         viewHolder.txtName.setText(dataModel.getName());
-        viewHolder.txtAmount.setText(Integer.toString(dataModel.getAmount()));
+
+        viewHolder.txtAmount.setText(String.valueOf(dataModel.getAmount()));
+        viewHolder.txtMinute.setText(String.valueOf(dataModel.getMinutes()));
 
         // Return the completed view to render on screen
         return convertView;
