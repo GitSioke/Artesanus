@@ -65,5 +65,7 @@
     <string name="degrees_symbol">ºC</string>
     <string name="minutes_symbol">\'</string>
     <string name="minutes_abreviature">min</string>
+    <string name="kilogram_abreviature">Kg</string>
+    <string name="grams_abreviature">gr</string>
 
 </resources>

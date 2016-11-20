@@ -91,7 +91,7 @@
             </RelativeLayout>
 
             <ListView
-                android:id="@+id/new_crafting_cereals_added"
+                android:id="@+id/new_crafting_cereals_added_lv"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"></ListView>
 
@@ -119,7 +119,7 @@
                     android:layout_toEndOf="@+id/new_crafting_hops"/>
             </RelativeLayout>
             <ListView
-                android:id="@+id/new_crafting_hops_added"
+                android:id="@+id/new_crafting_hop_added_lv"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"></ListView>
         </LinearLayout>
