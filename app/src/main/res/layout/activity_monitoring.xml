@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:columnCount="2"
+android:columnWidth="320dp"
+android:orientation="vertical"
+android:rowCount="2"
+android:stretchMode="columnWidth">
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <android.support.design.widget.TabLayout
+            android:id="@+id/monitoring_tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <android.support.v4.view.ViewPager
+            android:id="@+id/viewpager"
+            android:layout_width="match_parent"
+            android:layout_height="0px"
+            android:layout_weight="1"
+            android:background="@android:color/white"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:showDividers="end"
+            android:divider="@drawable/divider_drawable">
+
+
+            <TextView
+                android:id="@+id/new_crafting_name"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/new_crafting_name"></TextView>
+            <EditText
+                android:id="@+id/new_crafting_name_edit"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:autoText="false"
+                android:clickable="false"
+                ></EditText>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/divider_drawable"
+            android:showDividers="end">
+
+            <TextView
+                android:id="@+id/new_crafting_kind"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:text="@string/new_crafting_kind"></TextView>
+            <TextView
+                android:id="@+id/new_crafting_kind_selected"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"></TextView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/divider_drawable"
+            android:showDividers="end">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/new_crafting_cereals"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/new_crafting_cereals"
+                    android:layout_alignParentTop="true"
+                    ></TextView>
+                <ImageView
+                    android:id="@+id/new_crafting_add_cereal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_black_18dp"
+                    android:layout_toEndOf="@+id/new_crafting_cereals"/>
+
+            </RelativeLayout>
+
+            <ListView
+                android:id="@+id/new_crafting_cereals_added"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"></ListView>
+
+            </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:divider="@drawable/divider_drawable"
+            android:showDividers="end">
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/new_crafting_hops"
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:text="@string/new_crafting_hops"></TextView>
+                <ImageView
+                    android:id="@+id/new_crafting_add_hop"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_add_black_18dp"
+                    android:layout_toEndOf="@+id/new_crafting_hops"/>
+            </RelativeLayout>
+                <ListView
+                    android:id="@+id/new_crafting_hops_added"
+                    android:layout_height="wrap_content"
+                    android:layout_width="match_parent"></ListView>
+        </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/monitoring_floating_end"
+        android:src="@drawable/ic_done_white_18dp"
+        android:layout_gravity="bottom|end"
+        />
+
+</FrameLayout>
+
+
