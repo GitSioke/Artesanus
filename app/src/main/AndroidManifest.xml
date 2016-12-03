@@ -32,6 +32,8 @@
             android:name=".MenuActivity"
             android:label="@string/menu_title"
             android:exported="true"/>
+        <activity android:name=".MonitoringActivity"
+            android:label="@string/monitor_title"/>
 
         <activity
             android:name="nandroid.artesanus.gui.MonitorActivity"
