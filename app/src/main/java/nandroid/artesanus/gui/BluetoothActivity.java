@@ -39,13 +39,17 @@ public class BluetoothActivity extends AppCompatActivity
     // This method control the pairing action of an unpair device.
     public void doPositiveClick()
     {
-
+        //Start DeviceListActivity to scan and connect with selected device.
+        Intent serverIntent = new Intent(this, DeviceListActivity.class);
+        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
     }
 
     // This method control if user doesn't want to pair its device.
     public void doNegativeClick()
     {
-
+        Snackbar.make(findViewById(R.id.ly_coordinator),
+                getResources().getString(R.string.menu_device_wasnt_paired),
+                Snackbar.LENGTH_LONG).show();
     }
 
     protected boolean enableBT()
@@ -70,7 +74,7 @@ public class BluetoothActivity extends AppCompatActivity
         }
         else
         {
-            Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+            Snackbar.make(findViewById(R.id.ly_coordinator),
                     "Bluetooth no disponible",
                     Snackbar.LENGTH_LONG).show();
             finish();

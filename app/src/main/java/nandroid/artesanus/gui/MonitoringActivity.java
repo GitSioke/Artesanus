@@ -10,6 +10,7 @@ import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
@@ -17,6 +18,7 @@ import android.widget.Toast;
 
 import nandroid.artesanus.adapter.MonitorTabFragmentPagerAdapter;
 import nandroid.artesanus.common.AppController;
+import nandroid.artesanus.fragments.UnpairedDevicesFragment;
 import nandroid.artesanus.services.BluetoothMessageService;
 
 /**
@@ -46,6 +48,9 @@ public class MonitoringActivity extends BluetoothActivity {
         if(D) Log.e(TAG, "+++ ON CREATE +++");
         // Set up the window layout
         setContentView(R.layout.activity_monitoring);
+
+        DialogFragment newFragment = new UnpairedDevicesFragment();
+        newFragment.show(getSupportFragmentManager(), "MonitoringActivity");
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -143,7 +148,7 @@ public class MonitoringActivity extends BluetoothActivity {
         }
         else
         {
-            Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+            Snackbar.make(findViewById(R.id.ly_coordinator),
                     "Bluetooth no disponible",
                     Snackbar.LENGTH_LONG).show();
             finish();
@@ -197,20 +202,20 @@ public class MonitoringActivity extends BluetoothActivity {
                             //mTitle.setText(R.string.main_title_connected_to);
                             //mTitle.append(mConnectedDeviceName);
                             //mConversationArrayAdapter.clear();
-                            Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+                            Snackbar.make(findViewById(R.id.ly_coordinator),
                                     getResources().getString(R.string.main_title_connected_to),
                                     Snackbar.LENGTH_LONG).show();
                             break;
                         case BluetoothMessageService.STATE_CONNECTING:
                             //mTitle.setText(R.string.main_title_connecting);
-                            Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+                            Snackbar.make(findViewById(R.id.ly_coordinator),
                                     getResources().getString(R.string.main_title_connecting),
                                     Snackbar.LENGTH_LONG).show();
                             break;
                         case BluetoothMessageService.STATE_LISTEN:
                         case BluetoothMessageService.STATE_NONE:
                             //mTitle.setText(R.string.main_title_not_connected);
-                            Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+                            Snackbar.make(findViewById(R.id.ly_coordinator),
                                     getResources().getString(R.string.main_title_not_connected),
                                     Snackbar.LENGTH_LONG).show();
                             break;
@@ -259,36 +264,19 @@ public class MonitoringActivity extends BluetoothActivity {
                     mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
                     //Toast.makeText(getApplicationContext(), R.string.main_title_connected_to
                     //      + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+                    Snackbar.make(findViewById(R.id.ly_coordinator),
                             getResources().getString(R.string.main_title_connected_to) + mConnectedDeviceName,
                             Snackbar.LENGTH_LONG).show();
                     break;
                 case MESSAGE_TOAST:
                     //Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
                     //      Toast.LENGTH_SHORT).show();
-                    Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
+                    Snackbar.make(findViewById(R.id.ly_coordinator),
                             msg.getData().getString(TOAST),
                             Snackbar.LENGTH_LONG).show();
                     break;
             }
         }
     };
-
-
-    // This method control the pairing action of an unpair device.
-    public void doPositiveClick()
-    {
-        //Start DeviceListActivity to scan and connect with selected device.
-        Intent serverIntent = new Intent(this, DeviceListActivity.class);
-        startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE);
-    }
-
-    // This method control if user doesn't want to pair its device.
-    public void doNegativeClick()
-    {
-        Snackbar.make(findViewById(R.id.main_menu_ly_coordinator),
-                getResources().getString(R.string.menu_device_wasnt_paired),
-                Snackbar.LENGTH_LONG).show();
-    }
 
 }
