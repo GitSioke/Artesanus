@@ -32,7 +32,7 @@ public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnC
 
     public interface OnItemRemoved
     {
-
+        public void onItemRemoved(int index);
     }
 
     // View lookup cache
@@ -96,7 +96,6 @@ public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnC
                 //TODO Remove element from list
                 Integer index = (Integer) v.getTag();
                 dataSet.remove(index.intValue());
-                notifyDataSetChanged();
             }
         });
 

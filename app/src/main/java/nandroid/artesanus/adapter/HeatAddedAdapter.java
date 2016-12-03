@@ -112,4 +112,9 @@ public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClick
     {
         dataSet.add(heat);
     }
+
+    public void remove(Heat heat)
+    {
+        dataSet.remove(heat);
+    }
 }
