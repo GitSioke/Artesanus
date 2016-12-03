@@ -1,4 +1,4 @@
-package nandroid.artesanus.fragments;
+package nandroid.artesanus.adapter;
 
 import android.content.Context;
 import android.support.v4.app.Fragment;
@@ -6,14 +6,15 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
 import nandroid.artesanus.common.FragmentFactory;
+import nandroid.artesanus.common.MonitorFragmentFactory;
 
 
-public class NewFragmentPagerAdapter extends FragmentPagerAdapter{
-    final int PAGE_COUNT = 2;
-    private String tabTitles[] = new String[] {"Tipo", "Maceración" };
+public class MonitorTabFragmentPagerAdapter extends FragmentPagerAdapter{
+    final int PAGE_COUNT = 3;
+    private String tabTitles[] = new String[] {"Maceracion","Coccion", "Fermentacion"};
     private Context context;
 
-    public NewFragmentPagerAdapter(FragmentManager fm, Context context) {
+    public MonitorTabFragmentPagerAdapter(FragmentManager fm, Context context) {
         super(fm);
         this.context = context;
     }
@@ -25,7 +26,7 @@ public class NewFragmentPagerAdapter extends FragmentPagerAdapter{
 
     @Override
     public Fragment getItem(int position) {
-        return FragmentFactory.getFragment(position);
+        return MonitorFragmentFactory.getFragment(position);
     }
 
     @Override
