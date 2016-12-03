@@ -40,7 +40,9 @@
         Wow!\n
         No has elaborado ninguna cerveza.\n
         ¡Empieza una ahora!\n</string>
-    <string name="unpaired_fragment_no_pair_device">Este dispositivo no está emparejado con ningún dispositivo Bluetooth. Si no lo empareja ahora no podrá continuar.\\n ¿Desea emparejarlo ahora?</string>
+    <string name="unpaired_fragment_no_pair_device">Este dispositivo no está emparejado con ningún dispositivo Bluetooth.
+        Si no lo empareja ahora no podrá continuar.
+        ¿Desea emparejarlo ahora?</string>
     <string name="unpaired_fragment_pair_devices">Emparejar</string>
     <string name="cancel">Cancelar</string>
     <string name="menu_device_wasnt_paired">El dispositivo no fue emparejado. No puede iniciarse el proceso</string>
