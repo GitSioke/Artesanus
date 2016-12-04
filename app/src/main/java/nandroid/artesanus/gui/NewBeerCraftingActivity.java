@@ -51,7 +51,6 @@ public class NewBeerCraftingActivity extends BluetoothActivity {
                     @Override
                     public void onClick(View v)
                     {
-                        enableBT();
                         Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
                         startActivity(intent);
                     }

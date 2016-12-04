@@ -1,18 +1,35 @@
 package nandroid.artesanus.gui;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.os.Handler;
+import android.os.Message;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import nandroid.artesanus.services.BluetoothMessageService;
 
 /**
  * Created by Nando on 03/12/2016.
  */
 public class BluetoothActivity extends AppCompatActivity
 {
+    // Member object for the chat services
+    protected BluetoothMessageService mBTService = null;
+
+    // Name of the connected device
+    private String mConnectedDeviceName = null;
+
+    // Debugging
+    private static final String TAG = "BluetoothActivity";
+    private static final boolean D = true;
 
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
@@ -108,6 +125,48 @@ public class BluetoothActivity extends AppCompatActivity
         return false;
     }
 
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(D) Log.d(TAG, "onActivityResult " + resultCode);
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE:
+                // When DeviceListActivity returns with a device to connect
+                if (resultCode == Activity.RESULT_OK)
+                {
+                    // Get the device MAC address
+                    String address = data.getExtras()
+                            .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
+                    // Get the BLuetoothDevice object
+                    BluetoothDevice device = mBluetoothAdapter.getRemoteDevice(address);
+                    // Attempt to connect to the device
+                    mBTService.connect(device);
+                }
+                break;
+            case REQUEST_ENABLE_BT:
+                // When the request to enable Bluetooth returns
+                if (resultCode == Activity.RESULT_OK)
+                {
+                    // Bluetooth is now enabled, so set up a messenger session
+                    setupMessenger();
+                }
+                else
+                {
+                    // User did not enable Bluetooth or an error occured
+                    Log.d(TAG, "BT not enabled");
+                    Toast.makeText(this, R.string.main_bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+        }
+    }
+
+    protected void setupMessenger()
+    {
+        Log.d(TAG, "setupMessenger()");
+        // Initialize the array adapter for the conversation thread
+
+        // Initialize the BluetoothMessageService to perform bluetooth connections
+        mBTService = new BluetoothMessageService(this, mHandler);
+    }
+
     // Method to handle Discoverable feature instiantiated by option menu
     private void ensureDiscoverable() {
         /*if(D) Log.d(TAG, "ensure discoverable");
@@ -118,4 +177,93 @@ public class BluetoothActivity extends AppCompatActivity
             startActivity(discoverableIntent);
         }*/
     }
+
+    // The Handler that gets information back from the BluetoothMessageService
+    private final Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MESSAGE_STATE_CHANGE:
+                    if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
+                    switch (msg.arg1) {
+                        case BluetoothMessageService.STATE_CONNECTED:
+                            //mTitle.setText(R.string.main_title_connected_to);
+                            //mTitle.append(mConnectedDeviceName);
+                            //mConversationArrayAdapter.clear();
+                            Snackbar.make(findViewById(R.id.ly_coordinator),
+                                    getResources().getString(R.string.main_title_connected_to),
+                                    Snackbar.LENGTH_LONG).show();
+                            break;
+                        case BluetoothMessageService.STATE_CONNECTING:
+                            //mTitle.setText(R.string.main_title_connecting);
+                            Snackbar.make(findViewById(R.id.ly_coordinator),
+                                    getResources().getString(R.string.main_title_connecting),
+                                    Snackbar.LENGTH_LONG).show();
+                            break;
+                        case BluetoothMessageService.STATE_LISTEN:
+                        case BluetoothMessageService.STATE_NONE:
+                            //mTitle.setText(R.string.main_title_not_connected);
+                            Snackbar.make(findViewById(R.id.ly_coordinator),
+                                    getResources().getString(R.string.main_title_not_connected),
+                                    Snackbar.LENGTH_LONG).show();
+                            break;
+                    }
+                    break;
+                /*case MESSAGE_ASK_DATA:
+                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + ""
+                            + R.string.main_asking_for_data);
+                    break;*/
+                /*case MESSAGE_SEND_DATA:
+                    byte[] sendBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String sendMessage = new String(sendBuf);
+                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + sendMessage);
+                    break;*/
+                /*case MESSAGE_WRITE:
+                    byte[] writeBuf = (byte[]) msg.obj;
+                    // construct a string from the buffer
+                    String writeMessage = new String(writeBuf);
+                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + writeMessage);
+                    break;*/
+                /*case MESSAGE_READ:
+                    byte[] readBuf = (byte[]) msg.obj;
+                    // construct a string from the valid bytes in the buffer
+                    String readMessage = new String(readBuf, 0, msg.arg1);
+                    if (readMessage.equalsIgnoreCase("ASK_DATA"))
+                    {
+
+                        mNotifierService.start();
+                        mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
+                    }
+                    else
+                    {
+                        String[] data = readMessage.split("\n");
+                        for (String field :data)
+                        {
+                            String[] part = field.split(" : ");
+                            mListPair.add(new Pair(part[0], part[1]));
+                            mConversationArrayAdapter.add(mConnectedDeviceName+ ":  " + part[0] + " : " + part[1]);
+                        }
+                    }
+
+                    break;*/
+                case MESSAGE_DEVICE_NAME:
+                    // save the connected device's name
+                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
+                    //Toast.makeText(getApplicationContext(), R.string.main_title_connected_to
+                    //      + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.ly_coordinator),
+                            getResources().getString(R.string.main_title_connected_to) + mConnectedDeviceName,
+                            Snackbar.LENGTH_LONG).show();
+                    break;
+                case MESSAGE_TOAST:
+                    //Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
+                    //      Toast.LENGTH_SHORT).show();
+                    Snackbar.make(findViewById(R.id.ly_coordinator),
+                            msg.getData().getString(TOAST),
+                            Snackbar.LENGTH_LONG).show();
+                    break;
+            }
+        }
+    };
 }

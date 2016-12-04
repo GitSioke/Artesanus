@@ -15,8 +15,6 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Pair;
 
-import nandroid.artesanus.gui.MainActivity;
-
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -29,6 +27,8 @@ import java.util.List;
 import java.util.UUID;
 
 import nandroid.artesanus.common.TransientPair;
+import nandroid.artesanus.gui.MenuActivity;
+import nandroid.artesanus.gui.MonitoringActivity;
 
 /**
  * This class does all the work for setting up and managing Bluetooth
@@ -57,7 +57,8 @@ public class BluetoothMessageService extends IntentService {
 
     // Member fields
     private BluetoothAdapter mAdapter;
-    private final Handler mHandler;
+    private Handler mHandler;
+    //private Handler mHandlerMonitoringActivity;
     private AcceptThread mAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
@@ -81,12 +82,25 @@ public class BluetoothMessageService extends IntentService {
         mContext = context;
     }
 
+    public void setHandler(Handler handler)
+    {
+        this.mHandler = handler;
+    }
+
+    /*public void setHandlerMonitoringActivity(Handler handler)
+    {
+        if (mHandlerMonitoringActivity == null)
+        {
+            mHandlerMonitoringActivity = handler;
+        }
+    }*/
+
+
     @Override
     protected void onHandleIntent(Intent intent)
     {
         //mAdapter = BluetoothAdapter.getDefaultAdapter();
         //mState = STATE_NONE;
-
     }
 
     @Override
@@ -106,11 +120,12 @@ public class BluetoothMessageService extends IntentService {
 
         mState = state;
         // Give the new state to the Handler so the UI Activity can update
-        //mHandler.obtainMessage(MainActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
-        Intent bcIntent = new Intent();
-        bcIntent.setAction(ACTION_STATE_CHANGE);
-        bcIntent.putExtra("STATE_CHANGE", state);
-        mContext.sendBroadcast(bcIntent);
+        mHandler
+                .obtainMessage(MonitoringActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+        //Intent bcIntent = new Intent();
+        //bcIntent.setAction(ACTION_STATE_CHANGE);
+        //bcIntent.putExtra("STATE_CHANGE", state);
+        //mContext.sendBroadcast(bcIntent);
     }
 
     /**
@@ -215,9 +230,9 @@ public class BluetoothMessageService extends IntentService {
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
-        //Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_DEVICE_NAME);
+        //Message msg = mHandler.obtainMessage(MenuActivity.MESSAGE_DEVICE_NAME);
         //Bundle bundle = new Bundle();
-        //bundle.putString(MainActivity.DEVICE_NAME, device.getName());
+        //bundle.putString(MenuActivity.DEVICE_NAME, device.getName());
         //msg.setData(bundle);
         //mHandler.sendMessage(msg);
 
@@ -325,9 +340,9 @@ public class BluetoothMessageService extends IntentService {
         setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
-        //Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_TOAST);
+        //Message msg = mHandler.obtainMessage(MenuActivity.MESSAGE_TOAST);
         //Bundle bundle = new Bundle();
-        //bundle.putString(MainActivity.TOAST, "Imposible conectar con el dispositivo");
+        //bundle.putString(MenuActivity.TOAST, "Imposible conectar con el dispositivo");
         //msg.setData(bundle);
         Intent bcIntent = new Intent();
         bcIntent.setAction(ACTION_TOAST);
@@ -344,15 +359,15 @@ public class BluetoothMessageService extends IntentService {
         setState(STATE_LISTEN);
 
         // Send a failure message back to the Activity
-        //Message msg = mHandler.obtainMessage(MainActivity.MESSAGE_TOAST);
-        //Bundle bundle = new Bundle();
-        //bundle.putString(MainActivity.TOAST, "Device connection was lost");
-        //msg.setData(bundle);
+        Message msg = mHandler.obtainMessage(MonitoringActivity.MESSAGE_TOAST);
+        Bundle bundle = new Bundle();
+        bundle.putString(MonitoringActivity.TOAST, "Device connection was lost");
+        msg.setData(bundle);
         //mHandler.sendMessage(msg);
-        Intent bcIntent = new Intent();
-        bcIntent.setAction(ACTION_TOAST);
-        bcIntent.putExtra("TOAST_MESSAGE", "Device connection was lost");
-        mContext.sendBroadcast(bcIntent);
+        //Intent bcIntent = new Intent();
+        //bcIntent.setAction(ACTION_TOAST);
+        //bcIntent.putExtra("TOAST_MESSAGE", "Device connection was lost");
+        //mContext.sendBroadcast(bcIntent);
     }
 
 
@@ -571,12 +586,12 @@ public class BluetoothMessageService extends IntentService {
                     bytes = mmInStream.read(buffer);
                     // Send the obtained bytes to the UI Activity
                     // Share the sent message back to the UI Activity
-                    Intent bcIntent = new Intent();
-                    bcIntent.setAction(ACTION_READ_DATA);
-                    bcIntent.putExtra("READ", buffer.toString());
-                    sendBroadcast(bcIntent);
-                    //mHandler.obtainMessage(MainActivity.MESSAGE_READ, bytes, -1, buffer)
-                      //      .sendToTarget();
+                    //Intent bcIntent = new Intent();
+                    //bcIntent.setAction(ACTION_READ_DATA);
+                    //bcIntent.putExtra("READ", buffer.toString());
+                    //sendBroadcast(bcIntent);
+                    mHandler.obtainMessage(MonitoringActivity.MESSAGE_READ, bytes, -1, buffer)
+                            .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
                     connectionLost();
@@ -595,7 +610,7 @@ public class BluetoothMessageService extends IntentService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                //mHandler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer)
+                //mHandler.obtainMessage(MenuActivity.MESSAGE_WRITE, -1, -1, buffer)
                   //      .sendToTarget();
                 Intent bcIntent = new Intent();
                 bcIntent.setAction(ACTION_WRITE_DATA);
@@ -625,7 +640,7 @@ public class BluetoothMessageService extends IntentService {
                 bcIntent.setAction(ACTION_WRITE_DATA);
                 bcIntent.putExtra("WRITE", sb.toString());
                 mContext.sendBroadcast(bcIntent);
-                //mHandler.obtainMessage(MainActivity.MESSAGE_WRITE, -1, -1, buffer)
+                //mHandler.obtainMessage(MenuActivity.MESSAGE_WRITE, -1, -1, buffer)
                   //      .sendToTarget();
 
             } catch (IOException e) {
@@ -649,7 +664,7 @@ public class BluetoothMessageService extends IntentService {
                 bcIntent.putExtra("ASK", buffer.toString());
                 mContext.sendBroadcast(bcIntent);
                 // Share the sent message back to the UI Activity
-                //mHandler.obtainMessage(MainActivity.MESSAGE_ASK_DATA, -1, -1, buffer)
+                //mHandler.obtainMessage(MenuActivity.MESSAGE_ASK_DATA, -1, -1, buffer)
                         //.sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during ask", e);

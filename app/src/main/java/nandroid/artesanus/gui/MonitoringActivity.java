@@ -35,11 +35,6 @@ public class MonitoringActivity extends BluetoothActivity {
     // Local Bluetooth adapter
     private BluetoothAdapter mBluetoothAdapter = null;
 
-    // Member object for the chat services
-    private BluetoothMessageService mBTService = null;
-
-    // Name of the connected device
-    private String mConnectedDeviceName = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -78,7 +73,10 @@ public class MonitoringActivity extends BluetoothActivity {
     public void onStart() {
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
-        enableBT();
+        if (enableBT())
+        {
+            setupMessenger();
+        }
     }
 
     @Override
@@ -101,6 +99,7 @@ public class MonitoringActivity extends BluetoothActivity {
     public synchronized void onPause() {
         super.onPause();
         if(D) Log.e(TAG, "- ON PAUSE -");
+
     }
     @Override
     public void onStop() {
@@ -115,47 +114,8 @@ public class MonitoringActivity extends BluetoothActivity {
         if (mBTService != null) mBTService.stop();
     }
 
-    private void setupMessenger()
-    {
-        Log.d(TAG, "setupMessenger()");
-        // Initialize the array adapter for the conversation thread
 
-        // Initialize the BluetoothMessageService to perform bluetooth connections
-        //mBTService = new BluetoothMessageService(this);
-        AppController.getInstance().startBTService();
-        mBTService = AppController.getInstance().getBTService(mHandler);
-    }
 
-    /*private boolean enableBT()
-    {
-        boolean retVal = false;
-        // Get local Bluetooth adapter
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // If there is no adapter try to get it.
-        if (mBluetoothAdapter != null)
-        {
-            if (!mBluetoothAdapter.isEnabled())
-            {
-                Intent enableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                startActivityForResult(enableIntent, REQUEST_ENABLE_BT);
-                // Otherwise, setup the bluetooth session
-            } else
-            {
-                retVal = true;
-                if (mBTService == null) setupMessenger();
-            }
-        }
-        else
-        {
-            Snackbar.make(findViewById(R.id.ly_coordinator),
-                    "Bluetooth no disponible",
-                    Snackbar.LENGTH_LONG).show();
-            finish();
-        }
-
-        return retVal;
-    }*/
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
@@ -190,93 +150,5 @@ public class MonitoringActivity extends BluetoothActivity {
         }
     }
 
-    // The Handler that gets information back from the BluetoothMessageService
-    private final Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case MESSAGE_STATE_CHANGE:
-                    if(D) Log.i(TAG, "MESSAGE_STATE_CHANGE: " + msg.arg1);
-                    switch (msg.arg1) {
-                        case BluetoothMessageService.STATE_CONNECTED:
-                            //mTitle.setText(R.string.main_title_connected_to);
-                            //mTitle.append(mConnectedDeviceName);
-                            //mConversationArrayAdapter.clear();
-                            Snackbar.make(findViewById(R.id.ly_coordinator),
-                                    getResources().getString(R.string.main_title_connected_to),
-                                    Snackbar.LENGTH_LONG).show();
-                            break;
-                        case BluetoothMessageService.STATE_CONNECTING:
-                            //mTitle.setText(R.string.main_title_connecting);
-                            Snackbar.make(findViewById(R.id.ly_coordinator),
-                                    getResources().getString(R.string.main_title_connecting),
-                                    Snackbar.LENGTH_LONG).show();
-                            break;
-                        case BluetoothMessageService.STATE_LISTEN:
-                        case BluetoothMessageService.STATE_NONE:
-                            //mTitle.setText(R.string.main_title_not_connected);
-                            Snackbar.make(findViewById(R.id.ly_coordinator),
-                                    getResources().getString(R.string.main_title_not_connected),
-                                    Snackbar.LENGTH_LONG).show();
-                            break;
-                    }
-                    break;
-                /*case MESSAGE_ASK_DATA:
-                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + ""
-                            + R.string.main_asking_for_data);
-                    break;*/
-                /*case MESSAGE_SEND_DATA:
-                    byte[] sendBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String sendMessage = new String(sendBuf);
-                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + sendMessage);
-                    break;*/
-                /*case MESSAGE_WRITE:
-                    byte[] writeBuf = (byte[]) msg.obj;
-                    // construct a string from the buffer
-                    String writeMessage = new String(writeBuf);
-                    mConversationArrayAdapter.add(R.string.main_messenger_user_myself + writeMessage);
-                    break;*/
-                /*case MESSAGE_READ:
-                    byte[] readBuf = (byte[]) msg.obj;
-                    // construct a string from the valid bytes in the buffer
-                    String readMessage = new String(readBuf, 0, msg.arg1);
-                    if (readMessage.equalsIgnoreCase("ASK_DATA"))
-                    {
-
-                        mNotifierService.start();
-                        mConversationArrayAdapter.add(mConnectedDeviceName + ":  " + readMessage);
-                    }
-                    else
-                    {
-                        String[] data = readMessage.split("\n");
-                        for (String field :data)
-                        {
-                            String[] part = field.split(" : ");
-                            mListPair.add(new Pair(part[0], part[1]));
-                            mConversationArrayAdapter.add(mConnectedDeviceName+ ":  " + part[0] + " : " + part[1]);
-                        }
-                    }
-
-                    break;*/
-                case MESSAGE_DEVICE_NAME:
-                    // save the connected device's name
-                    mConnectedDeviceName = msg.getData().getString(DEVICE_NAME);
-                    //Toast.makeText(getApplicationContext(), R.string.main_title_connected_to
-                    //      + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-                    Snackbar.make(findViewById(R.id.ly_coordinator),
-                            getResources().getString(R.string.main_title_connected_to) + mConnectedDeviceName,
-                            Snackbar.LENGTH_LONG).show();
-                    break;
-                case MESSAGE_TOAST:
-                    //Toast.makeText(getApplicationContext(), msg.getData().getString(TOAST),
-                    //      Toast.LENGTH_SHORT).show();
-                    Snackbar.make(findViewById(R.id.ly_coordinator),
-                            msg.getData().getString(TOAST),
-                            Snackbar.LENGTH_LONG).show();
-                    break;
-            }
-        }
-    };
 
 }
