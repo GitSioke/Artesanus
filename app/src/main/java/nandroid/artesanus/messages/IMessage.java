@@ -3,7 +3,7 @@ package nandroid.artesanus.messages;
 import java.util.Date;
 
 /**
- * Created by Nando on 06/12/2016.
+ * This interface declare methods of a message
  */
 
 public interface IMessage

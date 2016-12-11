@@ -21,21 +21,16 @@ public class  Message implements IMessage
         this.priority = priority;
     }
 
-    @Override
     public Date getDate() {
         return this.date;
     }
 
-
-    @Override
     public float getProcess() {
         return this.processId;
     }
 
-    @Override
     public int getPriority() {
         return this.priority;
     }
-
 
 }

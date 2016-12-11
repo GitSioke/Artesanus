@@ -6,9 +6,9 @@ import java.util.Date;
  * This class represents a message belonging to mashing step.
  */
 
-public class MessageMashingInfo extends MessageMashing
+public class MessageDataFermenter extends MessageData
 {
-    public MessageMashingInfo(float processId, int priority, Date date)
+    public MessageDataFermenter(float processId, int priority, Date date)
     {
         super(processId, priority, date);
     }
