@@ -2,6 +2,11 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Iniciar"
+        android:id="@+id/monitoring_button_initilice"/>
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -12,7 +17,7 @@
             android:layout_height="wrap_content"
             android:paddingLeft="20dp"
             android:paddingTop="20dp"
-            android:textSize="100dp"
+            android:textSize="40dp"
             android:text="10ºC"/>
         <ImageView
             android:layout_width="wrap_content"
@@ -28,7 +33,7 @@
             android:layout_below="@+id/monitor_main_value"
             android:paddingLeft="30dp"
             android:paddingTop="15dp"
-            android:textSize="50dp"
+            android:textSize="40dp"
             android:text="10ºC"/>
         <ImageView
             android:layout_width="wrap_content"
@@ -41,10 +46,10 @@
             android:id="@+id/monitor_third_value"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/monitor_second_value"
+            android:layout_toRightOf="@+id/monitor_second_value"
             android:paddingLeft="30dp"
             android:paddingTop="15dp"
-            android:textSize="50dp"
+            android:textSize="40dp"
             android:text="10ºC"/>
         <ImageView
             android:layout_width="wrap_content"
@@ -56,10 +61,29 @@
             android:id="@+id/webView"
             android:layout_width="match_parent"
             android:layout_height="200dp"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentStart="true"
+            android:layout_below="@id/monitor_third_value"
+            android:layout_marginTop="50dp"
             android:layout_marginBottom="74dp">
         </WebView>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/webView"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/monitoring_log"
+                android:textSize="20dp"
+                />
+            <ListView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/monitoring_log_lv"
+                android:stackFromBottom="true">
+            </ListView>
+        </LinearLayout>
 
     </RelativeLayout>
 

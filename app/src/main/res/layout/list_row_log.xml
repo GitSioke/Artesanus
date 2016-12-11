@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="5dip" >
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/ly_list_row_log">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lv_row_log_date"
+            android:text="10/30/30 20:30:20"/>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/lv_row_log_info_text"
+            android:paddingLeft="5dp"
+            android:text="Esto es una prueba del texto que podria salir aqui y podria ser bastante largo por lo que necesitamos tener mucho cuidado"
+            ></TextView>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:id="@+id/ly_time"
+        android:layout_toRightOf="@+id/ly_hop"
+        android:layout_centerInParent="true">
+    </LinearLayout>
+
+</RelativeLayout>
