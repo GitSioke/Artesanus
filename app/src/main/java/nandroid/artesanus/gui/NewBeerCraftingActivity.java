@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 import android.view.View;
@@ -15,13 +16,37 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import nandroid.artesanus.adapter.TabFragmentPagerAdapter;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
-public class NewBeerCraftingActivity extends BluetoothActivity {
+import java.util.ArrayList;
+import java.util.List;
+
+import nandroid.artesanus.adapter.TabFragmentPagerAdapter;
+import nandroid.artesanus.common.Brew;
+import nandroid.artesanus.common.Cereal;
+import nandroid.artesanus.common.Heat;
+import nandroid.artesanus.common.Hop;
+import nandroid.artesanus.common.PostController;
+import nandroid.artesanus.fragments.AddCerealFragment;
+import nandroid.artesanus.fragments.AddHeatFragment;
+import nandroid.artesanus.fragments.AddHopFragment;
+import nandroid.artesanus.messages.Message;
+
+public class NewBeerCraftingActivity extends AppCompatActivity
+        implements AddCerealFragment.OnCerealAddedListener,
+        AddHopFragment.OnHopAddedListener,
+        AddHeatFragment.OnHeatAddedListener
+
+{
 
     // Debugging
     private static final String TAG = "NewBeerCraftingActivity";
     private static final boolean D = true;
+
+    private List<Cereal> cerealsAdded = new ArrayList<Cereal>();
+    private List<Hop> hopsAdded = new ArrayList<Hop>();
+    private List<Heat> heatsAdded = new ArrayList<Heat>();
 
     String mAddress;
 
@@ -51,6 +76,31 @@ public class NewBeerCraftingActivity extends BluetoothActivity {
                     @Override
                     public void onClick(View v)
                     {
+                        // Send data to server and database
+                        Brew brew = new Brew();
+                        brew.setStartDate("testPrincipio");
+
+                        TextView txtNameView = (TextView) findViewById(R.id.new_crafting_name_edit);
+                        brew.setName(txtNameView.getText().toString());
+
+                        TextView txtLitresView = (TextView) findViewById(R.id.new_crafting_litres_selected);
+                        brew.setLitres(Integer.parseInt(txtLitresView.getText().toString()));
+
+                        TextView txtTypeView = (TextView) findViewById(R.id.new_crafting_kind_selected);
+                        brew.setBeerType(txtTypeView.getText().toString());
+
+                        brew.setCereals(cerealsAdded);
+                        //brew.setHeats(heatsAdded);
+                        //brew.setHops(hopsAdded);
+
+                        PostController controller = new PostController();
+                        GsonBuilder builder = new GsonBuilder();
+                        Gson gson = builder.create();
+                        String json = (gson.toJson(brew));
+
+                        controller.execute("/insert_brew", json);
+
+                        // Start Monitoring activity
                         Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
                         startActivity(intent);
                     }
@@ -58,7 +108,7 @@ public class NewBeerCraftingActivity extends BluetoothActivity {
         );
     }
 
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    /*public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(D) Log.d(TAG, "onActivityResult " + resultCode);
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE:
@@ -84,7 +134,7 @@ public class NewBeerCraftingActivity extends BluetoothActivity {
                     finish();
                 }
         }
-    }
+    }*/
 
     @Override
     public void onStart() {
@@ -114,4 +164,22 @@ public class NewBeerCraftingActivity extends BluetoothActivity {
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
+
+    @Override
+    public void onCerealAdded(ArrayList<Cereal> cereals)
+    {
+        cerealsAdded.addAll(cereals);
+    }
+
+    @Override
+    public void onHeatAdded(Heat heat)
+    {
+        heatsAdded.add(heat);
+    }
+
+    @Override
+    public void onHopAdded(ArrayList<Hop> hops)
+    {
+        hopsAdded.addAll(hops);
+    }
 }
