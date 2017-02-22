@@ -69,5 +69,6 @@
     <string name="minutes_abreviature">min</string>
     <string name="kilogram_abreviature">Kg</string>
     <string name="grams_abreviature">gr</string>
+    <string name="monitoring_log">Eventos</string>
 
 </resources>

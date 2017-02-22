@@ -92,7 +92,7 @@
 
             <ListView
                 android:id="@+id/new_crafting_cereals_added_lv"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:layout_width="match_parent"></ListView>
 
         </LinearLayout>
