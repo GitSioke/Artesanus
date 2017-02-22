@@ -21,10 +21,10 @@ import nandroid.artesanus.gui.R;
 /**
  * Created by Nando on 10/11/2016.
  */
-public class AddKindFragment extends DialogFragment
+public class AddCerealFragment extends DialogFragment
 {
 
-    public static final String LOGTAG = "AddKindFragment";
+    public static final String LOGTAG = "AddCerealFragment";
     ArrayList<Cereal> dataModels;
     ListView listView;
     private static CerealAdapter adapter;
@@ -40,7 +40,7 @@ public class AddKindFragment extends DialogFragment
     {
         dataModels= new ArrayList<>();
 
-        dataModels.add(new Cereal("Apple Pie"));
+        dataModels.add(new Cereal("  Pie"));
         dataModels.add(new Cereal("Banana Bread"));
         dataModels.add(new Cereal("Cupcake"));
         dataModels.add(new Cereal("Donut"));
@@ -54,7 +54,7 @@ public class AddKindFragment extends DialogFragment
         dataModels.add(new Cereal("Lollipop"));
         dataModels.add(new Cereal("Marshmallow"));
 
-        CerealAdapter adapter = new CerealAdapter(dataModels, getContext());
+        final CerealAdapter adapter = new CerealAdapter(dataModels, getContext());
 
         final View view  = inflater.inflate( R.layout.dialog_add_cereals, container, false);
 
@@ -91,14 +91,7 @@ public class AddKindFragment extends DialogFragment
                     }
                 }
 
-                Fragment fragment = getParentFragment();
-                if (fragment instanceof OnCerealAddedListener) {
-                    {
-                        OnCerealAddedListener listener = (OnCerealAddedListener) fragment;
-                        listener.onCerealAdded(addedCereals);
-                    }
-                }
-
+                FireCerealAddedListener(addedCereals);
                 dismiss();
             }
         });
@@ -112,5 +105,23 @@ public class AddKindFragment extends DialogFragment
         });
 
         return view;
+    }
+
+    private void FireCerealAddedListener(ArrayList<Cereal> addedCereals)
+    {
+        Fragment fragment = getParentFragment();
+        if (fragment instanceof OnCerealAddedListener) {
+            {
+                OnCerealAddedListener listener = (OnCerealAddedListener) fragment;
+                listener.onCerealAdded(addedCereals);
+            }
+        }
+
+        if (getActivity() instanceof OnCerealAddedListener)
+        {
+            OnCerealAddedListener listener = (OnCerealAddedListener) getActivity();
+            listener.onCerealAdded(addedCereals);
+        }
+
     }
 }
