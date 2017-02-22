@@ -43,23 +43,16 @@ public class AddHeatFragment extends DialogFragment
             @Override
             public void onClick(View v) {
 
-                Fragment fragment = getParentFragment();
-                if (fragment instanceof OnHeatAddedListener) {
-                    {
-                        String durationStr = etDuration.getText().toString();
-                        Integer.parseInt(durationStr);
-                        String tempStr = etTemp.getText().toString();
-                        Integer.parseInt(tempStr);
-                        String startStr = etStart.getText().toString();
-                        Integer.parseInt(startStr);
+                String durationStr = etDuration.getText().toString();
+                Integer.parseInt(durationStr);
+                String tempStr = etTemp.getText().toString();
+                Integer.parseInt(tempStr);
+                String startStr = etStart.getText().toString();
+                Integer.parseInt(startStr);
 
-                        Heat heat = new Heat(Integer.parseInt(tempStr), Integer.parseInt(durationStr), Integer.parseInt(startStr));
+                Heat heat = new Heat(Integer.parseInt(tempStr), Integer.parseInt(durationStr), Integer.parseInt(startStr));
 
-                        OnHeatAddedListener listener = (OnHeatAddedListener) fragment;
-                        listener.onHeatAdded(heat);
-                    }
-                }
-
+                FireHeatAddedListener(heat);
                 dismiss();
             }
         });
@@ -73,5 +66,21 @@ public class AddHeatFragment extends DialogFragment
         });
 
         return view;
+    }
+
+    private void FireHeatAddedListener(Heat heat)
+    {
+        Fragment fragment = getParentFragment();
+        if (fragment instanceof OnHeatAddedListener)
+        {
+            OnHeatAddedListener listener = (OnHeatAddedListener) fragment;
+            listener.onHeatAdded(heat);
+        }
+
+        if (getActivity() instanceof  OnHeatAddedListener)
+        {
+            OnHeatAddedListener listener = (OnHeatAddedListener) getActivity();
+            listener.onHeatAdded(heat);
+        }
     }
 }

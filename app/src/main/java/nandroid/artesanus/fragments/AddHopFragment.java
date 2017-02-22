@@ -91,13 +91,7 @@ public class AddHopFragment extends DialogFragment
                     }
                 }
 
-                Fragment fragment = getParentFragment();
-                if (fragment instanceof AddHopFragment.OnHopAddedListener) {
-                    {
-                        OnHopAddedListener listener = (OnHopAddedListener) fragment;
-                        listener.onHopAdded(addedHops);
-                    }
-                }
+                FireHopAddedListener(addedHops);
 
                 dismiss();
             }
@@ -112,5 +106,21 @@ public class AddHopFragment extends DialogFragment
         });
 
         return view;
+    }
+
+    private void FireHopAddedListener(ArrayList<Hop> addedHops)
+    {
+        Fragment fragment = getParentFragment();
+        if (fragment instanceof AddHopFragment.OnHopAddedListener) {
+
+            OnHopAddedListener listener = (OnHopAddedListener) fragment;
+            listener.onHopAdded(addedHops);
+        }
+
+        if (getActivity() instanceof AddHopFragment.OnHopAddedListener)
+        {
+            OnHopAddedListener listener = (OnHopAddedListener) getActivity();
+            listener.onHopAdded(addedHops);
+        }
     }
 }
