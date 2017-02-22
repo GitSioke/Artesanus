@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Hop;
@@ -18,18 +19,17 @@ import nandroid.artesanus.adapter.HopAddedAdapter;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 05/11/2016.
+ * This fragment class control CerealTab from NewBeerCraftingActivity to get information about cereals.
  */
 public class KindTabFragment extends Fragment
         implements ItemPickerDialogFragment.OnItemSelectedListener,
-            AddKindFragment.OnCerealAddedListener,
+            AddCerealFragment.OnCerealAddedListener,
             AddHopFragment.OnHopAddedListener
 {
     private HopAddedAdapter hopAdapter;
     private ListView hopListView;
     private CerealAddedAdapter cerealAdapter;
     private ListView cerealListView;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -96,7 +96,7 @@ public class KindTabFragment extends Fragment
 
     private void addCereal()
     {
-        AddKindFragment fragment = new AddKindFragment();
+        AddCerealFragment fragment = new AddCerealFragment();
         fragment.show(getChildFragmentManager(), "AddKindFragmentDialog");
     }
 
@@ -120,7 +120,6 @@ public class KindTabFragment extends Fragment
                 -1
         );
 
-
         dialog.show(getChildFragmentManager(), "ItemPicker");
     }
 
@@ -141,11 +140,11 @@ public class KindTabFragment extends Fragment
         for (Cereal cereal : cereals)
         {
             cerealAdapter.add(cereal);
+
             //Snackbar.make(getView(), hop.getName() + ":" + hop.getAmount(), Snackbar.LENGTH_SHORT).show();
         }
 
         cerealListView.setAdapter(cerealAdapter);
-
     }
 
     @Override
