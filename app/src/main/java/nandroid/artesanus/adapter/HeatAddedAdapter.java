@@ -16,7 +16,7 @@ import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 15/11/2016.
+ *  This adapter class deals with Heat elements added.
  */
 public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClickListener
 {

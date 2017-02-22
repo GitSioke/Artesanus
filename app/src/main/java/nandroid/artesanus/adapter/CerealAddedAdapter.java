@@ -16,7 +16,7 @@ import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 15/11/2016.
+ *  This Adapter class link Cereal(model) class with AddCerealFragment(view)
  */
 public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnClickListener
 {
