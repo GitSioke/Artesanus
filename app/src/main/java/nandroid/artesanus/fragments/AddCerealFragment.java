@@ -66,7 +66,7 @@ public class AddCerealFragment extends DialogFragment
 
                 Cereal dataModel = dataModels.get(position);
 
-                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getName() + " API: " + dataModel.getAmount(), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getName() + " API: " + dataModel.getQuantity(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
             }
         });
@@ -86,7 +86,7 @@ public class AddCerealFragment extends DialogFragment
                     if (amountToAdd > 0)
                     {
                         Cereal cereal = dataModels.get(children);
-                        cereal.setAmount(amountToAdd);
+                        cereal.setQuantity(amountToAdd);
                         addedCereals.add(cereal);
                     }
                 }

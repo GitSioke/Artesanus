@@ -81,13 +81,21 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                         brew.setStartDate("testPrincipio");
 
                         TextView txtNameView = (TextView) findViewById(R.id.new_crafting_name_edit);
-                        brew.setName(txtNameView.getText().toString());
+                        CharSequence charName = txtNameView.getText();
+                        if (charName != null)
+                            brew.setName(charName.toString());
 
                         TextView txtLitresView = (TextView) findViewById(R.id.new_crafting_litres_selected);
-                        brew.setLitres(Integer.parseInt(txtLitresView.getText().toString()));
+                        CharSequence charLitres = txtLitresView.getText();
+                        if (charLitres != null)
+                            brew.setLitres(Integer.parseInt(charLitres.toString()));
 
                         TextView txtTypeView = (TextView) findViewById(R.id.new_crafting_kind_selected);
-                        brew.setBeerType(txtTypeView.getText().toString());
+                        CharSequence charType = txtTypeView.getText();
+                        if (charType != null)
+                        {
+                            brew.setBeerType(charType.toString());
+                        }
 
                         brew.setCereals(cerealsAdded);
                         //brew.setHeats(heatsAdded);

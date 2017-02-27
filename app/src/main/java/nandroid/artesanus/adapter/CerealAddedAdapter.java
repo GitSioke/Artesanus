@@ -89,7 +89,7 @@ public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnC
         }
 
         viewHolder.txtName.setText(dataModel.getName());
-        viewHolder.txtAmount.setText(Integer.toString(dataModel.getAmount()));
+        viewHolder.txtAmount.setText(Integer.toString(dataModel.getQuantity()));
         viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

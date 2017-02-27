@@ -6,11 +6,11 @@ package nandroid.artesanus.common;
 public class Cereal
 {
     String name;
-    int amount;
+    int quantity;
 
     public Cereal(String name)
     {
-        this.amount = 0;
+        this.quantity = 0;
         this.name = name;
     }
 
@@ -19,14 +19,14 @@ public class Cereal
         return this.name;
     }
 
-    public int getAmount()
+    public int getQuantity()
     {
-        return this.amount;
+        return this.quantity;
     }
 
-    public void setAmount(int amount)
+    public void setQuantity(int amount)
     {
-        this.amount = amount;
+        this.quantity = amount;
     }
 
 }

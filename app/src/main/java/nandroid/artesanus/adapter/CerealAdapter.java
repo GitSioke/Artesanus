@@ -85,7 +85,7 @@ public class CerealAdapter extends ArrayAdapter<Cereal> implements View.OnClickL
         }
 
         viewHolder.txtName.setText(dataModel.getName());
-        viewHolder.txtAmount.setText(Integer.toString(dataModel.getAmount()));
+        viewHolder.txtAmount.setText(Integer.toString(dataModel.getQuantity()));
 
         // Return the completed view to render on screen
         return convertView;
