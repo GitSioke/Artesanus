@@ -87,9 +87,18 @@ public class NewBeerCraftingActivity extends AppCompatActivity
 
                         TextView txtLitresView = (TextView) findViewById(R.id.new_crafting_litres_selected);
                         CharSequence charLitres = txtLitresView.getText();
-                        if (charLitres != null)
-                            brew.setLitres(Integer.parseInt(charLitres.toString()));
-
+                        if (charLitres != null) {
+                            int litres = 0;
+                            try
+                            {
+                                litres = (Integer.parseInt(charLitres.toString()));
+                            } catch (NumberFormatException ex) {
+                                litres = 0;
+                            }
+                            finally {
+                                brew.setLitres(litres);
+                            }
+                        }
                         TextView txtTypeView = (TextView) findViewById(R.id.new_crafting_kind_selected);
                         CharSequence charType = txtTypeView.getText();
                         if (charType != null)
@@ -98,8 +107,8 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                         }
 
                         brew.setCereals(cerealsAdded);
-                        //brew.setHeats(heatsAdded);
-                        //brew.setHops(hopsAdded);
+                        brew.setHeats(heatsAdded);
+                        brew.setHops(hopsAdded);
 
                         PostController controller = new PostController();
                         GsonBuilder builder = new GsonBuilder();

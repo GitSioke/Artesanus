@@ -82,7 +82,7 @@ public class HopAdapter extends ArrayAdapter<Hop> implements View.OnClickListene
 
         viewHolder.txtName.setText(dataModel.getName());
 
-        viewHolder.txtAmount.setText(String.valueOf(dataModel.getAmount()));
+        viewHolder.txtAmount.setText(String.valueOf(dataModel.getQuantity()));
         viewHolder.txtMinute.setText(String.valueOf(dataModel.getMinutes()));
 
         // Return the completed view to render on screen

@@ -66,7 +66,7 @@ public class AddHopFragment extends DialogFragment
 
                 Hop hop = hopList.get(position);
 
-                Snackbar.make(view, hop.getName() + "\n" + hop.getName() + " API: " + hop.getAmount(), Snackbar.LENGTH_LONG)
+                Snackbar.make(view, hop.getName() + "\n" + hop.getName() + " API: " + hop.getQuantity(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
             }
         });
@@ -86,7 +86,7 @@ public class AddHopFragment extends DialogFragment
                     if (amountToAdd > 0)
                     {
                         Hop hop = hopList.get(children);
-                        hop.setAmount(amountToAdd);
+                        hop.setQuantity(amountToAdd);
                         addedHops.add(hop);
                     }
                 }

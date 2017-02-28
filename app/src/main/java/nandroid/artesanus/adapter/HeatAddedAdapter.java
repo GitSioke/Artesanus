@@ -84,7 +84,8 @@ public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClick
         }
 
         viewHolder.txtTemperature.setText(Integer.toString(dataModel.getTemperature()));
-        viewHolder.txtStart.setText(Integer.toString(dataModel.getStart()));
+        viewHolder.txtStart.setText(Integer.toString(dataModel.getStartTime()
+        ));
         viewHolder.txtDuration.setText(Integer.toString(dataModel.getDuration()));
 
         viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {

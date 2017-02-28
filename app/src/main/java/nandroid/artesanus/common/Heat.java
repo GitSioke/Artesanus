@@ -1,19 +1,28 @@
 package nandroid.artesanus.common;
 
 /**
- * Created by Nando on 13/11/2016.
+ * This class represents a heat during mashing process.
  */
 public class Heat
 {
-    int temperature;
-    int duration;
-    int start;
+    private int temperature;
+    private int duration;
+    private int startTime;
+    private int position;
+
+    public int getPosition() {
+        return position;
+    }
+
+    public void setPosition(int position) {
+        this.position = position;
+    }
 
     public Heat(int temperature, int duration, int start)
     {
         this.duration = duration;
         this.temperature = temperature;
-        this.start = start;
+        this.startTime = start;
     }
 
     public int getTemperature()
@@ -21,13 +30,24 @@ public class Heat
         return this.temperature;
     }
 
+    public int getStartTime() {
+        return startTime;
+    }
+
     public int getDuration()
     {
         return this.duration;
     }
 
-    public int getStart()
-    {
-        return this.start;
+    public void setTemperature(int temperature) {
+        this.temperature = temperature;
+    }
+
+    public void setDuration(int duration) {
+        this.duration = duration;
+    }
+
+    public void setStartTime(int startTime) {
+        this.startTime = startTime;
     }
 }

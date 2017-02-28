@@ -1,17 +1,17 @@
 package nandroid.artesanus.common;
 
 /**
- * Created by Nando on 12/11/2016.
+ * This class represents a model for a hop.
  */
 public class Hop
 {
     String name;
-    int amount;
+    int quantity;
     int minutes;
 
     public Hop(String name)
     {
-        this.amount = 0;
+        this.quantity = 0;
         this.name = name;
         this.minutes = 0;
     }
@@ -21,16 +21,19 @@ public class Hop
         return this.name;
     }
 
-    public int getAmount()
-    {
-        return this.amount;
-    }
-
     public int getMinutes()  { return this.minutes; }
 
-    public void setAmount(int amount)
-    {
-        this.amount = amount;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public int getQuantity() {
+
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public void setMinutes(int minutes)
