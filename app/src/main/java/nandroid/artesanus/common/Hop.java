@@ -6,7 +6,9 @@ package nandroid.artesanus.common;
 public class Hop
 {
     String name;
+
     int quantity;
+
     int minutes;
 
     public Hop(String name)

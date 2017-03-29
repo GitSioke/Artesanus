@@ -2,6 +2,7 @@ package nandroid.artesanus.gui;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
@@ -25,9 +26,12 @@ import java.util.List;
 import nandroid.artesanus.adapter.TabFragmentPagerAdapter;
 import nandroid.artesanus.common.Brew;
 import nandroid.artesanus.common.Cereal;
+import nandroid.artesanus.common.Event;
+import nandroid.artesanus.common.GetController;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.common.PostController;
+import nandroid.artesanus.common.Process;
 import nandroid.artesanus.fragments.AddCerealFragment;
 import nandroid.artesanus.fragments.AddHeatFragment;
 import nandroid.artesanus.fragments.AddHopFragment;
@@ -77,7 +81,7 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         // Send data to server and database
-                        Brew brew = new Brew();
+                        /*Brew brew = new Brew();
                         brew.setStartDate("testPrincipio");
 
                         TextView txtNameView = (TextView) findViewById(R.id.new_crafting_name_edit);
@@ -110,12 +114,31 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                         brew.setHeats(heatsAdded);
                         brew.setHops(hopsAdded);
 
+                        Event event = new Event();
+                        event.setMessage("Este es el evento que tiene que saltar");
+                        List<Event> eventList = new ArrayList<Event>();
+                        eventList.add(event);
+
+                        Process proc = new Process();
+                        proc.setType("MiTipo");
+                        proc.setEvents(eventList);
+                        List<Process> processList = new ArrayList<Process>();
+                        processList.add(proc);
+
+                        brew.setProcesses(processList);*/
+
                         PostController controller = new PostController();
+
+
+
+                        //PostController controller = new PostController();
                         GsonBuilder builder = new GsonBuilder();
                         Gson gson = builder.create();
-                        String json = (gson.toJson(brew));
+                        //String json = (gson.toJson(brew));
+                        String json = gson.toJson(1);
+                        controller.execute("/retrieve/events/1", json);
 
-                        controller.execute("/insert_brew", json);
+                        //controller.execute("/insert_brew", json);
 
                         // Start Monitoring activity
                         Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);

@@ -18,20 +18,25 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
 import nandroid.artesanus.adapter.MonitorTabFragmentPagerAdapter;
 import nandroid.artesanus.common.AppController;
 import nandroid.artesanus.common.BTConstants;
+import nandroid.artesanus.common.GetController;
 import nandroid.artesanus.fragments.UnpairedDevicesFragment;
 import nandroid.artesanus.services.BluetoothMessageService;
 
 /**
- * Created by Nando on 27/11/2016.
+ * This class controls Monitoring activity
  */
 public class MonitoringActivity extends AppCompatActivity {
 
     // Debugging
     private static final String TAG = "MonitoringActivity";
     private static final boolean D = true;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -40,6 +45,10 @@ public class MonitoringActivity extends AppCompatActivity {
         if(D) Log.e(TAG, "+++ ON CREATE +++");
         // Set up the window layout
         setContentView(R.layout.activity_monitoring);
+
+        // Start Monitoring activity
+        /*Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
+        startActivity(intent);*/
 
         // TODO Restaurar estas lineas y eliminar de BluetoohtActivity
         //DialogFragment newFragment = new UnpairedDevicesFragment();
@@ -67,39 +76,11 @@ public class MonitoringActivity extends AppCompatActivity {
         );
     }
 
-    /*@Override
-    public void onStart() {
-        super.onStart();
-        if(D) Log.e(TAG, "++ ON START ++");
-        if (enableBT())
-        {
-            setupMessenger();
-        }
-    }*/
-
     @Override
     public void onStart() {
         super.onStart();
         if (D) Log.e(TAG, "++ ON START ++");
     }
-
-    /*@Override
-    public synchronized void onResume() {
-            super.onResume();
-            if(D) Log.e(TAG, "+ ON RESUME +");
-            // Performing this check in onResume() covers the case in which BT was
-            // not enabled during onStart(), so we were paused to enable it...
-            // onResume() will be called when ACTION_REQUEST_ENABLE activity returns.
-
-            // TODO Refactor.
-            if (mBTService != null) {
-                // Only if the state is STATE_NONE, do we know that we haven't started already
-                if (mBTService.getState() == BTConstants.STATE_NONE) {
-                    // Start the Bluetooth chat services
-                    mBTService.start();
-                }
-            }
-    }*/
 
     @Override
     public synchronized void onResume() {
@@ -124,8 +105,6 @@ public class MonitoringActivity extends AppCompatActivity {
         if(D) Log.e(TAG, "--- ON DESTROY ---");
         //if (mBTService != null) mBTService.stop();
     }
-
-
 
     // TODO refactor to handle data written by BTService
     public void onActivityResult(int requestCode, int resultCode, Intent data)
