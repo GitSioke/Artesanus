@@ -1,5 +1,7 @@
 package nandroid.artesanus.common;
 
+import java.util.Date;
+
 /**
  * This class represents all events that happen inside a process
  */
@@ -17,7 +19,7 @@ public class Event
 
     private int value;
 
-    private String time;
+    private Date time;
 
     public int getId() {
         return id;
@@ -67,11 +69,11 @@ public class Event
         this.value = value;
     }
 
-    public String getTime() {
+    public Date getTime() {
         return time;
     }
 
-    public void setTime(String time) {
+    public void setTime(Date time) {
         this.time = time;
     }
 }
