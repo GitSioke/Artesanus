@@ -21,6 +21,8 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import nandroid.artesanus.adapter.TabFragmentPagerAdapter;
@@ -81,8 +83,9 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                     public void onClick(View v)
                     {
                         // Send data to server and database
-                        /*Brew brew = new Brew();
-                        brew.setStartDate("testPrincipio");
+                        Brew brew = new Brew();
+                        Date date = Calendar.getInstance().getTime();
+                        brew.setStartDate(date);
 
                         TextView txtNameView = (TextView) findViewById(R.id.new_crafting_name_edit);
                         CharSequence charName = txtNameView.getText();
@@ -115,17 +118,17 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                         brew.setHops(hopsAdded);
 
                         Event event = new Event();
-                        event.setMessage("Este es el evento que tiene que saltar");
+                        event.setMessage("START");
                         List<Event> eventList = new ArrayList<Event>();
                         eventList.add(event);
 
                         Process proc = new Process();
-                        proc.setType("MiTipo");
+                        proc.setType("MASHING");
                         proc.setEvents(eventList);
                         List<Process> processList = new ArrayList<Process>();
                         processList.add(proc);
 
-                        brew.setProcesses(processList);*/
+                        brew.setProcesses(processList);
 
                         PostController controller = new PostController();
 
@@ -133,12 +136,13 @@ public class NewBeerCraftingActivity extends AppCompatActivity
 
                         //PostController controller = new PostController();
                         GsonBuilder builder = new GsonBuilder();
+                        builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
                         Gson gson = builder.create();
-                        //String json = (gson.toJson(brew));
-                        String json = gson.toJson(1);
-                        controller.execute("/retrieve/events/1", json);
+                        String json = (gson.toJson(brew));
+                        //String json = gson.toJson(1);
+                        //controller.execute("/retrieve/events/1", json);
 
-                        //controller.execute("/insert_brew", json);
+                        controller.execute("/insert_brew", json);
 
                         // Start Monitoring activity
                         Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);

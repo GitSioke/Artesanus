@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.internal.Excluder;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 import com.jjoe64.graphview.series.Series;
@@ -128,15 +129,20 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
             List<Event> events = mashingProcess.getEvents();
 
             txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue())+"º");
-            int time = 0;
             LineGraphSeries series = new LineGraphSeries<DataPoint>();
             for (Event event : events ) {
-                time++;
                 series.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
-                //series.appendData(new DataPoint(x, y) , true, 500);
             }
 
+            _graph.getGridLabelRenderer().setHumanRounding(false);
             _graph.addSeries(series);
+
+            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
+            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
+            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
             //_webView.addJavascriptInterface(new WebAppInterface(this.getActivity()), "JSInterface");
             //_webView.getSettings().setJavaScriptEnabled(true);
             //_webView.loadUrl("file:///android_assets/raw/index.html");

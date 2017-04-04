@@ -17,7 +17,7 @@ public class Event
 
     private String data;
 
-    private int value;
+    private double value;
 
     private Date time;
 
@@ -61,11 +61,11 @@ public class Event
         this.data = data;
     }
 
-    public int getValue() {
+    public double getValue() {
         return value;
     }
 
-    public void setValue(int value) {
+    public void setValue(double value) {
         this.value = value;
     }
 

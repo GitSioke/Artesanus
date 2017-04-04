@@ -22,6 +22,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
+import nandroid.artesanus.common.BTConstants;
 import nandroid.artesanus.common.ProcessHelper;
 import nandroid.artesanus.services.BluetoothMessageService;
 import nandroid.artesanus.services.TimerService;
@@ -167,7 +168,7 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
         if (mChatService != null)
         {
             // Only if the state is STATE_NONE, do we know that we haven't started already
-            if (mChatService.getState() == BluetoothMessageService.STATE_NONE)
+            if (mChatService.getState() == BTConstants.STATE_NONE)
             {
                 // Start the Bluetooth chat services
                 mChatService.start();
@@ -263,9 +264,9 @@ private ProcessHelper.CRAFTING_PROCESS mProcess;
         else
         {
             //End of monitoring
-            intent = new Intent(this, MainActivity.class);
+            //intent = new Intent(this, MainActivity.class);
         }
-        startActivity(intent);
+        //startActivity(intent);
 
     }
 

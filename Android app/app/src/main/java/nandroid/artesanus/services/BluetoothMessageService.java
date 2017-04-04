@@ -1,19 +1,20 @@
 package nandroid.artesanus.services;
 
-import android.app.IntentService;
-import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
-import android.content.Intent;
+
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.IBinder;
+
 import android.os.Message;
 import android.util.Log;
 import android.util.Pair;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,9 +24,11 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.StreamCorruptedException;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
+import nandroid.artesanus.common.BTConstants;
 import nandroid.artesanus.common.TransientPair;
 import nandroid.artesanus.gui.MenuActivity;
 import nandroid.artesanus.gui.MonitoringActivity;
@@ -36,7 +39,7 @@ import nandroid.artesanus.gui.MonitoringActivity;
  * incoming connections, a thread for connecting with a device, and a
  * thread for performing data transmissions when connected.
  */
-public class BluetoothMessageService extends IntentService {
+public class BluetoothMessageService {
 
     // Debugging
     private static final String TAG = "BluetoothMessageService";
@@ -58,56 +61,19 @@ public class BluetoothMessageService extends IntentService {
     // Member fields
     private BluetoothAdapter mAdapter;
     private Handler mHandler;
-    //private Handler mHandlerMonitoringActivity;
     private AcceptThread mAcceptThread;
     private ConnectThread mConnectThread;
     private ConnectedThread mConnectedThread;
     private int mState;
-    private Context mContext;
-
-    // Constants that indicate the current connection state
-    public static final int STATE_NONE = 0;       // we're doing nothing
-    public static final int STATE_LISTEN = 1;     // now listening for incoming connections
-    public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
-    public static final int STATE_CONNECTED = 3;  // now connected to a remote device
 
 
 
     public BluetoothMessageService(Context context, Handler handler)
     {
-        super("BluetoothMessageService");
+        //super("BluetoothMessageService");
         mAdapter = BluetoothAdapter.getDefaultAdapter();
-        mState = STATE_NONE;
+        mState = BTConstants.STATE_NONE;
         mHandler = handler;
-        mContext = context;
-    }
-
-    public void setHandler(Handler handler)
-    {
-        this.mHandler = handler;
-    }
-
-    /*public void setHandlerMonitoringActivity(Handler handler)
-    {
-        if (mHandlerMonitoringActivity == null)
-        {
-            mHandlerMonitoringActivity = handler;
-        }
-    }*/
-
-
-    @Override
-    protected void onHandleIntent(Intent intent)
-    {
-        //mAdapter = BluetoothAdapter.getDefaultAdapter();
-        //mState = STATE_NONE;
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId)
-    {
-        //TODO Probar que el Servicio recibe el comando y sigue su ejecucion
-        return START_NOT_STICKY;
     }
 
     /**
@@ -121,11 +87,7 @@ public class BluetoothMessageService extends IntentService {
         mState = state;
         // Give the new state to the Handler so the UI Activity can update
         mHandler
-                .obtainMessage(MonitoringActivity.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
-        //Intent bcIntent = new Intent();
-        //bcIntent.setAction(ACTION_STATE_CHANGE);
-        //bcIntent.putExtra("STATE_CHANGE", state);
-        //mContext.sendBroadcast(bcIntent);
+                .obtainMessage(BTConstants.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
     }
 
     /**
@@ -156,14 +118,14 @@ public class BluetoothMessageService extends IntentService {
             mConnectedThread = null;
         }
 
+        setState(BTConstants.STATE_LISTEN);
+
         // Start the thread to listen on a BluetoothServerSocket
         if (mAcceptThread == null)
         {
             mAcceptThread = new AcceptThread();
             mAcceptThread.start();
         }
-
-        setState(STATE_LISTEN);
     }
 
     /**
@@ -174,7 +136,7 @@ public class BluetoothMessageService extends IntentService {
         if (D) Log.d(TAG, "connect to: " + device);
 
         // Cancel any thread attempting to make a connection
-        if (mState == STATE_CONNECTING)
+        if (mState == BTConstants.STATE_CONNECTING)
         {
             if (mConnectThread != null)
             {
@@ -193,7 +155,7 @@ public class BluetoothMessageService extends IntentService {
         // Start the thread to connect with the given device
         mConnectThread = new ConnectThread(device);
         mConnectThread.start();
-        setState(STATE_CONNECTING);
+        setState(BTConstants.STATE_CONNECTING);
     }
 
     /**
@@ -230,17 +192,18 @@ public class BluetoothMessageService extends IntentService {
         mConnectedThread.start();
 
         // Send the name of the connected device back to the UI Activity
-        //Message msg = mHandler.obtainMessage(MenuActivity.MESSAGE_DEVICE_NAME);
-        //Bundle bundle = new Bundle();
-        //bundle.putString(MenuActivity.DEVICE_NAME, device.getName());
-        //msg.setData(bundle);
-        //mHandler.sendMessage(msg);
+        Message msg = mHandler.obtainMessage(BTConstants.MESSAGE_DEVICE_NAME);
+        Bundle bundle = new Bundle();
+        bundle.putString(BTConstants.DEVICE_NAME, device.getName());
+        msg.setData(bundle);
+        mHandler.sendMessage(msg);
 
-        Intent bcIntent = new Intent();
-        bcIntent.setAction(ACTION_SEND_DEVICE_NAME);
-        bcIntent.putExtra("DEVICE_NAME", device.getName());
-        mContext.sendBroadcast(bcIntent);
-        setState(STATE_CONNECTED);
+        //Intent bcIntent = new Intent();
+        //bcIntent.setAction(ACTION_SEND_DEVICE_NAME);
+        //bcIntent.putExtra("DEVICE_NAME", device.getName());
+        //mContext.sendBroadcast(bcIntent);
+
+        setState(BTConstants.STATE_CONNECTED);
     }
 
     /**
@@ -267,7 +230,7 @@ public class BluetoothMessageService extends IntentService {
             mAcceptThread = null;
         }
 
-        setState(STATE_NONE);
+        setState(BTConstants.STATE_NONE);
     }
 
 
@@ -283,7 +246,7 @@ public class BluetoothMessageService extends IntentService {
         // Synchronize a copy of the ConnectedThread
         synchronized (this)
         {
-            if (mState != STATE_CONNECTED)
+            if (mState != BTConstants.STATE_CONNECTED)
                 return;
             thread = mConnectedThread;
         }
@@ -304,7 +267,7 @@ public class BluetoothMessageService extends IntentService {
         // Synchronize a copy of the ConnectedThread
         synchronized (this)
         {
-            if (mState != STATE_CONNECTED)
+            if (mState != BTConstants.STATE_CONNECTED)
                 return;
             thread = mConnectedThread;
         }
@@ -323,7 +286,7 @@ public class BluetoothMessageService extends IntentService {
         // Synchronize a copy of the ConnectedThread
         synchronized (this)
         {
-            if (mState != STATE_CONNECTED)
+            if (mState != BTConstants.STATE_CONNECTED)
                 return;
             thread = mConnectedThread;
         }
@@ -337,18 +300,15 @@ public class BluetoothMessageService extends IntentService {
      */
     private void connectionFailed()
     {
-        setState(STATE_LISTEN);
-
         // Send a failure message back to the Activity
-        //Message msg = mHandler.obtainMessage(MenuActivity.MESSAGE_TOAST);
-        //Bundle bundle = new Bundle();
-        //bundle.putString(MenuActivity.TOAST, "Imposible conectar con el dispositivo");
-        //msg.setData(bundle);
-        Intent bcIntent = new Intent();
-        bcIntent.setAction(ACTION_TOAST);
-        bcIntent.putExtra("TOAST_MESSAGE", "Imposible conectar con el dispositivo");
-        mContext.sendBroadcast(bcIntent);
-        //mHandler.sendMessage(msg);
+        Message msg = mHandler.obtainMessage(BTConstants.MESSAGE_TOAST);
+        Bundle bundle = new Bundle();
+        bundle.putString(BTConstants.TOAST, "Imposible conectar con el dispositivo");
+        msg.setData(bundle);
+        mHandler.sendMessage(msg);
+
+        // Start the service over to restart listening mode
+        BluetoothMessageService.this.start();
     }
 
     /**
@@ -356,26 +316,15 @@ public class BluetoothMessageService extends IntentService {
      */
     private void connectionLost()
     {
-        setState(STATE_LISTEN);
-
         // Send a failure message back to the Activity
-        Message msg = mHandler.obtainMessage(MonitoringActivity.MESSAGE_TOAST);
+        Message msg = mHandler.obtainMessage(BTConstants.MESSAGE_TOAST);
         Bundle bundle = new Bundle();
-        bundle.putString(MonitoringActivity.TOAST, "Device connection was lost");
+        bundle.putString(BTConstants.TOAST, "Device connection was lost");
         msg.setData(bundle);
-        //mHandler.sendMessage(msg);
-        //Intent bcIntent = new Intent();
-        //bcIntent.setAction(ACTION_TOAST);
-        //bcIntent.putExtra("TOAST_MESSAGE", "Device connection was lost");
-        //mContext.sendBroadcast(bcIntent);
-    }
+        mHandler.sendMessage(msg);
 
-
-
-    @Override
-    public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        // Start the service over to restart listening mode
+        BluetoothMessageService.this.start();
     }
 
     /**
@@ -408,7 +357,7 @@ public class BluetoothMessageService extends IntentService {
             BluetoothSocket socket = null;
 
             // Listen to the server socket if we're not connected
-            while (mState != STATE_CONNECTED) {
+            while (mState != BTConstants.STATE_CONNECTED) {
                 try
                 {
                     // This is a blocking call and will only return on a
@@ -423,15 +372,14 @@ public class BluetoothMessageService extends IntentService {
                 if (socket != null) {
                     synchronized (BluetoothMessageService.this) {
                         switch (mState) {
-                            case STATE_LISTEN:
-                            case STATE_CONNECTING:
+                            case BTConstants.STATE_LISTEN:
+                            case BTConstants.STATE_CONNECTING:
                                 // Situation normal. Start the connected thread.
                                 connected(socket, socket.getRemoteDevice());
                                 break;
 
-                            case STATE_NONE:
-                            case STATE_CONNECTED:
-
+                            case BTConstants.STATE_NONE:
+                            case BTConstants.STATE_CONNECTED:
                                 // Either not ready or already connected. Terminate new socket.
                                 try {
                                     socket.close();
@@ -476,13 +424,17 @@ public class BluetoothMessageService extends IntentService {
                 tmp = device.createRfcommSocketToServiceRecord(MY_UUID);
                 //tmp = (BluetoothSocket) device.getClass().getMethod("createRfcommSocketToServiceRecord", new Class[]{int.class}).invoke(device, 1);
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            }catch (IOException e) {
+               e.printStackTrace();
             }
-
+            /*catch(Exception e)
+            {
+                e.printStackTrace();
+            }*/
             mmSocket = tmp;
         }
 
+        // Run method from ConnectThread
         public void run() {
 
             Log.i(TAG, "BEGIN mConnectThread");
@@ -497,7 +449,6 @@ public class BluetoothMessageService extends IntentService {
                 // successful connection or an exception
                 mmSocket.connect();
             } catch (IOException e) {
-                connectionFailed();
                 // Close the socket
                 try {
                     mmSocket.close();
@@ -505,10 +456,10 @@ public class BluetoothMessageService extends IntentService {
                     Log.e(TAG, "unable to close() socket during connection failure", e2);
                 }
 
-                // Start the service over to restart listening mode
-                BluetoothMessageService.this.start();
+                connectionFailed();
                 return;
             }
+
             // Reset the ConnectThread because we're done
             synchronized (BluetoothMessageService.this) {
                 mConnectThread = null;
@@ -536,8 +487,8 @@ public class BluetoothMessageService extends IntentService {
         private final BluetoothSocket mmSocket;
         private final InputStream mmInStream;
         private final OutputStream mmOutStream;
-        private ObjectInputStream objInStream;
-        private ObjectOutputStream objOutStream;
+        //private ObjectInputStream objInStream;
+        //private ObjectOutputStream objOutStream;
 
         public ConnectedThread(BluetoothSocket socket) {
 
@@ -556,14 +507,14 @@ public class BluetoothMessageService extends IntentService {
             mmInStream = tmpIn;
             mmOutStream = tmpOut;
 
-            final BufferedOutputStream bufo = new BufferedOutputStream(mmOutStream);
-            final BufferedInputStream bufi = new BufferedInputStream(mmInStream);
+            //final BufferedOutputStream bufo = new BufferedOutputStream(mmOutStream);
+            //final BufferedInputStream bufi = new BufferedInputStream(mmInStream);
 
-            Log.d(TAG,"attempting to create OOS");
+            /*Log.d(TAG,"attempting to create OOS");
 
             try {
-                objOutStream = new ObjectOutputStream(bufo);
-                objInStream = new ObjectInputStream(bufi);
+                //objOutStream = new ObjectOutputStream(bufo);
+                //objInStream = new ObjectInputStream(bufi);
             } catch (StreamCorruptedException e) {
                 Log.d(TAG,"Caught Corrupted Stream Exception");
                 Log.w(TAG,e);
@@ -571,8 +522,7 @@ public class BluetoothMessageService extends IntentService {
             } catch (IOException e) {
                 Log.d(TAG,"Caught IOException");
                 Log.w(TAG,e);
-            }
-
+            }*/
         }
 
         public void run() {
@@ -580,21 +530,17 @@ public class BluetoothMessageService extends IntentService {
             byte[] buffer = new byte[1024];
             int bytes;
             // Keep listening to the InputStream while connected
-            while (true) {
+            while (mState == BTConstants.STATE_CONNECTED) {
                 try {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
-                    // Send the obtained bytes to the UI Activity
-                    // Share the sent message back to the UI Activity
-                    //Intent bcIntent = new Intent();
-                    //bcIntent.setAction(ACTION_READ_DATA);
-                    //bcIntent.putExtra("READ", buffer.toString());
-                    //sendBroadcast(bcIntent);
-                    mHandler.obtainMessage(MonitoringActivity.MESSAGE_READ, bytes, -1, buffer)
+                    mHandler.obtainMessage(BTConstants.MESSAGE_READ, bytes, -1, buffer)
                             .sendToTarget();
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
-                    connectionLost();
+
+                    // Start the service over to restart listening mode
+                    BluetoothMessageService.this.start();
                     break;
                 }
             }
@@ -610,12 +556,8 @@ public class BluetoothMessageService extends IntentService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                //mHandler.obtainMessage(MenuActivity.MESSAGE_WRITE, -1, -1, buffer)
-                  //      .sendToTarget();
-                Intent bcIntent = new Intent();
-                bcIntent.setAction(ACTION_WRITE_DATA);
-                bcIntent.putExtra("WRITE", buffer.toString());
-                mContext.sendBroadcast(bcIntent);
+                mHandler.obtainMessage(BTConstants.MESSAGE_WRITE, -1, -1, buffer)
+                      .sendToTarget();
 
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
@@ -636,12 +578,8 @@ public class BluetoothMessageService extends IntentService {
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                Intent bcIntent = new Intent();
-                bcIntent.setAction(ACTION_WRITE_DATA);
-                bcIntent.putExtra("WRITE", sb.toString());
-                mContext.sendBroadcast(bcIntent);
-                //mHandler.obtainMessage(MenuActivity.MESSAGE_WRITE, -1, -1, buffer)
-                  //      .sendToTarget();
+                mHandler.obtainMessage(BTConstants.MESSAGE_WRITE, -1, -1, buffer)
+                      .sendToTarget();
 
             } catch (IOException e) {
                 Log.e(TAG, "Exception during write", e);
@@ -654,18 +592,18 @@ public class BluetoothMessageService extends IntentService {
         public void ask() {
 
             try {
-                String ask = "ASK_DATA";
-                byte[] buffer = ask.getBytes();
+
+                nandroid.artesanus.messages.Message msg = new nandroid.artesanus.messages.Message(1000, 2, Calendar.getInstance().getTime());
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                String showTxt = (gson.toJson(msg));
+
+                byte[] buffer = showTxt.getBytes();
                 mmOutStream.write(buffer);
 
                 // Share the sent message back to the UI Activity
-                Intent bcIntent = new Intent();
-                bcIntent.setAction(ACTION_ASK_DATA);
-                bcIntent.putExtra("ASK", buffer.toString());
-                mContext.sendBroadcast(bcIntent);
-                // Share the sent message back to the UI Activity
-                //mHandler.obtainMessage(MenuActivity.MESSAGE_ASK_DATA, -1, -1, buffer)
-                        //.sendToTarget();
+                mHandler.obtainMessage(BTConstants.MESSAGE_ASK_DATA, -1, -1, buffer)
+                      .sendToTarget();
             } catch (IOException e) {
                 Log.e(TAG, "Exception during ask", e);
             }

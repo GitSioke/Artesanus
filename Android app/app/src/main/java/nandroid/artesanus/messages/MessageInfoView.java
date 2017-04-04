@@ -19,7 +19,7 @@ public class MessageInfoView implements IMessageInfoDrawing
 
     public void show(MessageInfo msg)
     {
-        this.view.findViewById(R.id.monitoring_button_initilice);
+        //this.view.findViewById(R.id.monitoring_button_initilice);
         int priority = msg.getPriority();
 
     }

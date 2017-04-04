@@ -18,6 +18,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import nandroid.artesanus.common.Brew;
@@ -58,8 +59,8 @@ public class SplashActivity extends AppCompatActivity {
     private void updateBrew()
     {
         Brew brew = new Brew();
-        brew.setStartDate("testPrincipio");
-        brew.setEndDate("testFin");
+        brew.setStartDate(Calendar.getInstance().getTime());
+        brew.setEndDate(Calendar.getInstance().getTime());
 
         PostExample example = new PostExample();
         GsonBuilder builder = new GsonBuilder();

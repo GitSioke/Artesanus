@@ -22,7 +22,7 @@ public class MessageDataView implements IMessageDataDrawing
 
     public void show(MessageData messageData)
     {
-        this.view.findViewById(R.id.monitoring_button_initilice);
+        /*this.view.findViewById(R.id.monitoring_button_initilice);*/
         Pair<String, Object> valueData = messageData.getValueData();
         String data = valueData.first;
         Object value = valueData.second;

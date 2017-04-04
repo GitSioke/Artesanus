@@ -1,5 +1,6 @@
 package nandroid.artesanus.common;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -11,9 +12,9 @@ public class Brew
 
     private String Id;
 
-    private String startDate;
+    private Date startDate;
 
-    private String endDate;
+    private Date endDate;
 
     private int litres;
 
@@ -95,19 +96,19 @@ public class Brew
         Id = id;
     }
 
-    public String getStartDate() {
+    public Date getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(String startDate) {
+    public void setStartDate(Date startDate) {
         this.startDate = startDate;
     }
 
-    public String getEndDate() {
+    public Date getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(String endDate) {
+    public void setEndDate(Date endDate) {
         this.endDate = endDate;
     }
 }

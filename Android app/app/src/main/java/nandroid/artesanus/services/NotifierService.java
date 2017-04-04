@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Random;
 
+import nandroid.artesanus.common.BTConstants;
+
 
 /**
  * This service handle the dummy data created to simulate Arduino entrances.
@@ -57,7 +59,7 @@ public class NotifierService extends Service
                     Pair<String, Date> kvTimestamp = new Pair<>("Date", new Date(System.currentTimeMillis()));
                     dataForPump.add(kvTimestamp);
                     // Check that we're actually connected before trying anything
-                    if (mBTService.getState() != BluetoothMessageService.STATE_CONNECTED)
+                    if (mBTService.getState() != BTConstants.STATE_CONNECTED)
                     {
                         return;
                     }
