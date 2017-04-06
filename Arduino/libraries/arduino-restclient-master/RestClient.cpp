@@ -1,6 +1,6 @@
 #include "RestClient.h"
 
-#define HTTP_DEBUG // Uncomment for debugging purposes
+//#define HTTP_DEBUG // Uncomment for debugging purposes
 
 #ifdef HTTP_DEBUG
 #define HTTP_DEBUG_PRINT(string) (Serial.print(string))
@@ -228,7 +228,7 @@ int RestClient::readResponse(String* response) {
       }
       else
       {
-		  HTTP_DEBUG_PRINT("\n RestClient: Http body is null \n");
+		  //HTTP_DEBUG_PRINT("\n RestClient: Http body is null \n");
           if (c == '\n' && currentLineIsBlank) {
             httpBody = true;
           }
@@ -246,7 +246,9 @@ int RestClient::readResponse(String* response) {
   }
   
   cresponse[j] = '\0';
+  
   response->concat(cresponse);
+  
   delay(200);
 
   HTTP_DEBUG_PRINT("RestClient: return readResponse\n");

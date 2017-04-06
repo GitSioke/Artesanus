@@ -58,7 +58,7 @@ bool checkForStart()
   Serial.println("checkForStart: creating variables");
   //Set content type to enable json content
   client.setContentType("application/json; charset=utf-8");
-  response = "";
+  response = "";  
   char json[256];
   
   // create and format json object to send to server
