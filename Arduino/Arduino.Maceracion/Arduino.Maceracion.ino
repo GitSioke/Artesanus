@@ -1,4 +1,4 @@
-#include <RestClient.h>
+//#include <RestClient.h>
 #include <Dhcp.h>
 #include <Dns.h>
 #include <Ethernet2.h>
@@ -12,10 +12,30 @@
 #define IP "192.168.1.40"  // Server IP
 #define PORT 5000         // Server Port
 
-RestClient client = RestClient(IP, PORT);
+//#define HTTP_DEBUG // Uncomment for debugging purposes
+
+//#ifdef HTTP_DEBUG
+//#define Serial.print(string) (Serial.print(string))
+//#endif
+
+//#ifndef HTTP_DEBUG
+//#define Serial.print(string)
+//#endif
+
+
+EthernetClient client;
+int readResponse(String*);
+void write(const char*);
+const char* host = IP;
+int port = PORT;
+int num_headers;
+const char* headers[10];
+const char* contentType = "application/json; charset=utf-8";
+
 double temperature;
 bool _started;
 int id_process;
+
 
 void setup() 
 {
@@ -25,14 +45,19 @@ void setup()
 
   temperature = 10.0;
   _started = false;
+
+  byte mac[] = { 0x90, 0xA2, 0xDA, 0x10, 0x13, 0x8A };
+  if (Ethernet.begin(mac) == 0) {
+    Serial.println("Failed to configure Ethernet using DHCP");
+    return false;
+  }
   
   // This could fail in case of no connection with router.
-  client.dhcp();
+  //client.dhcp();
   Serial.println(Ethernet.localIP());
   delay(500);
 }
 
-String response;
 bool first = false;
 void loop() 
 {    
@@ -43,6 +68,7 @@ void loop()
     sendDataToServer();
   }
 
+  Serial.println("Going to sleep");
   // Delay 30 seconds, and restart cheking if new start command was launched.
   delay(60000);
 }
@@ -56,9 +82,7 @@ bool checkForStart()
 {
   StaticJsonBuffer<20> jsonBuffer;
   Serial.println("checkForStart: creating variables");
-  //Set content type to enable json content
-  client.setContentType("application/json; charset=utf-8");
-  response = "";  
+  
   char json[256];
   
   // create and format json object to send to server
@@ -66,21 +90,24 @@ bool checkForStart()
   root["id_process"] = "1";
   root.printTo(json, sizeof(json));
   Serial.println(json); 
-  int statusCode = client.post("/retrieve/last_mashing_event/", json, &response);
+  
+  String response = request("POST", "/retrieve/last_mashing_event/", json);
+  //Serial.println(request("POST", "/retrieve/last_mashing_event/", json));
+  delay(1000);
+  Serial.println("Response body from server: ");
+  //Serial.println(response);
   
   StaticJsonBuffer<50> jsonBuffer1;
   JsonObject& root1 = jsonBuffer1.parseObject(response);
   id_process = root1["result"];
-  
-  Serial.println("Response body from server: ");
-  Serial.println(response);
+
+  Serial.println("Id process: ");
   Serial.println(id_process);
 
-  _started = id_process == 0 ? false: true;
-  //_started = true;
-  delay(1000);
+  bool startCommandReceived = id_process == 0 ? false: true;
+  _started = startCommandReceived;
 
-  return _started;
+  return startCommandReceived;
 }
 
 ///
@@ -88,9 +115,6 @@ bool checkForStart()
 ///
 void sendDataToServer()
 {
-  //Set content type to enable json content
-  client.setContentType("application/json; charset=utf-8");
-  response = "";
   StaticJsonBuffer<200> jsonBuffer;
   char json[256];
   
@@ -103,15 +127,135 @@ void sendDataToServer()
   root.printTo(json, sizeof(json));  
   Serial.println(json);
 
-
-  //int statusCode = client.post("/insert/events/", json3, &response3);
-  Serial.println("Status code from server: ");
-  //Serial.println(statusCode);
-  Serial.println("Response body from server: ");
+  String response = request("POST", "/insert/events/", json);
+  Serial.println("SENDDATA:: Response body from server: ");
   Serial.println(response);
   temperature = temperature + 0.5;
    
   
   // Sleep for 60 seconds and resend data
   delay(10000);
+}
+
+String request(const char* method, const char* path,
+                  const char* body)
+{
+  
+  if(client.connect(host, port)== 1){
+    Serial.print("Connected to server\n");
+    //Serial.print("REQUEST: \n");
+    // Make a HTTP request line:
+    String requestStr = "";
+    requestStr += method;
+    requestStr += " ";
+    requestStr += path;
+    requestStr += " HTTP/1.1\r\n";
+    for(int i=0; i<num_headers; i++){
+      requestStr += headers[i];
+      requestStr += "\r\n";
+    }
+    requestStr += "Host: ";
+    requestStr += host;
+    requestStr += "\r\n";
+    requestStr += "Connection: keep-alive\r\n";
+
+    if(body != NULL){
+      char contentLength[30];
+      sprintf(contentLength, "Content-Length: %d\r\n", strlen(body));
+      requestStr += contentLength;
+
+    delay(50);
+    //requestStr += "Content-Type: ";
+    requestStr += "application/json; charset=utf-8";
+    requestStr += "\r\n";
+    }
+
+    requestStr += "\r\n";
+
+    if(body != NULL){
+      requestStr += body;
+      requestStr += "\r\n";
+      requestStr += "\r\n";
+    }
+
+    client.print(requestStr);
+    Serial.println(requestStr);
+    
+    //make sure you write all those bytes.
+    delay(500);
+
+    // TODO: Clean
+    //String statusCode = "status code: ";
+    String statusCode = readResponse();
+  
+    //cleanup
+    num_headers = 0;
+    client.stop();
+    delay(100);
+    //Serial.print("RestClient: client stopped\n");
+    Serial.print(statusCode);
+    return statusCode;
+  }else{
+    Serial.print("RestClient Connection failed\n");
+    return "Connection failed";
+  }
+}
+
+String readResponse() {
+  
+  boolean currentLineIsBlank = true;
+  boolean httpBody = false;
+  boolean inStatus = false;
+
+  char statusCode[4];
+  String jsonResponse = "";
+  int i = 0;
+  int code = 0;
+
+  //Serial.print("RestClient: RESPONSE: \n");
+  while (client.available()) {
+    
+    char c = client.read();
+    Serial.print(c);
+  
+    if(c == ' ' && !inStatus)
+    {
+       inStatus = true;
+    }
+  
+    if(inStatus && i < 3 && c != ' '){
+      statusCode[i] = c;
+      i++;
+    }
+    if(i == 3){
+      statusCode[i] = '\0';
+      code = atoi(statusCode);
+    }
+  
+    if(httpBody && code== 200)
+    {
+      jsonResponse += c;
+      //Serial.print(c);
+    }
+    else
+    {
+      if (c == '\n' && currentLineIsBlank) {
+        httpBody = true;
+      }
+
+      if (c == '\n') {
+        // you're starting a new line
+        currentLineIsBlank = true;
+      }
+      else if (c != '\r') {
+        // Character on the current line
+        currentLineIsBlank = false;
+      }
+    }
+  }
+  
+  jsonResponse += '\0';
+  delay(1500);
+  
+  return jsonResponse;
 }
