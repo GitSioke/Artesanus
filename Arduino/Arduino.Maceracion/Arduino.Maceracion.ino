@@ -92,10 +92,9 @@ bool checkForStart()
   Serial.println(json); 
   
   String response = request("POST", "/retrieve/last_mashing_event/", json);
-  //Serial.println(request("POST", "/retrieve/last_mashing_event/", json));
   delay(1000);
   Serial.println("Response body from server: ");
-  //Serial.println(response);
+  Serial.println(response);
   
   StaticJsonBuffer<50> jsonBuffer1;
   JsonObject& root1 = jsonBuffer1.parseObject(response);
@@ -145,55 +144,50 @@ String request(const char* method, const char* path,
     Serial.print("Connected to server\n");
     //Serial.print("REQUEST: \n");
     // Make a HTTP request line:
-    String requestStr = "";
-    requestStr += method;
-    requestStr += " ";
-    requestStr += path;
-    requestStr += " HTTP/1.1\r\n";
-    for(int i=0; i<num_headers; i++){
-      requestStr += headers[i];
-      requestStr += "\r\n";
+    client.print(method);
+    client.print(" ");
+    client.print(path);
+    client.print(" HTTP/1.1\r\n");
+    for(int i=0; i<num_headers; i++)
+    {
+      client.print(headers[i]);
+      client.print("\r\n");
     }
-    requestStr += "Host: ";
-    requestStr += host;
-    requestStr += "\r\n";
-    requestStr += "Connection: keep-alive\r\n";
+    
+    client.print("Host: ");
+    client.print(host);
+    client.print("\r\n");
+    client.print("Connection: keep-alive\r\n");
+
 
     if(body != NULL){
-      char contentLength[30];
-      sprintf(contentLength, "Content-Length: %d\r\n", strlen(body));
-      requestStr += contentLength;
+      char contentLength[5];
+      sprintf(contentLength, "%d", strlen(body));
+      client.print("Content-Length: ");
+      client.print(contentLength);
+      client.print("\r\n");
 
-    delay(50);
-    //requestStr += "Content-Type: ";
-    requestStr += "application/json; charset=utf-8";
-    requestStr += "\r\n";
+      delay(50);
+      client.print("Content-Type: ");
+      client.print("application/json; charset=utf-8");
+      client.print("\r\n");
+      client.print("\r\n");
+      
+      client.print(body);
+      client.print("\r\n");
+      client.print("\r\n");
     }
-
-    requestStr += "\r\n";
-
-    if(body != NULL){
-      requestStr += body;
-      requestStr += "\r\n";
-      requestStr += "\r\n";
-    }
-
-    client.print(requestStr);
-    Serial.println(requestStr);
     
     //make sure you write all those bytes.
     delay(500);
 
-    // TODO: Clean
-    //String statusCode = "status code: ";
     String statusCode = readResponse();
   
     //cleanup
     num_headers = 0;
     client.stop();
     delay(100);
-    //Serial.print("RestClient: client stopped\n");
-    Serial.print(statusCode);
+    
     return statusCode;
   }else{
     Serial.print("RestClient Connection failed\n");
@@ -216,7 +210,7 @@ String readResponse() {
   while (client.available()) {
     
     char c = client.read();
-    Serial.print(c);
+    //Serial.print(c);
   
     if(c == ' ' && !inStatus)
     {
