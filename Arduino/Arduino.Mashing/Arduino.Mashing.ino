@@ -87,7 +87,7 @@ bool checkForStart()
   
   // create and format json object to send to server
   JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = "1";
+  root["id_process"] = id_process;
   root.printTo(json, sizeof(json));
   Serial.println(json); 
   
