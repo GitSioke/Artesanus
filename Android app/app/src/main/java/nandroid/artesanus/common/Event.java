@@ -21,6 +21,8 @@ public class Event
 
     private Date time;
 
+    private String source;
+
     public int getId() {
         return id;
     }
@@ -76,4 +78,9 @@ public class Event
     public void setTime(Date time) {
         this.time = time;
     }
+
+    public void setSource(String source) {this.source = source;}
+
+    public String getSource(){return this.source;}
+
 }
