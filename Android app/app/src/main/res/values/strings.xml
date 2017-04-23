@@ -70,5 +70,6 @@
     <string name="kilogram_abreviature">Kg</string>
     <string name="grams_abreviature">gr</string>
     <string name="monitoring_log">Eventos</string>
+    <string name="density_added">Density has been added</string>
 
 </resources>

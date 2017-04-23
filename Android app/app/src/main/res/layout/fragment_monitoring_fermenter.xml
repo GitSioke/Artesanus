@@ -6,65 +6,88 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-        <TextView
-            android:id="@+id/monitor_main_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:paddingLeft="20dp"
-            android:paddingTop="20dp"
-            android:textSize="40dp"
-            android:text="10ºC"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/monitor_main_value"
-            android:layout_toRightOf="@+id/monitor_main_value"
-            android:src="@drawable/common_full_open_on_phone"
-            android:id="@+id/imageView" />
-        <TextView
-            android:id="@+id/monitor_second_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/monitor_main_value"
-            android:paddingLeft="30dp"
-            android:paddingTop="15dp"
-            android:textSize="40dp"
-            android:text="10ºC"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/monitor_second_value"
-            android:layout_toRightOf="@+id/monitor_second_value"
-            android:src="@drawable/common_full_open_on_phone"/>
 
-        <TextView
-            android:id="@+id/monitor_third_value"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/monitor_second_value"
-            android:paddingLeft="30dp"
-            android:paddingTop="15dp"
-            android:textSize="40dp"
-            android:text="10ºC"/>
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/monitor_third_value"
-            android:layout_toRightOf="@+id/monitor_third_value"
-            android:src="@drawable/common_full_open_on_phone"/>
-        <WebView
-            android:id="@+id/webView"
+        <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_below="@id/monitor_third_value"
+            android:layout_height="wrap_content"
+            android:id="@+id/fermenter_relative_ly_primary">
+
+
+            <TextView
+                android:id="@+id/monitor_main_value"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="40dp"
+                android:text="10ºC"
+                android:layout_alignBottom="@+id/temperature_icon"
+                android:layout_toRightOf="@+id/temperature_icon"/>
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="20dp"
+                android:paddingTop="20dp"
+                android:src="@drawable/common_full_open_on_phone"
+                android:id="@+id/temperature_icon" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/fermenter_relative_ly_secondary"
+            android:layout_below="@+id/fermenter_relative_ly_primary">
+            <ImageView
+                android:id="@+id/density_icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/monitor_second_value"
+                android:src="@drawable/common_full_open_on_phone"
+                android:layout_alignParentStart="true"
+                android:paddingLeft="30dp"
+                android:paddingTop="15dp"/>
+            <TextView
+                android:id="@+id/monitor_second_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="40dp"
+                android:text="10ºC"
+                android:layout_toRightOf="@+id/density_icon"/>
+            <ImageView
+                android:id="@+id/monitor_add_density_icon"
+                android:layout_width="@dimen/button_size"
+                android:layout_height="@dimen/button_size"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/monitor_second_value"
+                android:src="@drawable/ic_add_black_18dp" />
+            <EditText
+                android:id="@+id/monitor_density_edit_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:inputType="number"
+                android:textSize="40dp"
+                android:layout_toRightOf="@+id/monitor_add_density_icon"/>
+            <ImageView
+                android:id="@+id/monitor_add_density_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="invisible"
+                android:layout_toRightOf="@+id/monitor_density_edit_text"/>
+
+        </RelativeLayout>
+
+        <com.jjoe64.graphview.GraphView
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:layout_below="@id/fermenter_relative_ly_secondary"
             android:layout_marginTop="50dp"
-            android:layout_marginBottom="74dp">
-        </WebView>
+            android:layout_marginBottom="25dp"
+            android:id="@+id/graph"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/webView"
+            android:layout_below="@id/graph"
             android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
