@@ -34,7 +34,7 @@ const char* contentType = "application/json; charset=utf-8";
 
 double temperature;
 bool _started;
-int id_process;
+int id_process = -1;
 
 
 void setup() 
@@ -61,17 +61,30 @@ void setup()
 void loop() 
 {    
   // Check if the process is in progress or if is going to start
-  if (_started || checkForStart())
+  if(isProcessAlive())
   {
-    Serial.println("Try send data to server");
+    Serial.println("Trying to send data to database");
     sendDataToServer();
-  }
+  } 
+  //if (_started || checkForStart())
 
   Serial.println("Going to sleep");
   // Delay 30 seconds, and restart cheking if new start command was launched.
   delay(60000);
 }
 
+// Check if process has been started but not stopped
+bool isProcessAlive()
+{
+  // Check if process is already started
+  if (_started || checkForStart())
+  {
+    // If process is already started, check now if process has been stopped
+    _started = !checkForStop();    
+  }
+
+  return _started;  
+}
 
 ///
 /// This function check on server for the latest start event and returns true in case of new event. 
@@ -81,6 +94,7 @@ bool checkForStart()
 {
   StaticJsonBuffer<20> jsonBuffer;
   Serial.println("checkForStart: creating variables");
+
   
   char json[256];
   
@@ -102,10 +116,42 @@ bool checkForStart()
   Serial.println("Id process: ");
   Serial.println(id_process);
 
-  bool startCommandReceived = id_process == 0 ? false: true;
-  _started = startCommandReceived;
+  bool startCommandReceived = id_process == -1 ? false: true;
 
   return startCommandReceived;
+}
+
+///
+/// This function check on server for any stop event at server for this process
+///
+bool checkForStop()
+{
+  StaticJsonBuffer<50> jsonBuffer;
+  Serial.println("checkForStop: ");
+
+  
+  char json[256];
+  
+  // create and format json object to send to server
+  JsonObject& root = jsonBuffer.createObject();
+  root["id_process"] = id_process;
+  root["source"] = "fermentation";
+  root.printTo(json, sizeof(json));
+  Serial.println(json); 
+  
+  String response = request("POST", "/retrieve/stop_event/", json);
+  delay(1000);
+  Serial.println("Response body from server: ");
+  Serial.println(response);
+  
+  StaticJsonBuffer<50> jsonBuffer1;
+  JsonObject& root1 = jsonBuffer1.parseObject(response);
+  bool stopCommandReceived = root1["stop"];
+
+  Serial.println("Has been received stop command: ");
+  Serial.println(stopCommandReceived);
+   
+  return stopCommandReceived;
 }
 
 ///
@@ -118,10 +164,11 @@ void sendDataToServer()
   
   // create and format json object to send to server
   JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = "1";
+  root["id_process"] = id_process;
   root["value"] = temperature;
   root["data"] = "temperature";
-  root["type"] = "fermentation";
+  root["source"] = "fermentation";
+  root["type"] = "data";
   root.printTo(json, sizeof(json));  
   Serial.println(json);
 

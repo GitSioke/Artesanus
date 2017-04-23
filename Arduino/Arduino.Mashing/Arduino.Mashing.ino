@@ -122,7 +122,8 @@ void sendDataToServer()
   root["id_process"] = "1";
   root["value"] = temperature;
   root["data"] = "temperature";
-  root["type"] = "mashing";
+  root["source"] = "mashing";
+  root["type"] = "data";
   root.printTo(json, sizeof(json));  
   Serial.println(json);
 

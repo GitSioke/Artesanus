@@ -86,11 +86,11 @@ bool checkForStart()
   
   // create and format json object to send to server
   JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = "1";
+  root["id_process"] = id_process;
   root.printTo(json, sizeof(json));
   Serial.println(json); 
   
-  String response = request("POST", "/retrieve/last_boil_event/", json);
+  String response = request("POST", "/retrieve/last_boiling_event/", json);
   delay(1000);
   Serial.println("Response body from server: ");
   Serial.println(response);
@@ -121,7 +121,8 @@ void sendDataToServer()
   root["id_process"] = "1";
   root["value"] = temperature;
   root["data"] = "temperature";
-  root["type"] = "mashing";
+  root["source"] = "mashing";
+  root["type"] = "data";
   root.printTo(json, sizeof(json));  
   Serial.println(json);
 
