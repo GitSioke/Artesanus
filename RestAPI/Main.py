@@ -145,6 +145,23 @@ def retrieve_last_mashing_event():
     print(id_process)
     return jsonify({'result' : id_process})
 
+@app.route('/retrieve/last_fermentation_event/', methods= ['POST'])
+def retrieve_last_fermentation_event():
+    id_process = "none" 
+    event = (db.session.query(event_entity).filter(and_(event_entity.source == "FERMENTATION", event_entity.type == "COMMAND", event_entity.message == "START")).order_by(event_entity.id.desc()).first())
+    print(event)
+    id_process = event.id_process
+    print(id_process)
+    return jsonify({'result' : id_process})
+
+@app.route('/retrieve/last_boiling_event/', methods= ['POST'])
+def retrieve_last_boil_event():
+    id_process = "none" 
+    event = (db.session.query(event_entity).filter(and_(event_entity.source == "BOILING", event_entity.type == "COMMAND", event_entity.message == "START")).order_by(event_entity.id.desc()).first())
+    print(event)
+    id_process = event.id_process
+    print(id_process)
+    return jsonify({'result' : id_process})
 
 
 
