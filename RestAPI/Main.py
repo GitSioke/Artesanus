@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, g
 from flask_restful import Resource, Api
-from sqlalchemy import create_engine, func, and_
+from sqlalchemy import create_engine, func, and_, inspect
+from sqlalchemy.orm import aliased
 from flask_sqlalchemy import SQLAlchemy
 from json import dumps
 from Brew import create_brew
@@ -131,7 +132,7 @@ def insert_event():
     data_json = request.get_json()
     date = datetime.now()
     print(date.strftime('%Y-%m-%d %H:%M:%S'))
-    event = event_entity(id_process=data_json.get('id_process'), type=data_json.get('type'), data=data_json.get('data'), value=data_json.get('value'), time=date.strftime('%Y-%m-%d %H:%M:%S'))
+    event = event_entity(id_process=data_json.get('id_process'), type=data_json.get('type'), source=data_json.get('source'), data=data_json.get('data'), value=data_json.get('value'), time=date.strftime('%Y-%m-%d %H:%M:%S'))
     db.session.add(event)
     db.session.commit()
     return jsonify({'result' : True})
@@ -139,7 +140,7 @@ def insert_event():
 @app.route('/retrieve/last_mashing_event/', methods= ['POST'])
 def retrieve_last_mashing_event():
     id_process = "none" 
-    event = (db.session.query(event_entity).filter(and_(event_entity.source == "MASHING", event_entity.type == "COMMAND", event_entity.message == "START")).order_by(event_entity.id.desc()).first())
+    event = (db.session.query(event_entity).filter(and_(event_entity.source == "mashing", event_entity.type == "command", event_entity.message == "start")).order_by(event_entity.id.desc()).first())
     print(event)
     id_process = event.id_process
     print(id_process)
@@ -147,23 +148,90 @@ def retrieve_last_mashing_event():
 
 @app.route('/retrieve/last_fermentation_event/', methods= ['POST'])
 def retrieve_last_fermentation_event():
-    id_process = "none" 
-    event = (db.session.query(event_entity).filter(and_(event_entity.source == "FERMENTATION", event_entity.type == "COMMAND", event_entity.message == "START")).order_by(event_entity.id.desc()).first())
-    print(event)
-    id_process = event.id_process
-    print(id_process)
-    return jsonify({'result' : id_process})
+    id_proc = -1 
+    
+    
+    stopped_query = (db.session.query(event_entity).filter(and_(event_entity.source == "fermentation", event_entity.type == "command", event_entity.message == "stop")).order_by(event_entity.id.desc()))
+    started_query = (db.session.query(event_entity).filter(and_(event_entity.source == "fermentation", event_entity.type == "command", event_entity.message == "start")).order_by(event_entity.id.desc()))    
+    
+    for start_event in started_query:
+	found = False
+	print(start_event)
+        for stop_event in stopped_query:
+	    print(stop_event.id_process)
+            if (start_event.id_process == stop_event.id_process):
+		print("start and stop equals")
+                break
+	    elif (start_event.id_process < stop_event.id_process):
+		found = True
+		break
+	    else:
+		# Do nothing, continue execution
+		continue
+	if (found):
+	    id_proc = start_event.id_process
+	    break
+
+    #query = stopped_query.outerjoin(started_query, started_query.c.id_process == stopped_query.c.id_process).first() 
+    #print(query)
+    #if event is not None:
+        #id_process = event.id_process
+        #stop_event = (db.session.query(event_entity).filter(and_(event_entity.id_process == id_process, event_entity.source == "fermentation", event_entity.type == "command", event_entity.message == "stop")).order_by(event_entity.id.desc()).first())
+    	#if stop_event is not None:
+    print(id_proc)
+    return jsonify({'result' : id_proc})
 
 @app.route('/retrieve/last_boiling_event/', methods= ['POST'])
 def retrieve_last_boil_event():
-    id_process = "none" 
-    event = (db.session.query(event_entity).filter(and_(event_entity.source == "BOILING", event_entity.type == "COMMAND", event_entity.message == "START")).order_by(event_entity.id.desc()).first())
+    # id_process will be -1 if we dont find any match criteria
+    id_process = -1 
+    event = (db.session.query(event_entity).filter(and_(event_entity.source == "boiling", event_entity.type == "command", event_entity.message == "start")).order_by(event_entity.id.desc()).first())
     print(event)
-    id_process = event.id_process
+    if hasattr(event, id_process):
+        id_process = event.id_process
     print(id_process)
     return jsonify({'result' : id_process})
 
 
+@app.route('/insert/last_density/fermentation/', methods= ['POST'])
+def insert_last_density_medition_fermentation():
+    stop = False
+    # last density calculated will be compared with the previously density inserted on database
+    # if the lastest densities are the same. The process would stop, so we are going to insert a STOP command
+    # in order to advise any device listening
+    data_json = request.get_json()
+    
+    query_ev = db.session.query(event_entity)
+    id_ev = next_id(query_ev)
+
+    event = (db.session.query(event_entity).filter(and_(event_entity.id_process == id_proc, event_entity.source == "fermentation", event_entity.type == "data", event_entity.data == "density")).order_by(event_entity.time.desc()).first())
+    
+    last_density = data_json.get('value')
+    last_density_event = event_entity(id_process = data_json.get('id_process'), source= data_json.get('source'), type=data_json.get('type'), value=data_json.get('value'), data=data_json.get('data'), time=data_json.get('time'))
+    db.session.add(last_density_event)    
+   
+    # If condition of stop fermentation meets, we have to insert a STOP command to database
+    if (event is not None && event.value == last_density):
+        date = datetime.now()
+        stop_event = event_entity(id_process=id_proc, type="command", message="stop", time=date.strftime('%Y-%m-%d %H:%M:%S'))
+        db.session.add(stop_event)        
+    	stop = True
+
+    db.session.commit()
+    return jsonify({'result' : stop})
+
+
+@app.route('/retrieve/stop_event/', methods= ['POST'])
+def retrieve_stop_event():
+    hasStopped = False
+    data_json = request.get_json()
+    id_proc = data_json.get('id_process')
+    source = data_json.get('source')
+    event = (db.session.query(event_entity).filter(and_(event_entity.id_process == id_proc, event_entity.source == source, event_entity.type == "command", event_entity.message == "stop" )).order_by(event_entity.time.desc()).first())
+    
+    if event is not None:
+        hasStopped = True
+    return jsonify({'stop': hasStopped})
 
 @app.route('/test')
 def test():
