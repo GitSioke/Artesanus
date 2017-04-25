@@ -2,42 +2,32 @@ package nandroid.artesanus.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Debug;
-import android.provider.CalendarContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.JavascriptInterface;
-import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.internal.Excluder;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
-import com.jjoe64.graphview.series.Series;
 
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import nandroid.artesanus.adapter.LogAdapter;
 import nandroid.artesanus.common.Event;
-import nandroid.artesanus.common.GetController;
-import nandroid.artesanus.common.IAsyncHttpResponse;
+import nandroid.artesanus.http.GetController;
+import nandroid.artesanus.http.IAsyncHttpResponse;
 import nandroid.artesanus.common.Process;
-import nandroid.artesanus.gui.BluetoothActivity;
-import nandroid.artesanus.gui.MonitorActivity;
 import nandroid.artesanus.gui.R;
 import nandroid.artesanus.messages.MessageInfo;
 import nandroid.artesanus.messages.MessageInfoMasher;

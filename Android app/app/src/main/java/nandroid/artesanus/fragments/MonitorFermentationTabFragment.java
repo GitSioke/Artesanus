@@ -8,28 +8,26 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
-import nandroid.artesanus.adapter.CerealAddedAdapter;
-import nandroid.artesanus.adapter.HopAddedAdapter;
-import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Event;
-import nandroid.artesanus.common.Hop;
-import nandroid.artesanus.common.PostController;
+import nandroid.artesanus.http.GetController;
+import nandroid.artesanus.http.HTTPController;
+import nandroid.artesanus.http.IAsyncHttpResponse;
+import nandroid.artesanus.http.PostController;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.http.PutController;
 
 /**
  * This class handles the Monitor tab fragment for Fermentation process
  */
-public class MonitorFermentationTabFragment extends Fragment
+public class MonitorFermentationTabFragment extends Fragment implements IAsyncHttpResponse
 {
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -44,6 +42,7 @@ public class MonitorFermentationTabFragment extends Fragment
         final ImageView imgDensityButton = (ImageView)view.findViewById(R.id.monitor_add_density_icon);
         final EditText densityEditText = (EditText)view.findViewById(R.id.monitor_density_edit_text);
         final ImageView imgConfirmButton = (ImageView)view.findViewById(R.id.monitor_add_density_confirm);
+        final TextView txSecondValue = (TextView)view.findViewById(R.id.monitor_second_value);
 
         imgConfirmButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,9 +51,9 @@ public class MonitorFermentationTabFragment extends Fragment
                 densityEditText.setVisibility(View.INVISIBLE);
                 imgConfirmButton.setVisibility(View.INVISIBLE);
                 imgDensityButton.setVisibility(View.VISIBLE);
+                txSecondValue.setVisibility(View.VISIBLE);
 
                 // Add density to database
-                PostController controller = new PostController();
                 GsonBuilder builder = new GsonBuilder();
                 builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
                 Gson gson = builder.create();
@@ -65,14 +64,38 @@ public class MonitorFermentationTabFragment extends Fragment
                 Date date = cal.getTime();
                 event.setTime(date);
                 event.setSource("fermentation");
-                event.setValue(Long.getLong(densityEditText.getText().toString()));
+
+                // TODO modificar para que el id_process sea el correcto
+                event.setId_process(1);
+                
+                event.setValue(Double.parseDouble(densityEditText.getText().toString()));
                 event.setData("density");
-                String json = (gson.toJson(densityEditText.getText().toString()));
-                controller.execute("/insert_density", json);
+                event.setType("data");
+
+                String json = gson.toJson(event);
+                PostController controller = new PostController();
+                controller.execute("/insert/last_density/fermentation/", json);
+                //new PutController(MonitorFermentationTabFragment.this).execute("/insert/last_density/fermentation", json);
 
                 // Show to user the operation has been performed
-                Snackbar.make(v, R.string.density_added, Snackbar.LENGTH_SHORT)
-                        .setAction("No action", null).show();
+                StringBuilder strBuild = new StringBuilder();
+                strBuild.append(getResources().getString(R.string.density_added));
+                strBuild.append(event.getValue());
+                strBuild.append(getResources().getString(R.string.density_measure));
+
+                Snackbar.make(v,
+                        strBuild.toString(),
+                        Snackbar.LENGTH_SHORT)
+                        .show();
+
+                // Modify view
+                txSecondValue.setText(Double.toString(event.getValue()));
+
+                // Hide and show the views
+                densityEditText.setVisibility(View.INVISIBLE);
+                imgConfirmButton.setVisibility(View.INVISIBLE);
+                imgDensityButton.setVisibility(View.VISIBLE);
+                txSecondValue.setVisibility(View.VISIBLE);
             }
         });
 
@@ -82,6 +105,7 @@ public class MonitorFermentationTabFragment extends Fragment
                 densityEditText.setVisibility(View.VISIBLE);
                 imgConfirmButton.setVisibility(View.VISIBLE);
                 imgDensityButton.setVisibility(View.INVISIBLE);
+                txSecondValue.setVisibility(View.INVISIBLE);
             }
         });
 
@@ -92,4 +116,9 @@ public class MonitorFermentationTabFragment extends Fragment
         super.onResume();
     }
 
+    @Override
+    public void ProcessFinish(String output) {
+        //
+
+    }
 }

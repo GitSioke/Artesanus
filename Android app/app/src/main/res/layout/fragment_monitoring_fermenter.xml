@@ -66,13 +66,14 @@
                 android:visibility="invisible"
                 android:inputType="number"
                 android:textSize="40dp"
-                android:layout_toRightOf="@+id/monitor_add_density_icon"/>
+                android:layout_toRightOf="@+id/density_icon"/>
             <ImageView
                 android:id="@+id/monitor_add_density_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:visibility="invisible"
-                android:layout_toRightOf="@+id/monitor_density_edit_text"/>
+                android:layout_toRightOf="@+id/monitor_second_value"
+                android:src="@drawable/ic_done_black_24dp"/>
 
         </RelativeLayout>
 

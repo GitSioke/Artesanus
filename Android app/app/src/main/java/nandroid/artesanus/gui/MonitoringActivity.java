@@ -1,32 +1,15 @@
 package nandroid.artesanus.gui;
 
-import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import nandroid.artesanus.adapter.MonitorTabFragmentPagerAdapter;
-import nandroid.artesanus.common.AppController;
-import nandroid.artesanus.common.BTConstants;
-import nandroid.artesanus.common.GetController;
-import nandroid.artesanus.fragments.UnpairedDevicesFragment;
-import nandroid.artesanus.services.BluetoothMessageService;
 
 /**
  * This class controls Monitoring activity

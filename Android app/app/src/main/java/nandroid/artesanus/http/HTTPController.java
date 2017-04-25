@@ -1,4 +1,4 @@
-package nandroid.artesanus.common;
+package nandroid.artesanus.http;
 
 import android.os.AsyncTask;
 import okhttp3.MediaType;

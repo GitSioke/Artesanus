@@ -1,4 +1,4 @@
-package nandroid.artesanus.common;
+package nandroid.artesanus.http;
 
 /**
  * This interface declare a contract to have  a response from a http asynchronous response

@@ -1,8 +1,6 @@
 package nandroid.artesanus.gui;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
 import android.support.design.widget.FloatingActionButton;
@@ -15,7 +13,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -29,15 +26,13 @@ import nandroid.artesanus.adapter.TabFragmentPagerAdapter;
 import nandroid.artesanus.common.Brew;
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Event;
-import nandroid.artesanus.common.GetController;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.common.Hop;
-import nandroid.artesanus.common.PostController;
+import nandroid.artesanus.http.PostController;
 import nandroid.artesanus.common.Process;
 import nandroid.artesanus.fragments.AddCerealFragment;
 import nandroid.artesanus.fragments.AddHeatFragment;
 import nandroid.artesanus.fragments.AddHopFragment;
-import nandroid.artesanus.messages.Message;
 
 public class NewBeerCraftingActivity extends AppCompatActivity
         implements AddCerealFragment.OnCerealAddedListener,

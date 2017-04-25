@@ -1,4 +1,4 @@
-package nandroid.artesanus.common;
+package nandroid.artesanus.http;
 
 import com.github.kevinsawicki.http.HttpRequest;
 
@@ -12,16 +12,20 @@ import okhttp3.Response;
  * This class control HTTP POST request.
  */
 
-public class PostController extends HTTPController
+public class GetController extends HTTPController
 {
+    public IAsyncHttpResponse delegate = null;
 
+    public GetController(IAsyncHttpResponse delegate){
+        this.delegate = delegate;
+    }
     @Override
     protected String doInBackground(String... params) {
 
         RequestBody body = RequestBody.create(JSON, params[1]);
         Request request = new Request.Builder()
                 .url(_url+params[0])
-                .post(body)
+                .get()
                 .build();
         try (Response response = client.newCall(request).execute())
         {
@@ -36,6 +40,11 @@ public class PostController extends HTTPController
         {
             return null;
         }
+    }
+
+    @Override
+    protected void onPostExecute(String result) {
+        delegate.ProcessFinish(result);
     }
 
 }
