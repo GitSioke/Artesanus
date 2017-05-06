@@ -73,5 +73,11 @@
     <string name="density_added">Density has been added: </string>
     <string name="density_measure"> kg/m3</string>
     <string name="main_menu_preferences">Preferencias</string>
+    <string name="preferences_ip_address">Direccion IP</string>
+    <string name="preferences_language">Idioma</string>
+    <string name="save_button">Guardar</string>
+    <string name="preferences_saved">Las preferencias han sido actualizadas</string>
+    <string name="preferences_not_saved">Las preferencias no fueron actualizadas</string>
+    <string name="preferences_title">Preferencias</string>
 
 </resources>
