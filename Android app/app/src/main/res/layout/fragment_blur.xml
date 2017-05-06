@@ -18,6 +18,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/main_menu_no_previous_crafting"
+        android:shadowColor="@color/black"
+        android:shadowDx="3"
+        android:shadowDy="2"
+        android:shadowRadius="3"
         android:layout_gravity="center_vertical"
         android:textSize="30sp"
         style="@style/ShadowEffect"/>
