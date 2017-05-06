@@ -20,19 +20,17 @@ import android.widget.TextView;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 31/10/2016.
+ * This fragment performs a blur effects over background image in order to have a more readable fonts.
  */
 public class RSBlurFragment extends Fragment {
     private ImageView image;
     private TextView text;
-    private TextView statusText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_blur, container, false);
         image = (ImageView) view.findViewById(R.id.picture);
         text = (TextView) view.findViewById(R.id.text);
-        statusText = addStatusText((ViewGroup) view.findViewById(R.id.controls));
         applyBlur();
         return view;
     }
@@ -53,7 +51,6 @@ public class RSBlurFragment extends Fragment {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private void blur(Bitmap bkg, View view) {
-        long startMs = System.currentTimeMillis();
 
         float radius = 20;
 
@@ -85,7 +82,6 @@ public class RSBlurFragment extends Fragment {
                 getResources(), overlay));
 
         rs.destroy();
-        statusText.setText(System.currentTimeMillis() - startMs + "ms");
     }
 
     @Override
