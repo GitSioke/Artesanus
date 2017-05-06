@@ -84,17 +84,5 @@ public class RSBlurFragment extends Fragment {
         rs.destroy();
     }
 
-    @Override
-    public String toString() {
-        return "RenderScript";
-    }
-
-    private TextView addStatusText(ViewGroup container) {
-        TextView result = new TextView(getActivity());
-        result.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        result.setTextColor(0xFFFFFFFF);
-        container.addView(result);
-        return result;
-    }
 }
 
