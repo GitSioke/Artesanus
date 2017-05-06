@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
     android:id="@+id/ly_coordinator"
-    tools:context="com.example.nando.arti.MainMenuActivity">
+    tools:context="nandroid.artesanus.gui.MenuActivity">
 
     <LinearLayout
         android:id="@+id/MainLayout"

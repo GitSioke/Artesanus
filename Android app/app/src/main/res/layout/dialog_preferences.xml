@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+android:id="@+id/ly_coordinator"
+android:layout_width="match_parent"
+android:layout_height="match_parent"
+android:columnCount="2"
+android:columnWidth="320dp"
+android:orientation="vertical"
+android:rowCount="2"
+android:stretchMode="columnWidth">
+
+
+
+        <LinearLayout
+            android:paddingLeft="10dp"
+            android:paddingTop="15dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:focusable="true"
+            android:focusableInTouchMode="true">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/preferences_title"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                android:textColor="@color/darkYellow"
+                android:paddingBottom="15dp"
+                android:shadowColor="@color/black"
+                android:shadowDx="3"
+                android:shadowDy="2"
+                android:shadowRadius="1.8"/>
+
+            <TextView
+                android:id="@+id/preferences_txt_address"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:textColor="@color/black"
+                android:textStyle="bold"
+                android:text="@string/preferences_ip_address"></TextView>
+            <EditText
+                android:paddingTop="5dp"
+                android:id="@+id/preferences_ed_address"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:inputType="textUri"
+                android:background="@android:color/transparent"></EditText>
+
+            <TextView
+                android:paddingTop="15dp"
+                android:textStyle="bold"
+                android:id="@+id/preferences_txt_language"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:textColor="@color/black"
+                android:text="@string/preferences_language"></TextView>
+            <EditText
+                android:paddingTop="5dp"
+                android:id="@+id/preferences_ed_language"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:background="@android:color/transparent"
+                ></EditText>
+        </LinearLayout>
+
+
+</FrameLayout>
+
+

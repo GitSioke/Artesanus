@@ -1,8 +1,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/scan"
+    <item android:id="@+id/menu_scan_option"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/main_menu_connect" />
-    <item android:id="@+id/discoverable"
+    <item android:id="@+id/menu_preferences_option"
         android:icon="@drawable/ic_add_process"
         android:title="@string/main_menu_preferences" />
 </menu>
