@@ -9,6 +9,8 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -24,12 +26,12 @@ import java.util.List;
 
 import nandroid.artesanus.adapter.TabFragmentPagerAdapter;
 import nandroid.artesanus.common.Brew;
+import nandroid.artesanus.common.BrewProcess;
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Event;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.http.PostController;
-import nandroid.artesanus.common.Process;
 import nandroid.artesanus.fragments.AddCerealFragment;
 import nandroid.artesanus.fragments.AddHeatFragment;
 import nandroid.artesanus.fragments.AddHopFragment;
@@ -77,66 +79,16 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                     @Override
                     public void onClick(View v)
                     {
-                        // Send data to server and database
-                        Brew brew = new Brew();
-                        Date date = Calendar.getInstance().getTime();
-                        brew.setStartDate(date);
-
-                        TextView txtNameView = (TextView) findViewById(R.id.new_crafting_name_edit);
-                        CharSequence charName = txtNameView.getText();
-                        if (charName != null)
-                            brew.setName(charName.toString());
-
-                        TextView txtLitresView = (TextView) findViewById(R.id.new_crafting_litres_selected);
-                        CharSequence charLitres = txtLitresView.getText();
-                        if (charLitres != null) {
-                            int litres = 0;
-                            try
-                            {
-                                litres = (Integer.parseInt(charLitres.toString()));
-                            } catch (NumberFormatException ex) {
-                                litres = 0;
-                            }
-                            finally {
-                                brew.setLitres(litres);
-                            }
-                        }
-                        TextView txtTypeView = (TextView) findViewById(R.id.new_crafting_kind_selected);
-                        CharSequence charType = txtTypeView.getText();
-                        if (charType != null)
-                        {
-                            brew.setBeerType(charType.toString());
-                        }
-
-                        brew.setCereals(cerealsAdded);
-                        brew.setHeats(heatsAdded);
-                        brew.setHops(hopsAdded);
-
-                        Event event = new Event();
-                        event.setMessage("START");
-                        List<Event> eventList = new ArrayList<Event>();
-                        eventList.add(event);
-
-                        Process proc = new Process();
-                        proc.setType("MASHING");
-                        proc.setEvents(eventList);
-                        List<Process> processList = new ArrayList<Process>();
-                        processList.add(proc);
-
-                        brew.setProcesses(processList);
-
-                        PostController controller = new PostController();
-
-
-
-                        //PostController controller = new PostController();
+                        Brew brew = PopulateBrew();
+                        
+                        // Parse brew content to json
                         GsonBuilder builder = new GsonBuilder();
                         builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
                         Gson gson = builder.create();
                         String json = (gson.toJson(brew));
-                        //String json = gson.toJson(1);
-                        //controller.execute("/retrieve/events/1", json);
 
+                        // Send post request
+                        PostController controller = new PostController();
                         controller.execute("/insert_brew", json);
 
                         // Start Monitoring activity
@@ -146,34 +98,6 @@ public class NewBeerCraftingActivity extends AppCompatActivity
                 }
         );
     }
-
-    /*public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(D) Log.d(TAG, "onActivityResult " + resultCode);
-        switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE:
-                // When DeviceListActivity returns with a device to connect
-                if (resultCode == Activity.RESULT_OK)
-                {
-                    // Get the device MAC address
-                    mAddress = data.getExtras()
-                            .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-                }
-                break;
-            case REQUEST_ENABLE_BT:
-                // When the request to enable Bluetooth returns
-                if (resultCode == Activity.RESULT_OK)
-                {
-
-                }
-                else
-                {
-                    // User did not enable Bluetooth or an error occured
-                    Log.d(TAG, "BT not enabled");
-                    Toast.makeText(this, R.string.main_bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-        }
-    }*/
 
     @Override
     public void onStart() {
@@ -203,6 +127,14 @@ public class NewBeerCraftingActivity extends AppCompatActivity
         if(D) Log.e(TAG, "--- ON DESTROY ---");
     }
 
+    // Overrided method to handle creation of Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu_option, menu);
+        return true;
+    }
 
     @Override
     public void onCerealAdded(ArrayList<Cereal> cereals)
@@ -220,5 +152,72 @@ public class NewBeerCraftingActivity extends AppCompatActivity
     public void onHopAdded(ArrayList<Hop> hops)
     {
         hopsAdded.addAll(hops);
+    }
+
+
+    private Brew PopulateBrew()
+    {
+        // Send data to server and database
+        Brew brew = new Brew();
+        Date date = Calendar.getInstance().getTime();
+        brew.setStartDate(date);
+
+        TextView txtNameView = (TextView) findViewById(R.id.new_crafting_name_edit);
+        CharSequence charName = txtNameView.getText();
+        if (charName != null)
+            brew.setName(charName.toString());
+
+        TextView txtLitresView = (TextView) findViewById(R.id.new_crafting_litres_selected);
+        CharSequence charLitres = txtLitresView.getText();
+        if (charLitres != null) {
+            int litres = 0;
+            try
+            {
+                litres = (Integer.parseInt(charLitres.toString()));
+            } catch (NumberFormatException ex) {
+                litres = 0;
+            }
+            finally {
+                brew.setLitres(litres);
+            }
+        }
+        TextView txtTypeView = (TextView) findViewById(R.id.new_crafting_kind_selected);
+        CharSequence charType = txtTypeView.getText();
+        if (charType != null)
+        {
+            brew.setBeerType(charType.toString());
+        }
+
+        brew.setCereals(cerealsAdded);
+        brew.setHeats(heatsAdded);
+        brew.setHops(hopsAdded);
+
+        // Create a new start event for mashing process
+        Event startEvent = new Event.Builder()
+                .source("mashing")
+                .type("command")
+                .message("start")
+                .build();
+        List<Event> eventList = new ArrayList<Event>();
+        eventList.add(startEvent);
+
+        BrewProcess mashingProc = new BrewProcess.Builder()
+                .type("mashing")
+                .events(eventList)
+                .build();
+        BrewProcess fermentingProc = new BrewProcess.Builder()
+                .type("fermentation")
+                .build();
+        BrewProcess boilingProc = new BrewProcess.Builder()
+                .type("boiling")
+                .build();
+
+        List<BrewProcess> brewProcessList = new ArrayList<BrewProcess>();
+        brewProcessList.add(mashingProc);
+        brewProcessList.add(boilingProc);
+        brewProcessList.add(fermentingProc);
+        brew.setProcesses(brewProcessList);
+
+        return brew;
     }
 }

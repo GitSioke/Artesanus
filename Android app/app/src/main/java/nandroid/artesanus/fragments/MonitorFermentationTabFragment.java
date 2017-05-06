@@ -57,31 +57,30 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
                 GsonBuilder builder = new GsonBuilder();
                 builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
                 Gson gson = builder.create();
-                Event event = new Event();
 
-                //event.setId_process();
                 Calendar cal = Calendar.getInstance();
                 Date date = cal.getTime();
-                event.setTime(date);
-                event.setSource("fermentation");
 
-                // TODO modificar para que el id_process sea el correcto
-                event.setId_process(1);
-                
-                event.setValue(Double.parseDouble(densityEditText.getText().toString()));
-                event.setData("density");
-                event.setType("data");
+                Event event = new Event.Builder()
+                        .time(date)
+                        .source("fermentation")
+                        .data("density")
+                        .value(Double.parseDouble(densityEditText.getText().toString()))
+                        .type("data")
+                        // TODO modificar para que el id_process sea el correcto
+                        .id_process(1)
+                        .build();
+
 
                 String json = gson.toJson(event);
                 PostController controller = new PostController();
                 controller.execute("/insert/last_density/fermentation/", json);
-                //new PutController(MonitorFermentationTabFragment.this).execute("/insert/last_density/fermentation", json);
 
                 // Show to user the operation has been performed
-                StringBuilder strBuild = new StringBuilder();
-                strBuild.append(getResources().getString(R.string.density_added));
-                strBuild.append(event.getValue());
-                strBuild.append(getResources().getString(R.string.density_measure));
+                StringBuilder strBuild = new StringBuilder()
+                        .append(getResources().getString(R.string.density_added))
+                        .append(event.getValue())
+                        .append(getResources().getString(R.string.density_measure));
 
                 Snackbar.make(v,
                         strBuild.toString(),

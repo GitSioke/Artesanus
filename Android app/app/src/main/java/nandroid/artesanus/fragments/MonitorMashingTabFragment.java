@@ -24,10 +24,10 @@ import java.util.Calendar;
 import java.util.List;
 
 import nandroid.artesanus.adapter.LogAdapter;
+import nandroid.artesanus.common.BrewProcess;
 import nandroid.artesanus.common.Event;
 import nandroid.artesanus.http.GetController;
 import nandroid.artesanus.http.IAsyncHttpResponse;
-import nandroid.artesanus.common.Process;
 import nandroid.artesanus.gui.R;
 import nandroid.artesanus.messages.MessageInfo;
 import nandroid.artesanus.messages.MessageInfoMasher;
@@ -115,8 +115,8 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
         builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
         Gson gson = builder.create();
         try {
-            Process mashingProcess = gson.fromJson(output, Process.class);
-            List<Event> events = mashingProcess.getEvents();
+            BrewProcess mashingBrewProcess = gson.fromJson(output, BrewProcess.class);
+            List<Event> events = mashingBrewProcess.getEvents();
 
             txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue())+"º");
             LineGraphSeries series = new LineGraphSeries<DataPoint>();
