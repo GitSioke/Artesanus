@@ -1,4 +1,4 @@
-package nandroid.artesanus.common;
+package nandroid.artesanus.factories;
 
 import android.support.v4.app.Fragment;
 

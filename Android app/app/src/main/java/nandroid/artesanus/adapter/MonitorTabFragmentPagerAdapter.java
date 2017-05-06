@@ -5,8 +5,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import nandroid.artesanus.common.FragmentFactory;
-import nandroid.artesanus.common.MonitorFragmentFactory;
+import nandroid.artesanus.factories.MonitorFragmentFactory;
 
 
 public class MonitorTabFragmentPagerAdapter extends FragmentPagerAdapter{
