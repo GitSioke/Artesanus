@@ -1,10 +1,13 @@
 package nandroid.artesanus.gui;
 
 import android.content.Intent;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 
@@ -34,11 +37,24 @@ public class MenuActivity extends AppCompatActivity {
 
     }
 
+    // Overrided method to handle creation of Menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu_option, menu);
+        return true;
+    }
+
     @Override
     public void onStart()
     {
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
+
+        // Start beer sound effect
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.beer_sound_effect);
+        mediaPlayer.start();
     }
     @Override
     public synchronized void onResume()

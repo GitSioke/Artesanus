@@ -3,6 +3,6 @@
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/main_menu_connect" />
     <item android:id="@+id/discoverable"
-        android:icon="@android:drawable/ic_menu_mylocation"
-        android:title="@string/main_menu_discoverable" />
+        android:icon="@drawable/ic_add_process"
+        android:title="@string/main_menu_preferences" />
 </menu>
