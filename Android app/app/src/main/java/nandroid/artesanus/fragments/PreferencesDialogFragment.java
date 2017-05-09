@@ -11,8 +11,16 @@ import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.ListView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import nandroid.artesanus.common.LanguageHelper;
 import nandroid.artesanus.gui.MenuActivity;
 import nandroid.artesanus.gui.R;
 
@@ -26,7 +34,7 @@ public class PreferencesDialogFragment extends DialogFragment
      * Each method passes the DialogFragment in case the host needs to query it. */
     public interface DialogResponseListener
     {
-        void onDialogPositiveClick(DialogFragment dialog);
+        void onDialogPositiveClick(DialogFragment dialog, String langCode);
         void onDialogNegativeClick(DialogFragment dialog);
     }
 
@@ -42,7 +50,8 @@ public class PreferencesDialogFragment extends DialogFragment
         {
             // Instantiate the NoticeDialogListener so we can send events to the host
             mListener = (DialogResponseListener) activity;
-        } catch (ClassCastException e)
+        }
+        catch (ClassCastException e)
         {
             // The activity doesn't implement the interface, throw exception
             throw new ClassCastException(activity.toString()
@@ -61,13 +70,21 @@ public class PreferencesDialogFragment extends DialogFragment
         final SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(getContext());
 
         // Get language from shared preferences and show it
-        final EditText edLanguage = (EditText)view.findViewById(R.id.preferences_ed_language);
-        String language = preferences.getString("language", "Spanish");
-        edLanguage.setText(language);
+        String languageCode = preferences.getString("language", "Spanish");
+        int positionSelected = LanguageHelper.getLanguagePosition(languageCode);
+
+        // Generate list view with languages
+        List<String> stringArray = Arrays.asList(getResources().getStringArray(R.array.string_array_languages));
+        ArrayAdapter<String> itemsAdapter =
+                new ArrayAdapter<String>(getContext(), android.R.layout.simple_list_item_1, stringArray);
+        final ListView listView = (ListView)view.findViewById(R.id.lv_languages);
+        listView.setItemChecked(positionSelected, true);
+        listView.setAdapter(itemsAdapter);
+        listView.setSelected(true);
 
         // Get ip address from shared preferences and show it
         final EditText edIPAddress = (EditText)view.findViewById(R.id.preferences_ed_address);
-        String ip = preferences.getString("ip_address", "0.0.0.0");
+        String ip = preferences.getString("ip_address", "192.168.1.40");
         edIPAddress.setText(ip);
 
         // Inflate and set the layout for the dialog
@@ -77,23 +94,23 @@ public class PreferencesDialogFragment extends DialogFragment
                 .setPositiveButton(R.string.save_button, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        // Edit SharedPreferences with new values
                         SharedPreferences.Editor editor = preferences.edit();
-                        String lang = edLanguage.getText().toString();
+                        String langCode = LanguageHelper.getLanguageCode(listView.getCheckedItemPosition());
                         String ip = edIPAddress.getText().toString();
-                        editor.putString("language",lang);
+                        editor.putString("language",langCode);
                         editor.putString("ip_address", ip);
-
                         SharedPreferencesCompat.EditorCompat.getInstance().apply(editor);
-                        mListener.onDialogPositiveClick(PreferencesDialogFragment.this);
+
+                        // Pass info back to activity
+                        mListener.onDialogPositiveClick(PreferencesDialogFragment.this, langCode);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         mListener.onDialogNegativeClick(PreferencesDialogFragment.this);
                     }
-                })
-
-        ;
+                });
         return builder.create();
     }
 

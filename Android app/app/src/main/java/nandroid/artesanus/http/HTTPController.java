@@ -21,4 +21,10 @@ public class HTTPController extends AsyncTask<String, Long, String>
     {
         return "";
     }
+
+    public void setIP(String ip)
+    {
+        _url = "http://"+ip+":5000";
+    }
+
 }

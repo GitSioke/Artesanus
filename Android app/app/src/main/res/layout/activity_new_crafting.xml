@@ -25,11 +25,14 @@ android:stretchMode="columnWidth">
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:focusable="true"
+        android:focusableInTouchMode="true">
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingTop="15dp">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

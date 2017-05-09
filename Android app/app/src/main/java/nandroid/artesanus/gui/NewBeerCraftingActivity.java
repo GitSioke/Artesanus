@@ -3,6 +3,7 @@ package nandroid.artesanus.gui;
 import android.content.Intent;
 import android.os.Bundle;
 
+import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
@@ -89,6 +90,8 @@ public class NewBeerCraftingActivity extends AppCompatActivity
 
                         // Send post request
                         PostController controller = new PostController();
+                        controller.setIP(PreferenceManager.
+                                getDefaultSharedPreferences(v.getContext()).getString("ip_address", "192.168.1.40"));
                         controller.execute("/insert_brew", json);
 
                         // Start Monitoring activity

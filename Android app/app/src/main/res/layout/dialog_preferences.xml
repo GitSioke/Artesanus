@@ -56,13 +56,14 @@ android:stretchMode="columnWidth">
                 android:layout_width="match_parent"
                 android:textColor="@color/black"
                 android:text="@string/preferences_language"></TextView>
-            <EditText
-                android:paddingTop="5dp"
-                android:id="@+id/preferences_ed_language"
-                android:layout_height="wrap_content"
+            <ListView
                 android:layout_width="match_parent"
-                android:background="@android:color/transparent"
-                ></EditText>
+                android:layout_height="wrap_content"
+                android:choiceMode="singleChoice"
+                android:listSelector="@color/darkYellow"
+                android:id="@+id/lv_languages"
+                android:paddingRight="20dp">
+            </ListView>
         </LinearLayout>
 
 

@@ -2,14 +2,15 @@ package nandroid.artesanus.gui;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.content.SharedPreferencesCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,6 +18,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 
+import java.util.Locale;
+
+import nandroid.artesanus.common.LanguageHelper;
+import nandroid.artesanus.common.SharedPreferencesHelper;
 import nandroid.artesanus.fragments.PreferencesDialogFragment;
 
 public class MenuActivity extends AppCompatActivity
@@ -28,6 +33,11 @@ public class MenuActivity extends AppCompatActivity
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+
+        // Check language settings and set app language to this
+        // TODO move to Splash when it exists
+        String langCode = SharedPreferencesHelper.getLanguagePreference(this);
+        LanguageHelper.changeLanguage(this, langCode);
 
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
@@ -45,7 +55,7 @@ public class MenuActivity extends AppCompatActivity
 
     }
 
-    // Overrided method to handle creation of Menu
+    // Override method to handle creation of Menu
     @Override
     public boolean onCreateOptionsMenu(Menu menu)
     {
@@ -107,7 +117,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDialogPositiveClick(DialogFragment dialog)
+    public void onDialogPositiveClick(DialogFragment dialog, String langCode)
     {
         String strPreferencesSaved = getResources().getString(R.string.preferences_saved);
         // Preferences option were saved, show it to user
@@ -115,6 +125,13 @@ public class MenuActivity extends AppCompatActivity
                 strPreferencesSaved,
                 Snackbar.LENGTH_LONG)
                 .show();
+
+        // Change locale settings in the app.
+        if (LanguageHelper.changeLanguage(this, langCode))
+        {
+            // There was a change, re-start activity.
+            this.recreate();
+        }
     }
 
     @Override
@@ -128,7 +145,8 @@ public class MenuActivity extends AppCompatActivity
                 .show();
     }
 
-    private void showPreferencesDialog() {
+    private void showPreferencesDialog()
+    {
         // Create an instance of the dialog fragment and show it
         DialogFragment dialog = new PreferencesDialogFragment();
         dialog.show(getSupportFragmentManager(), "PreferencesDialogFragment");
