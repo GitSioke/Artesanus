@@ -23,6 +23,7 @@ import java.util.Locale;
 import nandroid.artesanus.common.LanguageHelper;
 import nandroid.artesanus.common.SharedPreferencesHelper;
 import nandroid.artesanus.fragments.PreferencesDialogFragment;
+import nandroid.artesanus.http.HTTPController;
 
 public class MenuActivity extends AppCompatActivity
         implements PreferencesDialogFragment.DialogResponseListener
@@ -34,10 +35,13 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        // Check language settings and set app language to this
         // TODO move to Splash when it exists
+        // Check language settings and set app language to this.
         String langCode = SharedPreferencesHelper.getLanguagePreference(this);
         LanguageHelper.changeLanguage(this, langCode);
+        // Check ip_address in settings and set to http controller.
+        String ip_address = SharedPreferencesHelper.getIPAddressPreference(this);
+        HTTPController.setIP(ip_address);
 
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");

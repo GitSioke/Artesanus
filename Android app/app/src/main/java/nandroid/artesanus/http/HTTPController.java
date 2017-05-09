@@ -10,7 +10,7 @@ import okhttp3.OkHttpClient;
 
 public class HTTPController extends AsyncTask<String, Long, String>
 {
-    protected String _url = "http://192.168.1.40:5000";
+    protected static String _url = "http://192.168.1.40:5000";
 
     protected final MediaType JSON
             = MediaType.parse("application/json; charset=utf-8");
@@ -22,7 +22,7 @@ public class HTTPController extends AsyncTask<String, Long, String>
         return "";
     }
 
-    public void setIP(String ip)
+    public static void setIP(String ip)
     {
         _url = "http://"+ip+":5000";
     }
