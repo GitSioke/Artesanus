@@ -7,7 +7,9 @@ android:columnCount="2"
 android:columnWidth="320dp"
 android:orientation="vertical"
 android:rowCount="2"
-android:stretchMode="columnWidth">
+android:stretchMode="columnWidth"
+android:descendantFocusability="beforeDescendants"
+android:focusableInTouchMode="true">
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
