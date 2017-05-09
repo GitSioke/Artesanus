@@ -51,4 +51,10 @@ public class SharedPreferencesHelper
         SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
         return preferences.getString(languagePreference, "");
     }
+
+    public static String getIPAddressPreference(Context ctx)
+    {
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(ctx);
+        return preferences.getString(ipAddressPreference, "");
+    }
 }
