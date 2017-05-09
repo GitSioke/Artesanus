@@ -5,7 +5,7 @@
     <string name="connecting">Connecting...</string>
     <string name="paired_devices_title">Paired devices</string>
     <string name="new_devices_title">Found devices</string>
-    <string name="title_activity_measurements">MeasurementsActivity</string>
+    <string name="title_activity_measurements">Measurements</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
     <string name="title_activity_newprocess">New Process</string>
