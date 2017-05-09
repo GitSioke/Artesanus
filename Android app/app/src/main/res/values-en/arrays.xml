@@ -4,4 +4,13 @@
         <item>Spanish</item>
         <item>English</item>
     </string-array>
+    <string-array name="string_array_processes">
+        <item>Mashing</item>
+        <item>Boiling</item>
+        <item>Fermentation</item>
+    </string-array>
+    <string-array name="string_array_new_crafting_tabs">
+        <item>Kind</item>
+        <item>Boiling</item>
+    </string-array>
 </resources>

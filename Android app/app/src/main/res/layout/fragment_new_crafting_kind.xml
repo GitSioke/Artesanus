@@ -5,14 +5,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:paddingTop="15dp">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:showDividers="end"
-            android:divider="@drawable/divider_drawable">
-
+            android:orientation="vertical">
+            <!--android:showDividers="end"
+            android:divider="@drawable/divider_drawable"-->
 
             <TextView
                 android:id="@+id/new_crafting_name"
@@ -32,8 +34,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/divider_drawable"
-            android:showDividers="end">
+            android:paddingTop="10dp">
 
             <TextView
                 android:id="@+id/new_crafting_kind"
@@ -50,8 +51,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/divider_drawable"
-            android:showDividers="end">
+            android:paddingTop="10dp">
 
             <TextView
                 android:id="@+id/new_crafting_litres"
@@ -69,8 +69,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/divider_drawable"
-            android:showDividers="end">
+            android:paddingTop="10dp">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
