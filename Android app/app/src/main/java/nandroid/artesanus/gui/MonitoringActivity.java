@@ -29,13 +29,7 @@ public class MonitoringActivity extends AppCompatActivity {
         // Set up the window layout
         setContentView(R.layout.activity_monitoring);
 
-        // Start Monitoring activity
-        /*Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
-        startActivity(intent);*/
-
-        // TODO Restaurar estas lineas y eliminar de BluetoohtActivity
-        //DialogFragment newFragment = new UnpairedDevicesFragment();
-        //newFragment.show(getSupportFragmentManager(), "MonitoringActivity");
+        getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_measurements));
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);

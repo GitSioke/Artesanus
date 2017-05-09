@@ -64,6 +64,8 @@ public class NewBeerCraftingActivity extends AppCompatActivity
         // Set up the window layout
         setContentView(R.layout.activity_new_crafting);
 
+        getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_newcrafting));
+
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
         viewPager.setAdapter(new TabFragmentPagerAdapter(
