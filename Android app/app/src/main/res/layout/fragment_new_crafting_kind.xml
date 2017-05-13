@@ -12,7 +12,10 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:background="@color/darkYellow"
+            android:alpha="0.9"
+            android:layout_marginBottom="10dp">
             <!--android:showDividers="end"
             android:divider="@drawable/divider_drawable"-->
 
@@ -20,56 +23,85 @@
                 android:id="@+id/new_crafting_name"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="@string/new_crafting_name"></TextView>
+                android:text="@string/new_crafting_name"
+                android:textColor="@color/white"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="1.8"
+                android:shadowColor="@color/black"
+                android:padding="5dp"></TextView>
             <EditText
                 android:id="@+id/new_crafting_name_edit"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
                 android:autoText="false"
                 android:clickable="false"
-                android:inputType="text"/>
+                android:inputType="text"
+                android:padding="10dp"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="10dp">
+            android:background="@color/darkYellow"
+            android:alpha="0.9"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:id="@+id/new_crafting_kind"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="@string/new_crafting_kind"/>
+                android:text="@string/new_crafting_kind"
+                android:textColor="@color/white"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="1.8"
+                android:shadowColor="@color/black"
+                android:padding="5dp"
+                />
             <TextView
                 android:id="@+id/new_crafting_kind_selected"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"/>
+                android:layout_width="match_parent"
+                android:textColor="@color/black"
+                android:padding="10dp"/>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="10dp">
+            android:background="@color/darkYellow"
+            android:alpha="0.9"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:id="@+id/new_crafting_litres"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:text="@string/new_crafting_litre"></TextView>
+                android:text="@string/new_crafting_litre"
+                android:textColor="@color/white"
+                android:shadowDx="3"
+                android:shadowDy="3"
+                android:shadowRadius="1.8"
+                android:shadowColor="@color/black"
+                android:padding="5dp"></TextView>
             <EditText
                 android:id="@+id/new_crafting_litres_selected"
                 android:layout_height="wrap_content"
                 android:layout_width="match_parent"
-                android:inputType="number"></EditText>
+                android:inputType="number"
+                android:padding="10dp"></EditText>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:paddingTop="10dp">
+            android:background="@color/darkYellow"
+            android:alpha="0.9"
+            android:layout_marginBottom="10dp">
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
@@ -79,20 +111,28 @@
                     android:layout_width="wrap_content"
                     android:text="@string/new_crafting_cereals"
                     android:layout_alignParentTop="true"
+                    android:textColor="@color/white"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1.8"
+                    android:shadowColor="@color/black"
+                    android:padding="5dp"
                     ></TextView>
                 <ImageView
                     android:id="@+id/new_crafting_add_cereal"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_add_black_18dp"
-                    android:layout_toEndOf="@+id/new_crafting_cereals"/>
+                    android:layout_toEndOf="@+id/new_crafting_cereals"
+                    android:padding="5dp"/>
 
             </RelativeLayout>
 
             <ListView
                 android:id="@+id/new_crafting_cereals_added_lv"
                 android:layout_height="50dp"
-                android:layout_width="match_parent"></ListView>
+                android:layout_width="match_parent"
+                android:padding="10dp"></ListView>
 
         </LinearLayout>
 
@@ -100,8 +140,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:divider="@drawable/divider_drawable"
-            android:showDividers="end">
+            android:showDividers="end"
+            android:background="@color/darkYellow"
+            android:alpha="0.90">
             <RelativeLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
@@ -109,18 +150,26 @@
                     android:id="@+id/new_crafting_hops"
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
-                    android:text="@string/new_crafting_hops"></TextView>
+                    android:text="@string/new_crafting_hops"
+                    android:textColor="@color/white"
+                    android:shadowDx="3"
+                    android:shadowDy="3"
+                    android:shadowRadius="1.8"
+                    android:shadowColor="@color/black"
+                    android:padding="5dp"></TextView>
                 <ImageView
                     android:id="@+id/new_crafting_add_hop"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@drawable/ic_add_black_18dp"
-                    android:layout_toEndOf="@+id/new_crafting_hops"/>
+                    android:layout_toEndOf="@+id/new_crafting_hops"
+                    android:padding="5dp"/>
             </RelativeLayout>
             <ListView
                 android:id="@+id/new_crafting_hop_added_lv"
                 android:layout_height="wrap_content"
-                android:layout_width="match_parent"></ListView>
+                android:layout_width="match_parent"
+                android:padding="10dp"></ListView>
         </LinearLayout>
 
     </LinearLayout>
