@@ -35,14 +35,6 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
-        // TODO move to Splash when it exists
-        // Check language settings and set app language to this.
-        String langCode = SharedPreferencesHelper.getLanguagePreference(this);
-        LanguageHelper.changeLanguage(this, langCode);
-        // Check ip_address in settings and set to http controller.
-        String ip_address = SharedPreferencesHelper.getIPAddressPreference(this);
-        HTTPController.setIP(ip_address);
-
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
         // Set up the window layout
@@ -88,10 +80,6 @@ public class MenuActivity extends AppCompatActivity
     {
         super.onStart();
         if(D) Log.e(TAG, "++ ON START ++");
-
-        // Start beer sound effect
-        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.beer_sound_effect);
-        mediaPlayer.start();
     }
     @Override
     public synchronized void onResume()

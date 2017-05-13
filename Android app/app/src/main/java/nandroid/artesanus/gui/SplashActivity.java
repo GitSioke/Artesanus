@@ -1,13 +1,18 @@
 package nandroid.artesanus.gui;
 
+import android.content.Intent;
+import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.widget.VideoView;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.gson.Gson;
@@ -22,6 +27,9 @@ import java.util.Calendar;
 import java.util.List;
 
 import nandroid.artesanus.common.Brew;
+import nandroid.artesanus.common.LanguageHelper;
+import nandroid.artesanus.common.SharedPreferencesHelper;
+import nandroid.artesanus.http.HTTPController;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -32,101 +40,59 @@ import static android.R.attr.path;
 
 public class SplashActivity extends AppCompatActivity {
 
-    private String _url = "http://192.168.1.38:5000";
     private String TAG = "SplashActivity";
-    public static final MediaType JSON
-            = MediaType.parse("application/json; charset=utf-8");
+    private static final boolean D = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if(D) Log.e(TAG, "+++ ON CREATE +++");
+
         setContentView(R.layout.activity_splash);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*LoadFilmTask task = new LoadFilmTask();
-                task.execute(_url+"/create");*/
+        // configure and start pouring sound effect and video
+        StartSplashSoundNVideo();
 
-                updateBrew();
+        // Get shared preferences and configure app with them
+        ConfigureSettings();
+    }
+
+    private void StartSplashSoundNVideo()
+    {
+        VideoView videoView = (VideoView)findViewById(R.id.splah_vv);
+        String pathToVideo = "android.resource://" + getPackageName() + "/" + R.raw.splash_pouring_beer;
+        videoView.setVideoURI(Uri.parse(pathToVideo));
+        videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            public void onCompletion(MediaPlayer mp) {
+                //Start Menu activity when video ends.
+                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
+                startActivity(intent);
             }
         });
+
+        // Display video at full size
+        /*DisplayMetrics metrics = new DisplayMetrics(); getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) videoView.getLayoutParams();
+        params.width =  metrics.widthPixels;
+        params.height = metrics.heightPixels;
+        params.leftMargin = 0;
+        videoView.setLayoutParams(params);*/
+
+        videoView.start();
+
+        // Start beer sound effect
+        MediaPlayer mediaPlayer = MediaPlayer.create(this, R.raw.beer_sound_effect);
+        mediaPlayer.start();
     }
 
-    private void updateBrew()
+    private void ConfigureSettings()
     {
-        Brew brew = new Brew();
-        brew.setStartDate(Calendar.getInstance().getTime());
-        brew.setEndDate(Calendar.getInstance().getTime());
+        // Check language settings and set app language to this.
+        String langCode = SharedPreferencesHelper.getLanguagePreference(this);
+        LanguageHelper.changeLanguage(this, langCode);
 
-        PostExample example = new PostExample();
-        GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        String json = (gson.toJson(brew));
-
-        example.execute(_url+"/update_brew/1", json);
-
-
+        // Check ip_address in settings and set to http controller.
+        String ip_address = SharedPreferencesHelper.getIPAddressPreference(this);
+        HTTPController.setIP(ip_address);
     }
-
-    private class PostExample extends AsyncTask<String, Long, String> {
-        public final MediaType JSON
-                = MediaType.parse("application/json; charset=utf-8");
-
-        OkHttpClient client = new OkHttpClient();
-
-        protected String doInBackground(String... params) {
-
-            RequestBody body = RequestBody.create(JSON, params[1]);
-            Request request = new Request.Builder()
-                    .url(params[0])
-                    .post(body)
-                    .build();
-            try (Response response = client.newCall(request).execute())
-            {
-                String ret = response.body().string();
-                return ret;
-            }
-            catch (HttpRequest.HttpRequestException exception)
-            {
-                return null;
-            }
-            catch (IOException ex)
-            {
-                return null;
-            }
-
-        }
-    }
-
-
-    private class LoadFilmTask extends AsyncTask<String, Long, String> {
-        protected String doInBackground(String... urls) {
-            try {
-                HttpRequest request = HttpRequest.get(urls[0]);
-                if (request.ok()) {
-                    return request.body();
-                }
-
-            } catch (HttpRequest.HttpRequestException exception)
-            {
-                return null;
-            }
-
-            return null;
-        }
-    }
-
-    protected void onPostExecute(String response) {
-        Log.i(TAG, response);
-    }
-
-    public void testing()
-    {
-        Snackbar.make(findViewById(R.id.ly_splash), "TESTING BUTTON", Snackbar.LENGTH_LONG).show();
-    }
-
 }
