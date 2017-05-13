@@ -3,20 +3,21 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dp" >
 
     <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="3dip"
+        android:padding="3dp"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip">
+        android:layout_marginRight="5dp">
 
         <ImageView
             android:id="@+id/list_image"
-            android:layout_width="50dip"
-            android:layout_height="50dip"/>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/dark_yellow_hop"/>
     </LinearLayout>
 
     <LinearLayout
@@ -30,7 +31,9 @@
             android:id="@+id/txtName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="sample"/>
+            android:text="sample"
+            android:textSize="20dp"
+            android:textColor="@color/black"/>
     </LinearLayout>
 
 
@@ -47,16 +50,20 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/thumbnail"
             android:inputType="numberDecimal"
-            android:textColor="#040404"
+            android:textSize="20dp"
+            android:textColor="@color/black"
             android:typeface="sans"
-            android:textSize="15dip"
-            android:textStyle="bold"/>
+            android:textStyle="bold"
+            android:layout_marginLeft="10dp"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/list_row_cereal_kilogram"
-            android:layout_toRightOf="@+id/hop_amount"/>
+            android:layout_toRightOf="@+id/hop_amount"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            android:layout_marginLeft="5dp"/>
     </LinearLayout>
 
 
@@ -66,21 +73,24 @@
         android:orientation="horizontal"
         android:id="@+id/ly_time"
         android:layout_toRightOf="@+id/ly_hop"
-        android:layout_centerInParent="true">
+        android:layout_centerInParent="true"
+        android:layout_marginLeft="15dp">
         <EditText
             android:id="@+id/time"
             android:layout_width="15dp"
             android:layout_height="wrap_content"
-            android:textColor="#343434"
-            android:textSize="15dip"
             android:layout_marginTop="1dip"
             android:inputType="numberDecimal"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:textSize="20dp"
+            android:textColor="@color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/list_row_hop_minutes"/>
+            android:text="@string/list_row_hop_minutes"
+            android:textSize="20dp"
+            android:textColor="@color/black"/>
     </LinearLayout>
 
 </RelativeLayout>

@@ -3,20 +3,21 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dp" >
 
     <!--  ListRow Left sied Thumbnail image -->
     <LinearLayout android:id="@+id/thumbnail"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="3dip"
+        android:padding="3dp"
         android:layout_alignParentLeft="true"
-        android:layout_marginRight="5dip">
+        android:layout_marginRight="5dp">
 
         <ImageView
             android:id="@+id/list_image"
-            android:layout_width="50dip"
-            android:layout_height="50dip"/>
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:src="@drawable/dark_yellow_cereal"/>
     </LinearLayout>
 
     <LinearLayout
@@ -30,6 +31,8 @@
             android:id="@+id/txtName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:textSize="20dp"
+            android:textColor="@color/black"
             android:text="sample"/>
     </LinearLayout>
 
@@ -42,20 +45,24 @@
         android:layout_toRightOf="@+id/ly_cereal_kind"
         android:layout_centerInParent="true">
         <EditText
+            android:layout_marginLeft="10dp"
             android:id="@+id/cereal_amount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/thumbnail"
             android:inputType="numberDecimal"
-            android:textColor="#040404"
             android:typeface="sans"
-            android:textSize="15dip"
+            android:textSize="20dp"
+            android:textColor="@color/black"
             android:textStyle="bold"/>
 
         <TextView
+            android:layout_marginLeft="5dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/list_row_cereal_kilogram"
+            android:textSize="20dp"
+            android:textColor="@color/black"
             android:layout_toRightOf="@+id/cereal_amount"/>
     </LinearLayout>
 
