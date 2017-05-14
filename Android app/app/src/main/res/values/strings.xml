@@ -79,5 +79,8 @@
     <string name="preferences_saved">Las preferencias han sido actualizadas</string>
     <string name="preferences_not_saved">Las preferencias no fueron actualizadas</string>
     <string name="preferences_title">Preferencias</string>
+    <string name="add_button">Añadir</string>
+    <string name="heat_added_with">Se añadió un escalón de temperatura a %1dºC</string>
+    <string name="main_menu_credits">Créditos</string>
 
 </resources>

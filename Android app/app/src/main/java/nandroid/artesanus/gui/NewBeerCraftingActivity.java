@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -40,7 +41,7 @@ import nandroid.artesanus.fragments.AddHopFragment;
 public class NewBeerCraftingActivity extends AppCompatActivity
         implements AddCerealFragment.OnCerealAddedListener,
         AddHopFragment.OnHopAddedListener,
-        AddHeatFragment.OnHeatAddedListener
+        AddHeatFragment.AddHeatListener
 
 {
 
@@ -147,8 +148,9 @@ public class NewBeerCraftingActivity extends AppCompatActivity
         cerealsAdded.addAll(cereals);
     }
 
+    // Deals with positive click on AddHeat Dialog
     @Override
-    public void onHeatAdded(Heat heat)
+    public void onDialogPositiveClick(DialogFragment dialog, Heat heat)
     {
         heatsAdded.add(heat);
     }

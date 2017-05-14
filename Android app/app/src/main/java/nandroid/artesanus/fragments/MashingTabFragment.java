@@ -1,7 +1,9 @@
 package nandroid.artesanus.fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +22,7 @@ import nandroid.artesanus.gui.R;
 /**
  * This class represents a fragment for a mashing tab inside MonitoringActivity
  */
-public class MashingTabFragment extends Fragment implements AddHeatFragment.OnHeatAddedListener{
+public class MashingTabFragment extends Fragment implements AddHeatFragment.AddHeatListener{
 
     private HeatAddedAdapter heatAdapter;
     private ListView addedHeatListView;
@@ -54,11 +56,13 @@ public class MashingTabFragment extends Fragment implements AddHeatFragment.OnHe
     }
 
     @Override
-    public void onHeatAdded(Heat heat)
+    public void onDialogPositiveClick(DialogFragment dialog, Heat heat)
     {
         heatAdapter.add(heat);
         addedHeatListView.setAdapter(heatAdapter);
-        //Snackbar.make(getView(), "Se añadió un escalón a " + ":" + heat.getTemperature(), Snackbar.LENGTH_SHORT).show();
+        Resources resources = getResources();
+        String snackText = resources.getString(R.string.heat_added_with, heat.getTemperature());
+        Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
     }
 }
 

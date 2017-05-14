@@ -1,5 +1,6 @@
 package nandroid.artesanus.gui;
 
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
@@ -67,11 +68,20 @@ public class MenuActivity extends AppCompatActivity
                 // Launch the dialog for preferences
                 showPreferencesDialog();
                 return true;
-            case R.id.menu_scan_option:
+            case R.id.menu_credits_option:
                 // Ensure this device is discoverable by others
+                ShowCreditDialog();
                 return true;
         }
         return false;
+    }
+
+    private void ShowCreditDialog()
+    {
+        // Create an instance of the dialog fragment and show it
+        Dialog dialog = new Dialog(this);
+        dialog.setContentView(R.layout.dialog_add_heat);
+        dialog.show();
     }
 
 
