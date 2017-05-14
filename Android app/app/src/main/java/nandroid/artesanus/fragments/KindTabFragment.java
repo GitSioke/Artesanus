@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import nandroid.artesanus.common.Cereal;
@@ -101,18 +102,14 @@ public class KindTabFragment extends Fragment
     }
 
     public void onKindButtonClick() {
+
         ArrayList<ItemPickerDialogFragment.Item> pickerItems = new ArrayList<>();
-        pickerItems.add(new ItemPickerDialogFragment.Item("C. Avena", "C.Avena"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("C. Cebada", "C. Cebada"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("C. Maiz", "C. Maiz"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("C. Trigo", "C. Trigo"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Chocolate", "Chocolate"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Cristal60", "Cristal60"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Cristal120", "Cristal120"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Munich", "Munich"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Pale Ale", "Pale Ale"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Pilsen", "Pilsen"));
-        pickerItems.add(new ItemPickerDialogFragment.Item("Trigo", "Trigo"));
+        List<String> beerKindNames = Arrays.asList(getResources().getStringArray(R.array.string_array_beer_kinds));
+
+        for (String name : beerKindNames)
+        {
+            pickerItems.add(new ItemPickerDialogFragment.Item(name, name));
+        }
 
         ItemPickerDialogFragment dialog = ItemPickerDialogFragment.newInstance(
                 getContext().getString(R.string.title_item_picker),

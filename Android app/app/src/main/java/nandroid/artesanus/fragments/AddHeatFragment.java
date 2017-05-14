@@ -14,7 +14,7 @@ import nandroid.artesanus.adapter.CerealAdapter;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 13/11/2016.
+ * This dialog fragment will manage the Add Heat one
  */
 public class AddHeatFragment extends DialogFragment
 {

@@ -18,7 +18,7 @@ import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 05/11/2016.
+ * This class represents a fragment for a boiling tab inside MonitoringActivity
  */
 public class MonitorBoilTabFragment extends Fragment
 {

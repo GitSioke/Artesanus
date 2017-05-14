@@ -1,5 +1,6 @@
 package nandroid.artesanus.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
@@ -8,11 +9,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.adapter.CerealAdapter;
@@ -20,7 +24,7 @@ import nandroid.artesanus.adapter.HopAdapter;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 10/11/2016.
+ * This class represents a dialog fragment for add hops
  */
 public class AddHopFragment extends DialogFragment
 {
@@ -38,21 +42,13 @@ public class AddHopFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        hopList= new ArrayList<>();
+        hopList = new ArrayList<Hop>();
+        List<String> hopNames = Arrays.asList(getResources().getStringArray(R.array.string_array_hops));
 
-        hopList.add(new Hop("Apple Pie"));
-        hopList.add(new Hop("Banana Bread"));
-        hopList.add(new Hop("Cupcake"));
-        hopList.add(new Hop("Donut"));
-        hopList.add(new Hop("Eclair"));
-        hopList.add(new Hop("Froyo"));
-        hopList.add(new Hop("Gingerbread"));
-        hopList.add(new Hop("Honeycomb"));
-        hopList.add(new Hop("Ice Cream Sandwich"));
-        hopList.add(new Hop("Jelly Bean"));
-        hopList.add(new Hop("Kitkat"));
-        hopList.add(new Hop("Lollipop"));
-        hopList.add(new Hop("Marshmallow"));
+        for (String name : hopNames)
+        {
+            hopList.add(new Hop(name));
+        }
 
         HopAdapter adapter = new HopAdapter(hopList, getContext());
 
@@ -123,4 +119,5 @@ public class AddHopFragment extends DialogFragment
             listener.onHopAdded(addedHops);
         }
     }
+
 }

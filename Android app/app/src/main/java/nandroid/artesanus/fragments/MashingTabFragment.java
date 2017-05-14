@@ -18,7 +18,7 @@ import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 05/11/2016.
+ * This class represents a fragment for a mashing tab inside MonitoringActivity
  */
 public class MashingTabFragment extends Fragment implements AddHeatFragment.OnHeatAddedListener{
 

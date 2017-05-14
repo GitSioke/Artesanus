@@ -4,14 +4,54 @@
         <item>Español</item>
         <item>Inglés</item>
     </string-array>
+
     <string-array name="string_array_processes">
         <item>Maceracion</item>
         <item>Coccion</item>
         <item>Fermentacion</item>
     </string-array>
+
     <string-array name="string_array_new_crafting_tabs">
         <item>Tipo</item>
         <item>Cocción</item>
+    </string-array>
+
+    <string-array name="string_array_hops">
+        <item>Crystal</item>
+        <item>Hallertau</item>
+        <item>Liberty</item>
+        <item>Nugget</item>
+        <item>Palisade</item>
+        <item>Tillicum</item>
+        <item>Tomahawk</item>
+        <item>Warrior</item>
+        <item>Zeus</item>
+    </string-array>
+
+    <string-array name="string_array_beer_kinds">
+        <item>American Wheat</item>
+        <item>Season</item>
+        <item>Pale Ale</item>
+        <item>Indian P.A.</item>
+        <item>Pilsner</item>
+        <item>Stout</item>
+        <item>Ocktoberfest</item>
+        <item>Brown</item>
+        <item>Bitter</item>
+        <item>Trigo</item>
+    </string-array>
+
+    <string-array name="string_array_cereals">
+        <item>Avena</item>
+        <item>Cebada</item>
+        <item>Maiz</item>
+        <item>Chocolate</item>
+        <item>Cristal60</item>
+        <item>Cristal120</item>
+        <item>Munich</item>
+        <item>Pale Ale</item>
+        <item>Pilsen</item>
+        <item>Trigo</item>
     </string-array>
 
 </resources>

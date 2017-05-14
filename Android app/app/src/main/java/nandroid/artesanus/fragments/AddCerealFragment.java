@@ -13,19 +13,22 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.adapter.CerealAdapter;
+import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.gui.R;
 
 /**
- * Created by Nando on 10/11/2016.
+ * This class represents a dialog fragment to add cereals.
  */
 public class AddCerealFragment extends DialogFragment
 {
 
     public static final String LOGTAG = "AddCerealFragment";
-    ArrayList<Cereal> dataModels;
+    ArrayList<Cereal> cerealList;
     ListView listView;
     private static CerealAdapter adapter;
 
@@ -38,23 +41,16 @@ public class AddCerealFragment extends DialogFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        dataModels= new ArrayList<>();
+        cerealList = new ArrayList<Cereal>();
 
-        dataModels.add(new Cereal("  Pie"));
-        dataModels.add(new Cereal("Banana Bread"));
-        dataModels.add(new Cereal("Cupcake"));
-        dataModels.add(new Cereal("Donut"));
-        dataModels.add(new Cereal("Eclair"));
-        dataModels.add(new Cereal("Froyo"));
-        dataModels.add(new Cereal("Gingerbread"));
-        dataModels.add(new Cereal("Honeycomb"));
-        dataModels.add(new Cereal("Ice Cream Sandwich"));
-        dataModels.add(new Cereal("Jelly Bean"));
-        dataModels.add(new Cereal("Kitkat"));
-        dataModels.add(new Cereal("Lollipop"));
-        dataModels.add(new Cereal("Marshmallow"));
+        List<String> cerealNames = Arrays.asList(getResources().getStringArray(R.array.string_array_cereals));
 
-        final CerealAdapter adapter = new CerealAdapter(dataModels, getContext());
+        for (String name : cerealNames)
+        {
+            cerealList.add(new Cereal(name));
+        }
+
+        final CerealAdapter adapter = new CerealAdapter(cerealList, getContext());
 
         final View view  = inflater.inflate( R.layout.dialog_add_cereals, container, false);
 
@@ -64,7 +60,7 @@ public class AddCerealFragment extends DialogFragment
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
-                Cereal dataModel = dataModels.get(position);
+                Cereal dataModel = cerealList.get(position);
 
                 Snackbar.make(view, dataModel.getName() + "\n" + dataModel.getName() + " API: " + dataModel.getQuantity(), Snackbar.LENGTH_LONG)
                         .setAction("No action", null).show();
@@ -85,7 +81,7 @@ public class AddCerealFragment extends DialogFragment
                     int amountToAdd = Integer.parseInt(ed.getText().toString());
                     if (amountToAdd > 0)
                     {
-                        Cereal cereal = dataModels.get(children);
+                        Cereal cereal = cerealList.get(children);
                         cereal.setQuantity(amountToAdd);
                         addedCereals.add(cereal);
                     }
