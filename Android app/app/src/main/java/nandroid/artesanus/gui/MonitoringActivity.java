@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 
 import nandroid.artesanus.adapter.MonitorTabFragmentPagerAdapter;
+import nandroid.artesanus.services.TimerService;
 
 /**
  * This class controls Monitoring activity
@@ -51,6 +52,14 @@ public class MonitoringActivity extends AppCompatActivity {
                     }
                 }
         );
+
+        Intent intentService = new Intent(this, TimerService.class);
+
+        // Code to define and initialize myData here
+
+        //intentService.putExtra("someData", myData);
+        //intentService.putExtra("resReceiver", theReceiver);
+        startService(intentService);
     }
 
     @Override

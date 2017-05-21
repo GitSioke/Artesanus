@@ -1,153 +1,136 @@
 package nandroid.artesanus.services;
 
-import android.app.Service;
+import android.app.ActivityManager;
+import android.app.IntentService;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.SystemClock;
+import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Chronometer;
 
-import nandroid.artesanus.gui.MonitorActivity;
+
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import nandroid.artesanus.gui.MonitoringActivity;
+import nandroid.artesanus.gui.R;
 
 
 /**
  * This class is intended to handle the countdown process to inform MonitoringActivity and to launch alarm notifications
  */
-public class TimerService extends Service {
+public class TimerService extends IntentService {
 
-    Thread mThread;
+    Context _context;
+    private final int _notificationID = 000000;
 
-    Handler mHandler;
-
-    Context mContext;
-
-    public TimerService()
-    {
-
-    }
-
-    public TimerService(Handler handler) {
-
-        mHandler = handler;
+    /**
+     * Creates an IntentService.  Invoked by your subclass's constructor.
+     */
+    public TimerService() {
+        super("TimerService");
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
+    public IBinder onBind(Intent intent)
+    {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
-    }
-
-    public TimerService(Context context, Handler handler) {
-        mHandler = handler;
-        mContext = context;
 
     }
 
-    //TODO Averigurar como pasar datos a un servicio
     @Override
-    public void onCreate()
+    protected void onHandleIntent(@Nullable Intent intent)
     {
-        //TODO Minutos jhardcoded
-        final int minutes = 5;
-        mThread = new Thread(new Runnable() {
+
+    }
+
+
+    @Override
+    public void onCreate() {
+
+        new Thread(new Runnable(){
+
             @Override
             public void run() {
-                while (true) {
-                    //Countdown with value set by user
-                    new CountDownTimer(minutes * 1000 * 60, 1000) {
+                // TODO Auto-generated method stub
+                while(true)
+                {
+                    try {
+                        Thread.sleep(6000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-                        public void onTick(long millisUntilFinished) {
-                            long remainingSeconds = millisUntilFinished / 1000;
-                            long remainingMinutes = millisUntilFinished / (1000 * 60);
-                            int seconds = (int) remainingSeconds % 60;
-                            int minutes = (int) remainingMinutes % 60;
-                            //TODO Format time
-                            byte[] buffer = new String(minutes + " : " + seconds).getBytes();
-                            mHandler.obtainMessage(MonitorActivity.UPDATE_CLOCK, -1, -1, buffer)
-                                    .sendToTarget();
+                    if (isAppIsInBackground(getApplicationContext()))
+                    {
+                        Intent notificationIntent = new Intent(getApplicationContext(), MonitoringActivity.class);
 
-                        }
+                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
-                        public void onFinish() {
-                            //StartCountUp();
-                        }
-                    }.start();
+                        PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
+                                notificationIntent, 0);
+
+                        NotificationCompat.Builder mBuilder =
+                                new NotificationCompat.Builder(getApplicationContext())
+                                        .setSmallIcon(R.drawable.dark_yellow_beer)
+                                        .setContentTitle(getResources().getString(R.string.add_cereal_kind))
+                                        .setContentText(getResources().getString(R.string.add_cereal_kind))
+                                        .setContentIntent(intent);
+                        Notification notification = mBuilder.build();
+                        notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+                        // Gets an instance of the NotificationManager service//
+
+                        NotificationManager mNotificationManager =
+                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+                        mNotificationManager.notify(_notificationID, notification);
+                    }
                 }
             }
+        }).start();
 
-
-        });
     }
 
-    public void start()
-    {
-        //TODO Minutos jhardcoded
-        final int minutes = 1;
 
-        //TODO Realizar la operacion en un hilo nuevo
-        /*Thread mThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mHandler.getLooper().prepare();
-                while (true) {
-*/
-                    //Countdown with value set by user
-                    new CountDownTimer((long) (0.1 * 1000 * 60), 1000) {
 
-                        public void onTick(long millisUntilFinished) {
-                            long remainingSeconds = millisUntilFinished / 1000;
-                            long remainingMinutes = millisUntilFinished / (1000 * 60);
-                            int seconds = (int) remainingSeconds % 60;
-                            int minutes = (int) remainingMinutes % 60;
-                            //TODO Format time
-                            byte[] buffer = new String(minutes + " : " + seconds).getBytes();
-
-                            mHandler.obtainMessage(MonitorActivity.UPDATE_CLOCK, -1, -1, buffer)
-                                    .sendToTarget();
-
+    private boolean isAppIsInBackground(Context context) {
+        boolean isInBackground = true;
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+            List<ActivityManager.RunningAppProcessInfo> runningProcesses = am.getRunningAppProcesses();
+            for (ActivityManager.RunningAppProcessInfo processInfo : runningProcesses) {
+                if (processInfo.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND) {
+                    for (String activeProcess : processInfo.pkgList) {
+                        if (activeProcess.equals(context.getPackageName())) {
+                            isInBackground = false;
                         }
-
-                        public void onFinish()
-                        {
-                            countUp();
-                        }
-                    }.start();
-       /*         }
-            }
-        });
-
-        mThread.start();*/
-    }
-
-    public void countUp()
-    {
-        //TODO Realizar la operacion en un hilo nuevo
-        /*Thread mThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                mHandler.getLooper().prepare();
-                while (true) {
-*/
-
-                Chronometer stopWatch = new Chronometer(mContext);
-                long startTime = SystemClock.elapsedRealtime();
-
-                stopWatch.setOnChronometerTickListener(new Chronometer.OnChronometerTickListener(){
-                    @Override
-                    public void onChronometerTick(Chronometer chronometer) {
-                        long elapsedSeconds = (SystemClock.elapsedRealtime() - chronometer.getBase())/1000;
-                        long elapsedMinutes = elapsedSeconds/60;
-
-                        String chronoStr = elapsedMinutes + ":" + elapsedSeconds;
-                        mHandler.obtainMessage(MonitorActivity.FINISH_CLOCK, -1, -1, chronoStr.getBytes())
-                                .sendToTarget();
                     }
-                });
+                }
+            }
+        } else {
+            List<ActivityManager.RunningTaskInfo> taskInfo = am.getRunningTasks(1);
+            ComponentName componentInfo = taskInfo.get(0).topActivity;
+            if (componentInfo.getPackageName().equals(context.getPackageName())) {
+                isInBackground = false;
+            }
+        }
 
-                stopWatch.start();
+        return isInBackground;
     }
+
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
