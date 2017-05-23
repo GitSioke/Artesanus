@@ -19,8 +19,10 @@ import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import nandroid.artesanus.adapter.LogAdapter;
@@ -76,16 +78,24 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
         // TODO Get from Intent the brew id and process id
         _idProcess = 1;
 
-
         // Get all events related to process and brew crafting from server
         String json = "";
         new GetController(this).execute("/retrieve/events/"+_idProcess, json);
 
         ArrayList<MessageInfoMasher> messages = new ArrayList<MessageInfoMasher>();
-        messages.add(new MessageInfoMasher(1000,1, Calendar.getInstance().getTime(), "Yi"));
-        messages.add(new MessageInfoMasher(1024,2, Calendar.getInstance().getTime(), "Yo"));
-        messages.add(new MessageInfoMasher(1040,0, Calendar.getInstance().getTime(), "Yu"));
-        messages.add(new MessageInfoMasher(1050,2, Calendar.getInstance().getTime(), "Yob"));
+        Calendar cal = Calendar.getInstance();
+        Date date1 = cal.getTime();
+        long time = date1.getTime();
+        time += 12387;
+        Date date2 = new Date(time);
+        time += 12344;
+        Date date3 = new Date(time);
+        time += 1234462;
+        Date date4 = new Date(time);
+        messages.add(new MessageInfoMasher(1000,1, date1, "Proceso iniciado"));
+        messages.add(new MessageInfoMasher(1024,2, date2, "Alarma de temperatura"));
+        messages.add(new MessageInfoMasher(1040,2, date3, "Alarma de temperatura"));
+        messages.add(new MessageInfoMasher(1050,1, date4, "Proceso finalizado"));
         onMsgreceived(messages);
 
         return view;
@@ -133,9 +143,6 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
             _graph.getViewport().setScrollableY(true); // enables vertical scrolling
             _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
             _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
-            //_webView.addJavascriptInterface(new WebAppInterface(this.getActivity()), "JSInterface");
-            //_webView.getSettings().setJavaScriptEnabled(true);
-            //_webView.loadUrl("file:///android_assets/raw/index.html");
         }
         catch (Exception ex)
         {

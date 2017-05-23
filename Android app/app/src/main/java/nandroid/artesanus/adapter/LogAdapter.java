@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import nandroid.artesanus.common.BTConstants;
@@ -73,7 +74,8 @@ public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClic
             result=convertView;
         }
 
-        viewHolder.txtDate.setText(dataModel.getDate().toString());
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        viewHolder.txtDate.setText(formatter.format(dataModel.getDate()));
         viewHolder.txtInfo.setText(dataModel.getInformation());
 
         // Set text color depends on the priority of the received message.

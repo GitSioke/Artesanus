@@ -34,11 +34,11 @@
 
         <activity android:name=".MonitoringActivity"
             android:label="@string/monitor_title">
-            <!--<intent-filter>
+            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
+            </intent-filter>
         </activity>
 
         <activity
@@ -49,11 +49,10 @@
         <activity
             android:name="nandroid.artesanus.gui.NewBeerCraftingActivity"
             android:label="@string/title_activity_newcrafting">
-            <intent-filter>
+            <!--<intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter>-->
         </activity>
 
         <service
@@ -83,7 +82,7 @@
                             <action android:name="android.intent.action.MAIN" />
 
                             <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
+            </intent-filter>-->
         </activity>
 
 

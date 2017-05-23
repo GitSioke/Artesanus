@@ -44,7 +44,7 @@
         If you don`t pair it now, you couldn`t continue.
         Do you want to pair it now?</string>
     <string name="unpaired_fragment_pair_devices">Pair</string>
-    <string name="cancel">Cancel</string>
+    <string name="cancel">CANCEL</string>
     <string name="menu_device_wasnt_paired">Device couldn`t be paired. The process cannot be started</string>
     <string name="title_activity_newcrafting">New Beer</string>
     <string name="new_crafting_name">Name</string>

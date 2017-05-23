@@ -8,100 +8,125 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/fermenter_relative_ly_primary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fermenter_relative_ly_primary">
-
+            android:paddingTop="20dp"
+            android:paddingLeft="10dp"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginBottom="10dp">
 
             <TextView
                 android:id="@+id/monitor_main_value"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:textSize="40dp"
-                android:text="10ºC"
-                android:layout_alignBottom="@+id/temperature_icon"
-                android:layout_toRightOf="@+id/temperature_icon"/>
-            <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="20dp"
-                android:paddingTop="20dp"
-                android:src="@drawable/common_full_open_on_phone"
-                android:id="@+id/temperature_icon" />
+                android:text="10"
+                android:textSize="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_toRightOf="@+id/temperature_icon"/>
+
+            <TextView
+                android:id="@+id/monitor_main_measure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@+id/monitor_main_value"
+                android:text="@string/degrees_symbol"
+                android:textSize="40dp" />
+
+            <ImageView
+                android:id="@+id/temperature_icon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_thermometer"
+                android:layout_alignBottom="@+id/monitor_main_value"/>
 
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/fermenter_relative_ly_secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/fermenter_relative_ly_secondary"
             android:layout_below="@+id/fermenter_relative_ly_primary">
+
             <ImageView
                 android:id="@+id/density_icon"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@+id/monitor_second_value"
-                android:src="@drawable/common_full_open_on_phone"
-                android:layout_alignParentStart="true"
-                android:paddingLeft="30dp"
-                android:paddingTop="15dp"/>
+                android:src="@drawable/ic_densimeter" />
+
             <TextView
                 android:id="@+id/monitor_second_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="40dp"
-                android:text="10ºC"
-                android:layout_toRightOf="@+id/density_icon"/>
+                android:layout_toRightOf="@+id/density_icon"
+                android:text="10"
+                android:textSize="40dp" />
+
+            <TextView
+                android:id="@+id/monitor_second_measure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_toRightOf="@+id/monitor_second_value"
+                android:text="@string/density_measure"
+                android:textSize="30dp"
+                android:layout_alignBottom="@+id/monitor_second_value"/>
+
             <ImageView
                 android:id="@+id/monitor_add_density_icon"
                 android:layout_width="@dimen/button_size"
                 android:layout_height="@dimen/button_size"
+                android:src="@drawable/ic_add_black_18dp"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/monitor_second_value"
-                android:src="@drawable/ic_add_black_18dp" />
+                android:layout_toEndOf="@+id/monitor_second_measure" />
+
             <EditText
                 android:id="@+id/monitor_density_edit_text"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"
+                android:layout_toRightOf="@+id/density_icon"
                 android:inputType="number"
                 android:textSize="40dp"
-                android:layout_toRightOf="@+id/density_icon"/>
+                android:visibility="invisible" />
+
             <ImageView
                 android:id="@+id/monitor_add_density_confirm"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"
                 android:layout_toRightOf="@+id/monitor_second_value"
-                android:src="@drawable/ic_done_black_24dp"/>
+                android:src="@drawable/ic_done_black_24dp"
+                android:visibility="invisible" />
 
         </RelativeLayout>
 
         <com.jjoe64.graphview.GraphView
+            android:id="@+id/graph"
             android:layout_width="match_parent"
             android:layout_height="250dp"
-            android:layout_below="@id/fermenter_relative_ly_secondary"
-            android:layout_marginTop="50dp"
             android:layout_marginBottom="25dp"
-            android:id="@+id/graph"/>
+            android:layout_below="@+id/fermenter_relative_ly_secondary"
+            android:layout_marginLeft="10dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/graph"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp">
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/monitoring_log"
-                android:textSize="20dp"
-                />
+                android:textSize="20dp" />
+
             <ListView
+                android:id="@+id/monitoring_log_lv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:id="@+id/monitoring_log_lv"
-                android:stackFromBottom="true">
-            </ListView>
+                android:stackFromBottom="true"></ListView>
         </LinearLayout>
 
     </RelativeLayout>

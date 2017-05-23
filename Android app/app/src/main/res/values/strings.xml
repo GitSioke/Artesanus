@@ -5,7 +5,7 @@
     <string name="connecting">Conectando...</string>
     <string name="paired_devices_title">Dispositivos emparejados</string>
     <string name="new_devices_title">Dispositivos encontrados</string>
-    <string name="title_activity_measurements">MeasurementsActivity</string>
+    <string name="title_activity_measurements">Monitor</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
     <string name="title_activity_newprocess">New Process</string>
@@ -44,7 +44,7 @@
         Si no lo empareja ahora no podrá continuar.
         ¿Desea emparejarlo ahora?</string>
     <string name="unpaired_fragment_pair_devices">Emparejar</string>
-    <string name="cancel">Cancelar</string>
+    <string name="cancel">CANCELAR</string>
     <string name="menu_device_wasnt_paired">El dispositivo no fue emparejado. No puede iniciarse el proceso</string>
     <string name="title_activity_newcrafting">Nueva Cerveza</string>
     <string name="new_crafting_name">Nombre</string>
@@ -53,7 +53,7 @@
     <string name="new_crafting_hops">Lúpulos</string>
     <string name="new_crafting_mashing">Maceración</string>
     <string name="new_crafting_step">Escalones</string>
-    <string name="ok">Aceptar</string>
+    <string name="ok">ACEPTAR</string>
     <string name="title_item_picker">Escoge un tipo de cerveza</string>
     <string name="new_crafting_litre">Litros</string>
     <string name="add_cereal_kind">Cereal</string>
