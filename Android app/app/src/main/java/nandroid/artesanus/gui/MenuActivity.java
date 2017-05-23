@@ -1,36 +1,22 @@
 package nandroid.artesanus.gui;
 
 import android.app.Dialog;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.media.MediaPlayer;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-
-import java.util.Locale;
-
 import nandroid.artesanus.common.LanguageHelper;
-import nandroid.artesanus.common.SharedPreferencesHelper;
 import nandroid.artesanus.fragments.PreferencesDialogFragment;
-import nandroid.artesanus.http.HTTPController;
 
 public class MenuActivity extends AppCompatActivity
         implements PreferencesDialogFragment.DialogResponseListener
 {
     // Debugging
-    private static final String TAG = "MenuActivity";
+    private static final String TAG = "MainActivity";
     private static final boolean D = true;
 
     @Override
@@ -38,17 +24,6 @@ public class MenuActivity extends AppCompatActivity
 
         super.onCreate(savedInstanceState);
         if(D) Log.e(TAG, "+++ ON CREATE +++");
-        // Set up the window layout
-        setContentView(R.layout.activity_main_menu);
-
-        // Set newCraft button for start new crafting process, so start first new process
-        FloatingActionButton newCraft = (FloatingActionButton) findViewById(R.id.main_menu_new_crafting);
-        newCraft.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                Intent intent = new Intent(getBaseContext(), NewBeerCraftingActivity.class);
-                startActivity(intent);
-            }
-        });
 
     }
 
@@ -80,7 +55,7 @@ public class MenuActivity extends AppCompatActivity
     {
         // Create an instance of the dialog fragment and show it
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.dialog_add_heat);
+        dialog.setContentView(R.layout.);
         dialog.show();
     }
 

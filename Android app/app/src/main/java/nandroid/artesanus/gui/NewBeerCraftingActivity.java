@@ -38,7 +38,7 @@ import nandroid.artesanus.fragments.AddCerealFragment;
 import nandroid.artesanus.fragments.AddHeatFragment;
 import nandroid.artesanus.fragments.AddHopFragment;
 
-public class NewBeerCraftingActivity extends AppCompatActivity
+public class NewBeerCraftingActivity extends MenuActivity
         implements AddCerealFragment.OnCerealAddedListener,
         AddHopFragment.OnHopAddedListener,
         AddHeatFragment.AddHeatListener

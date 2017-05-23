@@ -15,7 +15,7 @@ import nandroid.artesanus.services.TimerService;
 /**
  * This class controls Monitoring activity
  */
-public class MonitoringActivity extends AppCompatActivity {
+public class MonitoringActivity extends MenuActivity {
 
     // Debugging
     private static final String TAG = "MonitoringActivity";
