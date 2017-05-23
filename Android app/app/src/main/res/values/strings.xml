@@ -71,7 +71,7 @@
     <string name="grams_abreviature">gr</string>
     <string name="monitoring_log">Eventos</string>
     <string name="density_added">Density has been added: </string>
-    <string name="density_measure"> kg/m3</string>
+    <string name="density_measure"> g/cm3</string>
     <string name="main_menu_preferences">Preferencias</string>
     <string name="preferences_ip_address">Direccion IP</string>
     <string name="preferences_language">Idioma</string>

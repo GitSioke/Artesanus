@@ -47,12 +47,14 @@
             android:id="@+id/fermenter_relative_ly_secondary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/fermenter_relative_ly_primary">
+            android:layout_below="@+id/fermenter_relative_ly_primary"
+            android:layout_marginLeft="10dp">
 
             <ImageView
                 android:id="@+id/density_icon"
-                android:layout_width="wrap_content"
+                android:layout_width="50dp"
                 android:layout_height="wrap_content"
+                android:maxWidth="50dp"
                 android:layout_alignBottom="@+id/monitor_second_value"
                 android:src="@drawable/ic_densimeter" />
 
@@ -80,13 +82,15 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_marginBottom="25dp"
-            android:layout_below="@+id/fermenter_relative_ly_secondary" />
+            android:layout_below="@+id/fermenter_relative_ly_secondary"
+            android:layout_marginLeft="15dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/graph"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:layout_marginLeft="10dp">
 
             <TextView
                 android:layout_width="wrap_content"

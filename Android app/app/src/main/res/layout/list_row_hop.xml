@@ -15,8 +15,8 @@
 
         <ImageView
             android:id="@+id/list_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:src="@drawable/dark_yellow_hop"/>
     </LinearLayout>
 
@@ -32,7 +32,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="sample"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textColor="@color/black"/>
     </LinearLayout>
 
@@ -50,7 +50,7 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/thumbnail"
             android:inputType="numberDecimal"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textColor="@color/black"
             android:typeface="sans"
             android:textStyle="bold"
@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:text="@string/list_row_cereal_kilogram"
             android:layout_toRightOf="@+id/hop_amount"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textColor="@color/black"
             android:layout_marginLeft="5dp"/>
     </LinearLayout>
@@ -82,14 +82,14 @@
             android:layout_marginTop="1dip"
             android:inputType="numberDecimal"
             android:layout_weight="1"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textColor="@color/black"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/list_row_hop_minutes"
-            android:textSize="20dp"
+            android:textSize="15dp"
             android:textColor="@color/black"/>
     </LinearLayout>
 

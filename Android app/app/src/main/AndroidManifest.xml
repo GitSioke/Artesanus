@@ -25,20 +25,20 @@
             android:name=".MenuActivity"
             android:label="@string/menu_title"
             android:exported="true">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter> -->
-        </activity>
-
-        <activity android:name=".MonitoringActivity"
-            android:label="@string/monitor_title">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+
+        <activity android:name=".MonitoringActivity"
+            android:label="@string/monitor_title">
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
+
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity
@@ -55,24 +55,6 @@
             </intent-filter>-->
         </activity>
 
-        <service
-            android:name="nandroid.artesanus.services.NotifierService"
-            android:enabled="true"
-            android:exported="true" />
-
-        <!--<receiver
-            android:name="nandroid.artesanus.services.AlarmReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.NOTIFY" />
-            </intent-filter>
-        </receiver>-->
-
-        <service
-            android:name="nandroid.artesanus.services.BluetoothMessageService"
-            android:enabled="true"
-            android:exported="true" />
-
         <activity
             android:name=".SplashActivity"
             android:label="@string/title_activity_splash"
@@ -85,7 +67,15 @@
             </intent-filter>-->
         </activity>
 
+        <service
+            android:name="nandroid.artesanus.services.NotifierService"
+            android:enabled="true"
+            android:exported="true" />
 
+        <service
+            android:name="nandroid.artesanus.services.BluetoothMessageService"
+            android:enabled="true"
+            android:exported="true" />
 
         <service
             android:name="nandroid.artesanus.services.TimerService"
