@@ -16,26 +16,26 @@ import java.util.Locale;
 public class LanguageHelper
 {
     private static final ArrayList<String> languagesList = new ArrayList<String>();
+    private static String _localeCode = "es";
     static
     {
         languagesList.add("es");
         languagesList.add("en");
     }
 
-    public static boolean changeLanguage(Context context, String lang)
+    public static boolean changeLanguage(Context context, String langCode)
     {
         boolean ret = false;
-        Locale newLocale = new Locale(lang);
+        Locale newLocale = new Locale(langCode);
         Locale.setDefault(newLocale);
         android.content.res.Configuration config = new android.content.res.Configuration();
-        if (config.locale != newLocale)
+        if (_localeCode != langCode)
         {
             // We have a different locale, so change it and warn activity about change
             config.locale = newLocale;
+            _localeCode = newLocale.toString();
             ret = true;
             context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-            //Activity activity = (Activity) context;
-            //activity.recreate();
         }
 
         return ret;

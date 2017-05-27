@@ -18,11 +18,15 @@ import nandroid.artesanus.adapter.HeatAddedAdapter;
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.OnHeatRemovedListener;
 
 /**
- * This class represents a fragment for a mashing tab inside MonitoringActivity
+ * This class represents a fragment for a boling tab inside NewCraftingBeerActivity
  */
-public class MashingTabFragment extends Fragment implements AddHeatFragment.AddHeatListener{
+public class BoilingTabFragment extends Fragment
+        implements AddHeatFragment.AddHeatListener,
+        OnHeatRemovedListener
+{
 
     private HeatAddedAdapter heatAdapter;
     private ListView addedHeatListView;
@@ -49,6 +53,7 @@ public class MashingTabFragment extends Fragment implements AddHeatFragment.AddH
 
         ArrayList<Heat> addedHeatList = new ArrayList<Heat>();
         heatAdapter  = new HeatAddedAdapter(addedHeatList, getContext());
+        heatAdapter.setHeatRemovedListener(this);
         addedHeatListView = (ListView)view.findViewById(R.id.new_crafting_step_added);
         addedHeatListView.setAdapter(heatAdapter);
 
@@ -62,6 +67,17 @@ public class MashingTabFragment extends Fragment implements AddHeatFragment.AddH
         addedHeatListView.setAdapter(heatAdapter);
         Resources resources = getResources();
         String snackText = resources.getString(R.string.heat_added_with, heat.getTemperature());
+        Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onHeatRemoved(ArrayList<Heat> heats)
+    {
+        heatAdapter.clear();
+        heatAdapter.addAll(heats);
+        addedHeatListView.setAdapter(heatAdapter);
+        Resources resources = getResources();
+        String snackText = resources.getString(R.string.heat_removed);
         Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
     }
 }

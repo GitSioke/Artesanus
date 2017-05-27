@@ -11,13 +11,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import nandroid.artesanus.common.LanguageHelper;
 import nandroid.artesanus.fragments.PreferencesDialogFragment;
+import nandroid.artesanus.listener.DialogResponseListener;
 
 public class MenuActivity extends AppCompatActivity
-        implements PreferencesDialogFragment.DialogResponseListener
+        implements DialogResponseListener
 {
     // Debugging
     private static final String TAG = "MainActivity";
     private static final boolean D = true;
+    private static boolean _wasReset = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -55,7 +57,7 @@ public class MenuActivity extends AppCompatActivity
     {
         // Create an instance of the dialog fragment and show it
         Dialog dialog = new Dialog(this);
-        dialog.setContentView(R.layout.);
+        dialog.setContentView(R.layout.dialog_credits);
         dialog.show();
     }
 
@@ -96,30 +98,39 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public void onDialogPositiveClick(DialogFragment dialog, String langCode)
     {
+        // Change locale settings in the app.
+        if (LanguageHelper.changeLanguage(this, langCode))
+        {
+            _wasReset = true;
+            // There was a change, re-start activity.
+            this.recreate();
+        }
+
         String strPreferencesSaved = getResources().getString(R.string.preferences_saved);
         // Preferences option were saved, show it to user
         Snackbar.make(findViewById(R.id.ly_coordinator),
                 strPreferencesSaved,
                 Snackbar.LENGTH_LONG)
                 .show();
-
-        // Change locale settings in the app.
-        if (LanguageHelper.changeLanguage(this, langCode))
-        {
-            // There was a change, re-start activity.
-            this.recreate();
-        }
     }
 
     @Override
     public void onDialogNegativeClick(DialogFragment dialog)
     {
-        String strPreferencesSaved = getResources().getString(R.string.preferences_not_saved);
+        String strSnack = getResources().getString(R.string.preferences_not_saved);
+        if (_wasReset)
+        {
+            // There was a previous reset, show a preferences saved message
+            strSnack = getResources().getString(R.string.preferences_saved);
+        }
+
         // Preferences option were saved, show it to user
         Snackbar.make(findViewById(R.id.ly_coordinator),
-                strPreferencesSaved,
+                strSnack,
                 Snackbar.LENGTH_LONG)
                 .show();
+
+        _wasReset = false;
     }
 
     private void showPreferencesDialog()

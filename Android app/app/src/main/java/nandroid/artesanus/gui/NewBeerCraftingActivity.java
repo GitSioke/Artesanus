@@ -34,17 +34,15 @@ import nandroid.artesanus.common.Event;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.http.PostController;
-import nandroid.artesanus.fragments.AddCerealFragment;
 import nandroid.artesanus.fragments.AddHeatFragment;
-import nandroid.artesanus.fragments.AddHopFragment;
+import nandroid.artesanus.listener.OnCerealAddedListener;
+import nandroid.artesanus.listener.OnHopAddedListener;
 
 public class NewBeerCraftingActivity extends MenuActivity
-        implements AddCerealFragment.OnCerealAddedListener,
-        AddHopFragment.OnHopAddedListener,
+        implements OnCerealAddedListener,
+        OnHopAddedListener,
         AddHeatFragment.AddHeatListener
-
 {
-
     // Debugging
     private static final String TAG = "NewBeerCraftingActivity";
     private static final boolean D = true;

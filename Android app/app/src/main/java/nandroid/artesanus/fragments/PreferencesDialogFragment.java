@@ -23,21 +23,13 @@ import java.util.List;
 import nandroid.artesanus.common.LanguageHelper;
 import nandroid.artesanus.gui.MenuActivity;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.DialogResponseListener;
 
 /**
  * This fragment will manage DialogFragment for preferences options
  */
 public class PreferencesDialogFragment extends DialogFragment
 {
-    /* The activity that creates an instance of this dialog fragment must
-     * implement this interface in order to receive event callbacks.
-     * Each method passes the DialogFragment in case the host needs to query it. */
-    public interface DialogResponseListener
-    {
-        void onDialogPositiveClick(DialogFragment dialog, String langCode);
-        void onDialogNegativeClick(DialogFragment dialog);
-    }
-
     // Use this instance of the interface to deliver action events
     DialogResponseListener mListener;
 

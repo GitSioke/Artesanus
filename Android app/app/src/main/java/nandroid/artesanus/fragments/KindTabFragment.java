@@ -1,6 +1,8 @@
 package nandroid.artesanus.fragments;
 
+import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,14 +20,20 @@ import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.adapter.CerealAddedAdapter;
 import nandroid.artesanus.adapter.HopAddedAdapter;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.OnCerealAddedListener;
+import nandroid.artesanus.listener.OnCerealRemovedListener;
+import nandroid.artesanus.listener.OnHopAddedListener;
+import nandroid.artesanus.listener.OnHopRemovedListener;
 
 /**
  * This fragment class control CerealTab from NewBeerCraftingActivity to get information about cereals.
  */
 public class KindTabFragment extends Fragment
         implements ItemPickerDialogFragment.OnItemSelectedListener,
-            AddCerealFragment.OnCerealAddedListener,
-            AddHopFragment.OnHopAddedListener
+            OnCerealAddedListener,
+            OnHopAddedListener,
+            OnCerealRemovedListener,
+            OnHopRemovedListener
 {
     private HopAddedAdapter hopAdapter;
     private ListView hopListView;
@@ -73,12 +81,14 @@ public class KindTabFragment extends Fragment
 
         ArrayList<Hop> addedHopList = new ArrayList<Hop>();
         hopAdapter  = new HopAddedAdapter(addedHopList, getContext());
+        hopAdapter.setOnHopRemovedListener(this);
         hopListView = (ListView)view.findViewById(R.id.new_crafting_hop_added_lv);
         hopListView.setAdapter(hopAdapter);
 
 
         ArrayList<Cereal> addedCerealList = new ArrayList<Cereal>();
         cerealAdapter  = new CerealAddedAdapter(addedCerealList, getContext());
+        cerealAdapter.setOnCerealRemovedListener(this);
         cerealListView = (ListView)view.findViewById(R.id.new_crafting_cereals_added_lv);
         cerealListView.setAdapter(cerealAdapter);
 
@@ -137,11 +147,22 @@ public class KindTabFragment extends Fragment
         for (Cereal cereal : cereals)
         {
             cerealAdapter.add(cereal);
-
-            //Snackbar.make(getView(), hop.getName() + ":" + hop.getAmount(), Snackbar.LENGTH_SHORT).show();
         }
 
+        String snackText = getView().getResources().getString(R.string.cereals_added);
+        Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
         cerealListView.setAdapter(cerealAdapter);
+    }
+
+    @Override
+    public void onCerealRemoved(ArrayList<Cereal> cereals)
+    {
+        cerealAdapter.clear();
+        cerealAdapter.addAll(cereals);
+        cerealListView.setAdapter(cerealAdapter);
+        Resources resources = getResources();
+        String snackText = resources.getString(R.string.cereal_removed);
+        Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -150,9 +171,21 @@ public class KindTabFragment extends Fragment
         for (Hop hop : hops)
         {
             hopAdapter.add(hop);
-            //Snackbar.make(getView(), hop.getName() + ":" + hop.getAmount(), Snackbar.LENGTH_SHORT).show();
         }
 
+        String snackText = getView().getResources().getString(R.string.hops_added);
+        Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
         hopListView.setAdapter(hopAdapter);
+    }
+
+    @Override
+    public void onHopRemoved(ArrayList<Hop> hops)
+    {
+        hopAdapter.clear();
+        hopAdapter.addAll(hops);
+        hopListView.setAdapter(hopAdapter);
+        Resources resources = getResources();
+        String snackText = resources.getString(R.string.hop_removed);
+        Snackbar.make(getView(), snackText, Snackbar.LENGTH_SHORT).show();
     }
 }

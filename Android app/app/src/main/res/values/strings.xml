@@ -82,5 +82,10 @@
     <string name="add_button">Añadir</string>
     <string name="heat_added_with">Se añadió un escalón de temperatura a %1dºC</string>
     <string name="main_menu_credits">Créditos</string>
+    <string name="cereals_added">Se han añadido los cereales</string>
+    <string name="hops_added">Se han añadido los lúpulos</string>
+    <string name="heat_removed">Se ha eliminado el escalón de calor</string>
+    <string name="cereal_removed">Se eliminó el cereal</string>
+    <string name="hop_removed">El lúpulo fue eliminado</string>
 
 </resources>

@@ -2,8 +2,6 @@ package nandroid.artesanus.factories;
 
 import android.support.v4.app.Fragment;
 
-import nandroid.artesanus.fragments.KindTabFragment;
-import nandroid.artesanus.fragments.MashingTabFragment;
 import nandroid.artesanus.fragments.MonitorBoilTabFragment;
 import nandroid.artesanus.fragments.MonitorFermentationTabFragment;
 import nandroid.artesanus.fragments.MonitorMashingTabFragment;

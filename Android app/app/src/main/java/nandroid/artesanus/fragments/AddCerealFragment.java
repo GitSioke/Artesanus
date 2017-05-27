@@ -20,6 +20,7 @@ import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.adapter.CerealAdapter;
 import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.OnCerealAddedListener;
 
 /**
  * This class represents a dialog fragment to add cereals.
@@ -31,11 +32,6 @@ public class AddCerealFragment extends DialogFragment
     ArrayList<Cereal> cerealList;
     ListView listView;
     private static CerealAdapter adapter;
-
-    public interface OnCerealAddedListener{
-        void onCerealAdded(ArrayList<Cereal> cereals);
-    }
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

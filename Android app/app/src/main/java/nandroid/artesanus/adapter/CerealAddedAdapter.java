@@ -1,5 +1,7 @@
 package nandroid.artesanus.adapter;
 
+import android.app.Activity;
+import android.app.Fragment;
 import android.content.Context;
 import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
@@ -14,25 +16,27 @@ import java.util.ArrayList;
 
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.OnCerealRemovedListener;
 
 /**
- *  This Adapter class link Cereal(model) class with AddCerealFragment(view)
+ *  This Adapter class link Cereal(model) class with AddedCerealFragment(view)
  */
 public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnClickListener
 {
     private static ArrayList<Cereal> dataSet;
     Context mContext;
+    private static OnCerealRemovedListener mOnItemClickLister;
+
+    public void setOnCerealRemovedListener(OnCerealRemovedListener listener)
+    {
+        mOnItemClickLister = listener;
+    }
 
     public CerealAddedAdapter(ArrayList<Cereal> data, Context context)
     {
         super(context, R.layout.list_row_cereal_added, data);
         this.dataSet = data;
-        this.mContext=context;
-    }
-
-    public interface OnItemRemoved
-    {
-        public void onItemRemoved(int index);
+        this.mContext = context;
     }
 
     // View lookup cache
@@ -92,10 +96,10 @@ public class CerealAddedAdapter extends ArrayAdapter<Cereal> implements View.OnC
         viewHolder.txtAmount.setText(Integer.toString(dataModel.getQuantity()));
         viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //TODO Remove element from list
-                Integer index = (Integer) v.getTag();
-                dataSet.remove(index.intValue());
+            public void onClick(View v)
+            {
+                dataSet.remove(position);
+                mOnItemClickLister.onCerealRemoved(dataSet);
             }
         });
 

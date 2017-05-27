@@ -14,25 +14,22 @@ import java.util.ArrayList;
 import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.OnHopRemovedListener;
 
 /**
- * Created by Nando on 15/11/2016.
+ * This Adapter class link Hop(model) class with AddedHopFragment(view)
  */
 public class HopAddedAdapter extends ArrayAdapter<Hop> implements View.OnClickListener
 {
     private static ArrayList<Hop> dataSet;
     Context mContext;
+    private static OnHopRemovedListener mOnItemClickLister;
 
     public HopAddedAdapter(ArrayList<Hop> data, Context context)
     {
         super(context, R.layout.list_row_hop_added, data);
         this.dataSet = data;
         this.mContext=context;
-    }
-
-    public interface OnItemRemoved
-    {
-
     }
 
     // View lookup cache
@@ -80,7 +77,7 @@ public class HopAddedAdapter extends ArrayAdapter<Hop> implements View.OnClickLi
             viewHolder.txtName = (TextView) convertView.findViewById(R.id.row_hop_added_txtName);
             viewHolder.txtAmount = (TextView) convertView.findViewById(R.id.row_hop_added_amount);
             viewHolder.txtMinutes = (TextView) convertView.findViewById(R.id.row_hop_added_time);
-            viewHolder.imgRemove = (ImageView) convertView.findViewById(R.id.row_cereal_added_cancel_btn);
+            viewHolder.imgRemove = (ImageView) convertView.findViewById(R.id.row_hop_added_cancel_btn);
             result=convertView;
 
             convertView.setTag(viewHolder);
@@ -92,15 +89,14 @@ public class HopAddedAdapter extends ArrayAdapter<Hop> implements View.OnClickLi
 
         viewHolder.txtName.setText(dataModel.getName());
         viewHolder.txtAmount.setText(Integer.toString(dataModel.getQuantity()));
-        /*viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {
+        viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                //TODO Remove element from list
-                Integer index = (Integer) v.getTag();
-                dataSet.remove(index.intValue());
-                notifyDataSetChanged();
+            public void onClick(View v)
+            {
+                dataSet.remove(position);
+                mOnItemClickLister.onHopRemoved(dataSet);
             }
-        });*/
+        });
 
         // Return the completed view to render on screen
         return convertView;
@@ -116,5 +112,10 @@ public class HopAddedAdapter extends ArrayAdapter<Hop> implements View.OnClickLi
     public void add(Hop hop)
     {
         dataSet.add(hop);
+    }
+
+    public void setOnHopRemovedListener(OnHopRemovedListener listener)
+    {
+        mOnItemClickLister = listener;
     }
 }

@@ -1,18 +1,15 @@
 package nandroid.artesanus.adapter;
 
 import android.content.Context;
-import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import java.util.ArrayList;
-
-import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Heat;
+import nandroid.artesanus.listener.*;
 import nandroid.artesanus.gui.R;
 
 /**
@@ -22,6 +19,7 @@ public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClick
 {
     private static ArrayList<Heat> dataSet;
     Context mContext;
+    private static OnHeatRemovedListener mOnItemClickLister;
 
     public HeatAddedAdapter(ArrayList<Heat> data, Context context)
     {
@@ -30,9 +28,9 @@ public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClick
         this.mContext=context;
     }
 
-    public interface OnItemRemoved
+    public void setHeatRemovedListener(OnHeatRemovedListener listener)
     {
-
+        mOnItemClickLister = listener;
     }
 
     // View lookup cache
@@ -50,10 +48,7 @@ public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClick
         int position= (Integer)v.getTag();
         Object object= getItem(position);
         Heat dataModel= (Heat)object;
-
     }
-
-    private int lastPosition = -1;
 
     @Override
     public View getView(final int position, View convertView, ViewGroup parent) {
@@ -91,10 +86,8 @@ public class HeatAddedAdapter extends ArrayAdapter<Heat> implements View.OnClick
         viewHolder.imgRemove.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //TODO Remove element from list
-                Integer index = (Integer) v.getTag();
-                dataSet.remove(index.intValue());
-                notifyDataSetChanged();
+                dataSet.remove(position);
+                mOnItemClickLister.onHeatRemoved(dataSet);
             }
         });
 

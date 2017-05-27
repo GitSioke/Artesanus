@@ -22,6 +22,7 @@ import nandroid.artesanus.common.Hop;
 import nandroid.artesanus.adapter.CerealAdapter;
 import nandroid.artesanus.adapter.HopAdapter;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.listener.OnHopAddedListener;
 
 /**
  * This class represents a dialog fragment for add hops
@@ -34,10 +35,7 @@ public class AddHopFragment extends DialogFragment
     ListView listView;
     private static CerealAdapter adapter;
 
-    public interface OnHopAddedListener
-    {
-        void onHopAdded(ArrayList<Hop> hops);
-    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
@@ -107,13 +105,13 @@ public class AddHopFragment extends DialogFragment
     private void FireHopAddedListener(ArrayList<Hop> addedHops)
     {
         Fragment fragment = getParentFragment();
-        if (fragment instanceof AddHopFragment.OnHopAddedListener) {
+        if (fragment instanceof OnHopAddedListener) {
 
             OnHopAddedListener listener = (OnHopAddedListener) fragment;
             listener.onHopAdded(addedHops);
         }
 
-        if (getActivity() instanceof AddHopFragment.OnHopAddedListener)
+        if (getActivity() instanceof OnHopAddedListener)
         {
             OnHopAddedListener listener = (OnHopAddedListener) getActivity();
             listener.onHopAdded(addedHops);

@@ -3,7 +3,7 @@ package nandroid.artesanus.factories;
 import android.support.v4.app.Fragment;
 
 import nandroid.artesanus.fragments.KindTabFragment;
-import nandroid.artesanus.fragments.MashingTabFragment;
+import nandroid.artesanus.fragments.BoilingTabFragment;
 
 /**
  * Created by Nando on 05/11/2016.
@@ -18,7 +18,7 @@ public class FragmentFactory {
             case KIND:
                 return new KindTabFragment();
             case MASHING:
-                return new MashingTabFragment();
+                return new BoilingTabFragment();
         }
         return null;
     }
