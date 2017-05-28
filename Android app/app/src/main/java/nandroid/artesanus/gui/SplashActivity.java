@@ -3,40 +3,13 @@ package nandroid.artesanus.gui;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.widget.VideoView;
-
-import com.github.kevinsawicki.http.HttpRequest;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-
-import nandroid.artesanus.common.Brew;
 import nandroid.artesanus.common.LanguageHelper;
 import nandroid.artesanus.common.SharedPreferencesHelper;
 import nandroid.artesanus.http.HTTPController;
-import okhttp3.MediaType;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
-
-import static android.R.attr.path;
 
 public class SplashActivity extends AppCompatActivity {
 
@@ -69,14 +42,6 @@ public class SplashActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
-
-        // Display video at full size
-        /*DisplayMetrics metrics = new DisplayMetrics(); getWindowManager().getDefaultDisplay().getMetrics(metrics);
-        android.widget.LinearLayout.LayoutParams params = (android.widget.LinearLayout.LayoutParams) videoView.getLayoutParams();
-        params.width =  metrics.widthPixels;
-        params.height = metrics.heightPixels;
-        params.leftMargin = 0;
-        videoView.setLayoutParams(params);*/
 
         videoView.start();
 
