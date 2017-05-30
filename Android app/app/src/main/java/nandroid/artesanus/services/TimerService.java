@@ -15,46 +15,39 @@ import android.os.IBinder;
 import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
+import android.util.Log;
 import android.widget.Chronometer;
 
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import nandroid.artesanus.common.BrewProcess;
+import nandroid.artesanus.common.Event;
 import nandroid.artesanus.gui.MonitoringActivity;
 import nandroid.artesanus.gui.R;
+import nandroid.artesanus.http.IAsyncHttpResponse;
+import nandroid.artesanus.http.PostController;
 
 
 /**
  * This class is intended to handle the countdown process to inform MonitoringActivity and to launch alarm notifications
  */
-public class TimerService extends IntentService {
+public class TimerService extends IntentService implements IAsyncHttpResponse {
 
     Context _context;
     private final int _notificationID = 000000;
 
-    /**
-     * Creates an IntentService.  Invoked by your subclass's constructor.
-     */
     public TimerService() {
         super("TimerService");
     }
-
-    @Override
-    public IBinder onBind(Intent intent)
-    {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
-
-    }
-
-    @Override
-    protected void onHandleIntent(@Nullable Intent intent)
-    {
-
-    }
-
 
     @Override
     public void onCreate() {
@@ -63,7 +56,6 @@ public class TimerService extends IntentService {
 
             @Override
             public void run() {
-                // TODO Auto-generated method stub
                 while(true)
                 {
                     try {
@@ -74,37 +66,17 @@ public class TimerService extends IntentService {
 
                     if (isAppIsInBackground(getApplicationContext()))
                     {
-                        Intent notificationIntent = new Intent(getApplicationContext(), MonitoringActivity.class);
-
-                        notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
-                                | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-                        PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
-                                notificationIntent, 0);
-
-                        NotificationCompat.Builder mBuilder =
-                                new NotificationCompat.Builder(getApplicationContext())
-                                        .setSmallIcon(R.drawable.dark_yellow_beer)
-                                        .setContentTitle(getResources().getString(R.string.add_cereal_kind))
-                                        .setContentText(getResources().getString(R.string.add_cereal_kind))
-                                        .setContentIntent(intent);
-                        Notification notification = mBuilder.build();
-                        notification.flags |= Notification.FLAG_AUTO_CANCEL;
-
-                        // Gets an instance of the NotificationManager service//
-
-                        NotificationManager mNotificationManager =
-                                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-
-                        mNotificationManager.notify(_notificationID, notification);
+                        GsonBuilder builder = new GsonBuilder();
+                        builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
+                        Gson gson = builder.create();
+                        String json = gson.toJson("");
+                        PostController controller = new PostController();
+                        controller.execute("/retrieve/last_anomalous_event/", json);
                     }
                 }
             }
         }).start();
-
     }
-
-
 
     private boolean isAppIsInBackground(Context context) {
         boolean isInBackground = true;
@@ -131,11 +103,47 @@ public class TimerService extends IntentService {
         return isInBackground;
     }
 
+    @Override
+    public void ProcessFinish(String output)
+    {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
+        Gson gson = builder.create();
+        try {
+            Event lastEvent = gson.fromJson(output, Event.class);
+            Intent notificationIntent = new Intent(getApplicationContext(), MonitoringActivity.class);
+
+            notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+
+            PendingIntent intent = PendingIntent.getActivity(getApplicationContext(), 0,
+                    notificationIntent, 0);
+
+            NotificationCompat.Builder mBuilder =
+                    new NotificationCompat.Builder(getApplicationContext())
+                            .setSmallIcon(R.drawable.dark_yellow_beer)
+                            .setContentTitle(getResources().getString(R.string.event_background) + lastEvent.getSource() )
+                            .setContentText(lastEvent.getMessage())
+                            .setContentIntent(intent);
+            Notification notification = mBuilder.build();
+            notification.flags |= Notification.FLAG_AUTO_CANCEL;
+
+            // Gets an instance of the NotificationManager service//
+
+            NotificationManager mNotificationManager =
+                    (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+            mNotificationManager.notify(_notificationID, notification);
+
+        }
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId)
     {
-        //TODO Probar que el Servicio recibe el comando y sigue su ejecucion
         return START_NOT_STICKY;
     }
+
+    @Override
+    protected void onHandleIntent(@Nullable Intent intent) {}
 }
