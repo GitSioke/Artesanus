@@ -20,7 +20,10 @@ public class MonitoringActivity extends MenuActivity {
     // Debugging
     private static final String TAG = "MonitoringActivity";
     private static final boolean D = true;
-
+    private int _idCrafting;
+    private int _idMashing;
+    private int _idBoiling;
+    private int _idFermentation;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -31,6 +34,12 @@ public class MonitoringActivity extends MenuActivity {
         setContentView(R.layout.activity_monitoring);
 
         getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_measurements));
+
+        Intent intent = getIntent();
+        _idCrafting = intent.getIntExtra("id_crafting", 0);
+        _idMashing = intent.getIntExtra("id_mashing" ,0);
+        _idBoiling = intent.getIntExtra("id_boiling" ,0);
+        _idFermentation = intent.getIntExtra("id_fermentation", 0);
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -92,10 +101,29 @@ public class MonitoringActivity extends MenuActivity {
         //if (mBTService != null) mBTService.stop();
     }
 
-    // TODO refactor to handle data written by BTService
     public void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    public int GetIdCrafting()
+    {
+        return _idCrafting;
+    }
+
+    public int GetIdMashing()
+    {
+        return _idMashing;
+    }
+
+    public int GetIdBoiling()
+    {
+        return _idBoiling;
+    }
+
+    public int GetIdFermentation()
+    {
+        return _idFermentation;
     }
 
 }

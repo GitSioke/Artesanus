@@ -87,5 +87,6 @@
     <string name="heat_removed">Se ha eliminado el escalón de calor</string>
     <string name="cereal_removed">Se eliminó el cereal</string>
     <string name="hop_removed">El lúpulo fue eliminado</string>
+    <string name="event_background">Evento en</string>
 
 </resources>

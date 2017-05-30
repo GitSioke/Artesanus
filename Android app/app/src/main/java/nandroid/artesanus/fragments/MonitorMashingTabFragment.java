@@ -2,8 +2,11 @@ package nandroid.artesanus.fragments;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.support.v4.util.Pair;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,10 +27,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import nandroid.artesanus.adapter.LogAdapter;
 import nandroid.artesanus.common.BrewProcess;
 import nandroid.artesanus.common.Event;
+import nandroid.artesanus.common.XYValue;
+import nandroid.artesanus.gui.MonitoringActivity;
+import nandroid.artesanus.gui.NewBeerCraftingActivity;
 import nandroid.artesanus.http.GetController;
 import nandroid.artesanus.http.IAsyncHttpResponse;
 import nandroid.artesanus.gui.R;
@@ -44,7 +53,8 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
     private TextView txtViewPrimaryValue;
     private int _idProcess;
     private GraphView _graph;
-    private LineGraphSeries _dataSeries;
+    private LineGraphSeries<DataPoint> _dataPoints;
+    private Handler _handler;
 
     // Debugging
     private static final String TAG = "MonitorMashingTabFragment";
@@ -62,6 +72,9 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
     {
         View view  = inflater.inflate( R.layout.fragment_monitoring_mashing, container, false);
 
+        MonitoringActivity act = (MonitoringActivity)getActivity();
+        _idProcess = act.GetIdMashing();
+
         ArrayList<MessageInfo> msgInfoList = new ArrayList<MessageInfo>();
         logAdapter  = new LogAdapter(msgInfoList, getContext());
         logListView = (ListView)view.findViewById(R.id.monitoring_log_lv);
@@ -69,21 +82,53 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
 
         txtViewPrimaryValue = (TextView) view.findViewById(R.id.monitor_main_value);
 
-       double x,y;
-        x = 0.0;
-
         _graph = (GraphView)view.findViewById(R.id.graph);
+        _dataPoints = new LineGraphSeries<>();
+
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        for (int i = 0; i<20; i++)
+        {
+            Random r = new Random();
+            int low = 30;
+            int high = 100;
+            int data = r.nextInt(high-low) + low;
+            Date date2 = new Date(date.getTime()+60000*i);
+            _dataPoints.appendData(new DataPoint(date2, data), true, 30);
+        }
 
 
-        // TODO Get from Intent the brew id and process id
-        _idProcess = 1;
 
-        // Get all events related to process and brew crafting from server
-        String json = "";
-        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
+        _graph.getGridLabelRenderer().setHumanRounding(false);
+        _graph.addSeries(_dataPoints);
+
+        _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+        _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+        _graph.getViewport().setMinY(0);
+        _graph.getViewport().setMaxY(100);
+        _graph.getViewport().setScrollable(true); // enables horizontal scrolling
+        _graph.getViewport().setScrollableY(true); // enables vertical scrolling
+        _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+        _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+        _graph.getViewport().setBorderColor(Color.MAGENTA);
+
+        _dataPoints = new LineGraphSeries<DataPoint>();
+        _dataPoints.setColor(Color.RED);
+        _dataPoints.setDataPointsRadius(10);
+        _dataPoints.setThickness(3);
+
+        Timer timer = new Timer();
+        TimerTask myTask = new TimerTask() {
+            @Override
+            public void run() {
+                // Ask for data every 30 secs
+                ProcessData(this);
+            }
+        };
+
+        timer.schedule(myTask, 30000, 30000);
 
         ArrayList<MessageInfoMasher> messages = new ArrayList<MessageInfoMasher>();
-        Calendar cal = Calendar.getInstance();
         Date date1 = cal.getTime();
         long time = date1.getTime();
         time += 12387;
@@ -99,6 +144,33 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
         onMsgreceived(messages);
 
         return view;
+    }
+
+    private void ProcessData(TimerTask timerTask)
+    {
+        // Get all events related to process and brew crafting from server
+        String json = "";
+        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
+
+        // TODO Borrar hardcoded
+        Random r = new Random();
+        int low = 30;
+        int high = 100;
+        int data = r.nextInt(high-low) + low;
+
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        XYValue point = new XYValue(date, data);
+        ArrayList<XYValue> list = new ArrayList<XYValue>();
+        list.add(point);
+        _dataPoints = new LineGraphSeries<>();
+        _dataPoints.setColor(Color.RED);
+        _dataPoints.setThickness(3);
+        for (XYValue value : list)
+        {
+            _dataPoints.appendData(new DataPoint(value.getX(), value.getY()), true, 30);
+        }
+        _dataPoints.appendData(new DataPoint(date, data), true, 30);
     }
 
     public synchronized void onResume() {
@@ -122,7 +194,7 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
     public void ProcessFinish(String output)
     {
         GsonBuilder builder = new GsonBuilder();
-        builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
+        builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
         Gson gson = builder.create();
         try {
             BrewProcess mashingBrewProcess = gson.fromJson(output, BrewProcess.class);
@@ -134,47 +206,19 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
                 series.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
             }
 
-            _graph.getGridLabelRenderer().setHumanRounding(false);
-            _graph.addSeries(series);
-
-            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
-            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
-            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
-            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+//            _graph.getGridLabelRenderer().setHumanRounding(false);
+//            _graph.addSeries(series);
+//
+//            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+//            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+//            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
+//            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
+//            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+//            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
         }
         catch (Exception ex)
         {
             if(D) Log.e(TAG, ex.getMessage());
         }
-    }
-
-    public class WebAppInterface
-    {
-        Context mContext;
-
-        int timer =0;
-
-        /** Instantiate the interface and set the context */
-        WebAppInterface(Context c) {
-            mContext = c;
-        }
-
-        @JavascriptInterface
-        public int getNextValue() {
-            return 10;
-        }
-
-        @JavascriptInterface
-        public int getNextTime() {
-            return timer++;
-        }
-
-        @JavascriptInterface
-        public int getTotal() {
-            return 3;
-        }
-
     }
 }

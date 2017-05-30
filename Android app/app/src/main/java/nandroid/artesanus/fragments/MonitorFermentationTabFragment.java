@@ -3,32 +3,45 @@ package nandroid.artesanus.fragments;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
+import nandroid.artesanus.common.BrewProcess;
 import nandroid.artesanus.common.Event;
+import nandroid.artesanus.gui.MonitoringActivity;
 import nandroid.artesanus.http.GetController;
-import nandroid.artesanus.http.HTTPController;
 import nandroid.artesanus.http.IAsyncHttpResponse;
 import nandroid.artesanus.http.PostController;
 import nandroid.artesanus.gui.R;
-import nandroid.artesanus.http.PutController;
 
 /**
  * This class handles the Monitor tab fragment for Fermentation process
  */
 public class MonitorFermentationTabFragment extends Fragment implements IAsyncHttpResponse
 {
+    private int _idProcess;
+    private GraphView _graph;
+    private TextView txtViewPrimaryValue;
+
+    // Debugging
+    private static final String TAG = "MonitorFermentationTabFragment";
+    private static final boolean D = true;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,7 +51,16 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
+        MonitoringActivity act = (MonitoringActivity)getActivity();
+        _idProcess = act.GetIdFermentation();
+
         View view  = inflater.inflate( R.layout.fragment_monitoring_fermenter, container, false);
+        _graph = (GraphView)view.findViewById(R.id.graph);
+
+        // Get all events related to process and brew crafting from server
+        String json = "";
+        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
+
         final ImageView imgDensityButton = (ImageView)view.findViewById(R.id.monitor_add_density_icon);
         final EditText densityEditText = (EditText)view.findViewById(R.id.monitor_density_edit_text);
         final ImageView imgConfirmButton = (ImageView)view.findViewById(R.id.monitor_add_density_confirm);
@@ -108,6 +130,8 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
             }
         });
 
+        txtViewPrimaryValue = (TextView) view.findViewById(R.id.monitor_main_value);
+
         return view;
     }
 
@@ -116,8 +140,34 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
     }
 
     @Override
-    public void ProcessFinish(String output) {
-        //
+    public void ProcessFinish(String output)
+    {
+        GsonBuilder builder = new GsonBuilder();
+        builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
+        Gson gson = builder.create();
+        try {
+            BrewProcess mashingBrewProcess = gson.fromJson(output, BrewProcess.class);
+            List<Event> events = mashingBrewProcess.getEvents();
 
+            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue())+"º");
+            LineGraphSeries series = new LineGraphSeries<DataPoint>();
+            for (Event event : events ) {
+                series.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
+            }
+
+            _graph.getGridLabelRenderer().setHumanRounding(false);
+            _graph.addSeries(series);
+
+            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
+            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
+            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
+            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
+            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
+            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+        }
+        catch (Exception ex)
+        {
+            if(D) Log.e(TAG, ex.getMessage());
+        }
     }
 }

@@ -51,10 +51,6 @@ public class NewBeerCraftingActivity extends MenuActivity
     private List<Hop> hopsAdded = new ArrayList<Hop>();
     private List<Heat> heatsAdded = new ArrayList<Heat>();
 
-    String mAddress;
-
-    private TextView mSelectedKindBeer;
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
 
@@ -97,6 +93,10 @@ public class NewBeerCraftingActivity extends MenuActivity
 
                         // Start Monitoring activity
                         Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
+                        intent.putExtra("id_crafting", brew.getId());
+                        intent.putExtra("id_mashing", brew.getProcesses().get(0).getId());
+                        intent.putExtra("id_boiling", brew.getProcesses().get(1).getId());
+                        intent.putExtra("id_fermentation", brew.getProcesses().get(2).getId());
                         startActivity(intent);
                     }
                 }
@@ -210,11 +210,11 @@ public class NewBeerCraftingActivity extends MenuActivity
                 .type("mashing")
                 .events(eventList)
                 .build();
-        BrewProcess fermentingProc = new BrewProcess.Builder()
-                .type("fermentation")
-                .build();
         BrewProcess boilingProc = new BrewProcess.Builder()
                 .type("boiling")
+                .build();
+        BrewProcess fermentingProc = new BrewProcess.Builder()
+                .type("fermentation")
                 .build();
 
         List<BrewProcess> brewProcessList = new ArrayList<BrewProcess>();
