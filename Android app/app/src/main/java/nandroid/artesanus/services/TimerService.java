@@ -21,6 +21,7 @@ import android.widget.Chronometer;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonParseException;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
@@ -44,6 +45,10 @@ public class TimerService extends IntentService implements IAsyncHttpResponse {
 
     Context _context;
     private final int _notificationID = 000000;
+
+    // Debugging
+    private static final String TAG = "TimerService";
+    private static final boolean D = true;
 
     public TimerService() {
         super("TimerService");
@@ -109,7 +114,8 @@ public class TimerService extends IntentService implements IAsyncHttpResponse {
         GsonBuilder builder = new GsonBuilder();
         builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
         Gson gson = builder.create();
-        try {
+        try
+        {
             Event lastEvent = gson.fromJson(output, Event.class);
             Intent notificationIntent = new Intent(getApplicationContext(), MonitoringActivity.class);
 
@@ -134,7 +140,10 @@ public class TimerService extends IntentService implements IAsyncHttpResponse {
                     (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
             mNotificationManager.notify(_notificationID, notification);
-
+        }
+        catch (JsonParseException e)
+        {
+            if(D) Log.e(TAG, e.getMessage());
         }
     }
 
