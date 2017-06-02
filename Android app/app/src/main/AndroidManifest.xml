@@ -40,11 +40,11 @@
 
         <activity android:name=".MonitoringActivity"
             android:label="@string/monitor_title">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+            <!--<intent-filter>-->
+                <!--<action android:name="android.intent.action.MAIN" />-->
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+                <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <activity
@@ -66,17 +66,12 @@
             android:label="@string/title_activity_splash"
             android:theme="@style/AppTheme.NoActionBar"
             android:noHistory="true">
-            <!--<intent-filter>
+            <intent-filter>
                             <action android:name="android.intent.action.MAIN" />
 
                             <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
+            </intent-filter>
         </activity>
-
-        <service
-            android:name="nandroid.artesanus.services.BluetoothMessageService"
-            android:enabled="true"
-            android:exported="true" />
 
         <service
             android:name="nandroid.artesanus.services.TimerService"

@@ -122,55 +122,20 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
             @Override
             public void run() {
                 // Ask for data every 30 secs
-                ProcessData(this);
+                RequestData(this);
             }
         };
 
         timer.schedule(myTask, 30000, 30000);
 
-        ArrayList<MessageInfoMasher> messages = new ArrayList<MessageInfoMasher>();
-        Date date1 = cal.getTime();
-        long time = date1.getTime();
-        time += 12387;
-        Date date2 = new Date(time);
-        time += 12344;
-        Date date3 = new Date(time);
-        time += 1234462;
-        Date date4 = new Date(time);
-        messages.add(new MessageInfoMasher(1000,1, date1, "Proceso iniciado"));
-        messages.add(new MessageInfoMasher(1024,2, date2, "Alarma de temperatura"));
-        messages.add(new MessageInfoMasher(1040,2, date3, "Alarma de temperatura"));
-        messages.add(new MessageInfoMasher(1050,1, date4, "Proceso finalizado"));
-        onMsgreceived(messages);
-
         return view;
     }
 
-    private void ProcessData(TimerTask timerTask)
+    private void RequestData(TimerTask timerTask)
     {
         // Get all events related to process and brew crafting from server
         String json = "";
         new GetController(this).execute("/retrieve/events/"+_idProcess, json);
-
-        // TODO Borrar hardcoded
-        Random r = new Random();
-        int low = 30;
-        int high = 100;
-        int data = r.nextInt(high-low) + low;
-
-        Calendar cal = Calendar.getInstance();
-        Date date = cal.getTime();
-        XYValue point = new XYValue(date, data);
-        ArrayList<XYValue> list = new ArrayList<XYValue>();
-        list.add(point);
-        _dataPoints = new LineGraphSeries<>();
-        _dataPoints.setColor(Color.RED);
-        _dataPoints.setThickness(3);
-        for (XYValue value : list)
-        {
-            _dataPoints.appendData(new DataPoint(value.getX(), value.getY()), true, 30);
-        }
-        _dataPoints.appendData(new DataPoint(date, data), true, 30);
     }
 
     public synchronized void onResume() {
@@ -200,21 +165,13 @@ public class MonitorMashingTabFragment extends Fragment implements IAsyncHttpRes
             BrewProcess mashingBrewProcess = gson.fromJson(output, BrewProcess.class);
             List<Event> events = mashingBrewProcess.getEvents();
 
-            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue())+"º");
+            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue()));
             LineGraphSeries series = new LineGraphSeries<DataPoint>();
             for (Event event : events ) {
                 series.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
             }
 
-//            _graph.getGridLabelRenderer().setHumanRounding(false);
-//            _graph.addSeries(series);
-//
-//            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-//            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
-//            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
-//            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
-//            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-//            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
+            _graph.addSeries(series);
         }
         catch (Exception ex)
         {

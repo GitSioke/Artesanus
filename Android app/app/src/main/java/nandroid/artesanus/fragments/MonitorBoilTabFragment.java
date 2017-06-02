@@ -19,6 +19,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import nandroid.artesanus.adapter.CerealAddedAdapter;
 import nandroid.artesanus.adapter.HopAddedAdapter;
@@ -60,47 +62,52 @@ public class MonitorBoilTabFragment extends Fragment implements IAsyncHttpRespon
         _graph = (GraphView)view.findViewById(R.id.graph);
         txtViewPrimaryValue = (TextView)view.findViewById(R.id.monitor_main_value);
 
-        // Get all events related to process and brew crafting from server
-        String json = "";
-        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
+        Timer timer = new Timer();
+        TimerTask myTask = new TimerTask() {
+            @Override
+            public void run() {
+                // Ask for data every 30 secs
+                RequestData(this);
+            }
+        };
+
+        timer.schedule(myTask, 30000, 30000);
+
         return view;
     }
 
+
+    private void RequestData(TimerTask timerTask)
+    {
+        // Get all events related to process and brew crafting from server
+        String json = "";
+        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
+    }
 
     public synchronized void onResume() {
         super.onResume();
     }
 
-    @Override
     public void ProcessFinish(String output)
     {
         GsonBuilder builder = new GsonBuilder();
         builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
         Gson gson = builder.create();
         try {
-            BrewProcess mashingBrewProcess = gson.fromJson(output, BrewProcess.class);
-            List<Event> events = mashingBrewProcess.getEvents();
+            BrewProcess boilProcess = gson.fromJson(output, BrewProcess.class);
+            List<Event> events = boilProcess.getEvents();
 
-            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue())+"º");
+            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue()));
             LineGraphSeries series = new LineGraphSeries<DataPoint>();
             for (Event event : events ) {
                 series.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
             }
 
-            _graph.getGridLabelRenderer().setHumanRounding(false);
             _graph.addSeries(series);
-
-            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
-            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
-            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
-            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
         }
         catch (Exception ex)
         {
             if(D) Log.e(TAG, ex.getMessage());
         }
-
     }
 }

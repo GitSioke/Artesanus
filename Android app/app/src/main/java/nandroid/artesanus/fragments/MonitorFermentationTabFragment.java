@@ -20,6 +20,8 @@ import com.jjoe64.graphview.series.LineGraphSeries;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import nandroid.artesanus.common.BrewProcess;
 import nandroid.artesanus.common.Event;
@@ -57,10 +59,6 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
         View view  = inflater.inflate( R.layout.fragment_monitoring_fermenter, container, false);
         _graph = (GraphView)view.findViewById(R.id.graph);
 
-        // Get all events related to process and brew crafting from server
-        String json = "";
-        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
-
         final ImageView imgDensityButton = (ImageView)view.findViewById(R.id.monitor_add_density_icon);
         final EditText densityEditText = (EditText)view.findViewById(R.id.monitor_density_edit_text);
         final ImageView imgConfirmButton = (ImageView)view.findViewById(R.id.monitor_add_density_confirm);
@@ -89,8 +87,7 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
                         .data("density")
                         .value(Double.parseDouble(densityEditText.getText().toString()))
                         .type("data")
-                        // TODO modificar para que el id_process sea el correcto
-                        .id_process(1)
+                        .id_process(_idProcess)
                         .build();
 
 
@@ -132,38 +129,47 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
 
         txtViewPrimaryValue = (TextView) view.findViewById(R.id.monitor_main_value);
 
+        Timer timer = new Timer();
+        TimerTask myTask = new TimerTask() {
+            @Override
+            public void run() {
+                // Ask for data every 30 secs
+                RequestData(this);
+            }
+        };
+
+        timer.schedule(myTask, 30000, 30000);
+
         return view;
+    }
+
+    private void RequestData(TimerTask timerTask)
+    {
+        // Get all events related to process and brew crafting from server
+        String json = "";
+        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
     }
 
     public synchronized void onResume() {
         super.onResume();
     }
 
-    @Override
     public void ProcessFinish(String output)
     {
         GsonBuilder builder = new GsonBuilder();
         builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
         Gson gson = builder.create();
         try {
-            BrewProcess mashingBrewProcess = gson.fromJson(output, BrewProcess.class);
-            List<Event> events = mashingBrewProcess.getEvents();
+            BrewProcess fermentationBrewProcess = gson.fromJson(output, BrewProcess.class);
+            List<Event> events = fermentationBrewProcess.getEvents();
 
-            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue())+"º");
+            txtViewPrimaryValue.setText(String.valueOf(events.get(events.size()-1).getValue()));
             LineGraphSeries series = new LineGraphSeries<DataPoint>();
             for (Event event : events ) {
                 series.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
             }
 
-            _graph.getGridLabelRenderer().setHumanRounding(false);
             _graph.addSeries(series);
-
-            _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-            _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
-            _graph.getViewport().setScrollable(true); // enables horizontal scrolling
-            _graph.getViewport().setScrollableY(true); // enables vertical scrolling
-            _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-            _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
         }
         catch (Exception ex)
         {
