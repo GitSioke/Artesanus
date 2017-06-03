@@ -38,7 +38,7 @@ public class SplashActivity extends AppCompatActivity {
         videoView.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             public void onCompletion(MediaPlayer mp) {
                 //Start Menu activity when video ends.
-                Intent intent = new Intent(getBaseContext(), MainActivity.class);
+                Intent intent = new Intent(getBaseContext(), MenuActivity.class);
                 startActivity(intent);
             }
         });
