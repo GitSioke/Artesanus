@@ -1,16 +1,19 @@
-//#include <RestClient.h>
 #include <Dhcp.h>
 #include <Dns.h>
 #include <Ethernet2.h>
 #include <EthernetClient.h>
 #include <EthernetServer.h>
 #include <EthernetUdp2.h>
-//#include <DHT.h>
 #include <SPI.h>
 #include <ArduinoJson.h>
+#include <OneWire.h> 
+#include <DallasTemperature.h>
 
-#define IP "192.168.1.40"  // Server IP
+#define IP "192.168.1.46"  // Server IP
 #define PORT 5000         // Server Port
+#define TemperaturePin 4 // Temperature data pin
+ 
+
 
 //#define HTTP_DEBUG // Uncomment for debugging purposes
 
@@ -22,7 +25,8 @@
 //#define Serial.print(string)
 //#endif
 
-
+OneWire ourWire(TemperaturePin); // Establish temperature pin as bus for OneWire communication. 
+DallasTemperature temperatureSensor(&ourWire); // Instantiate DallasTemperature library.
 EthernetClient client;
 int readResponse(String*);
 void write(const char*);
@@ -32,10 +36,24 @@ int num_headers;
 const char* headers[10];
 const char* contentType = "application/json; charset=utf-8";
 
-double temperature;
 bool _started;
-int id_process;
+int id_process = -1;
 
+const char* sourceCode = "mashing";
+
+// 
+byte sensorInterrupt = 0;  // 0 = digital pin 2
+byte sensorPin       = 2;
+
+// The hall-effect flow sensor outputs approximately 4.5 pulses per second per
+// litre/minute of flow. Default: 4.5
+float calibrationFactor = 5.705;
+
+volatile byte pulseCount;  
+float flowRate;
+unsigned int flowMilliLitres;
+unsigned long totalMilliLitres;
+unsigned long oldTime;
 
 void setup() 
 {
@@ -43,7 +61,6 @@ void setup()
   // Connect via DHCP
   Serial.println("Connecting to network");
 
-  temperature = 10.0;
   _started = false;
 
   byte mac[] = { 0x90, 0xA2, 0xDA, 0x10, 0x13, 0x8A };
@@ -56,6 +73,22 @@ void setup()
   //client.dhcp();
   Serial.println(Ethernet.localIP());
   delay(500);
+
+  temperatureSensor.begin();
+
+  pinMode(sensorPin, INPUT);
+  digitalWrite(sensorPin, HIGH);
+
+  pulseCount        = 0;
+  flowRate          = 0.0;
+  flowMilliLitres   = 0;
+  totalMilliLitres  = 0;
+  oldTime           = 0;
+
+  // The Hall-effect sensor is connected to pin 2 which uses interrupt 0.
+  // Configured to trigger on a FALLING state change (transition from HIGH
+  // state to LOW state)
+  attachInterrupt(sensorInterrupt, pulseCounter, FALLING);
 }
 
 bool first = false;
@@ -81,17 +114,18 @@ void loop()
 bool checkForStart()
 {
   StaticJsonBuffer<20> jsonBuffer;
-  Serial.println("checkForStart: creating variables");
+  Serial.println("Asking for new START commands");
   
   char json[256];
   
   // create and format json object to send to server
   JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = id_process;
+  //root["id_process"] = id_process;
+  root["source"] = "mashing";
   root.printTo(json, sizeof(json));
   Serial.println(json); 
   
-  String response = request("POST", "/retrieve/last_mashing_event/", json);
+  String response = request("POST", "/retrieve/last_starting_event/", json);
   delay(1000);
   Serial.println("Response body from server: ");
   Serial.println(response);
@@ -103,7 +137,7 @@ bool checkForStart()
   Serial.println("Id process: ");
   Serial.println(id_process);
 
-  bool startCommandReceived = id_process == 0 ? false: true;
+  bool startCommandReceived = id_process == -1 ? false: true;
   _started = startCommandReceived;
 
   return startCommandReceived;
@@ -116,6 +150,13 @@ void sendDataToServer()
 {
   StaticJsonBuffer<200> jsonBuffer;
   char json[256];
+
+  temperatureSensor.requestTemperatures(); // Get sensor ready
+  double temperature = temperatureSensor.getTempCByIndex(0);
+  Serial.print(temperature); // Read temperature in Celsius
+  Serial.println(" ºC degrees");
+ 
+  //delay(6000); //Se provoca un lapso de 1 segundo antes de la próxima lectura
   
   // create and format json object to send to server
   JsonObject& root = jsonBuffer.createObject();
@@ -130,7 +171,6 @@ void sendDataToServer()
   String response = request("POST", "/insert/events/", json);
   Serial.println("SENDDATA:: Response body from server: ");
   Serial.println(response);
-  temperature = temperature + 0.5;
    
   
   // Sleep for 60 seconds and resend data
@@ -253,4 +293,13 @@ String readResponse() {
   delay(1500);
   
   return jsonResponse;
+}
+
+/*
+Interrupt Service Routine
+ */
+void pulseCounter()
+{
+  // Increment the pulse counter
+  pulseCount++;
 }
