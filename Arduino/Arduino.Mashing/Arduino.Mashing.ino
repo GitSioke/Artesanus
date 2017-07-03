@@ -8,6 +8,7 @@
 #include <ArduinoJson.h>
 #include <OneWire.h> 
 #include <DallasTemperature.h>
+#include <MemoryFree.h>
 
 #define IP "192.168.1.46"  // Server IP
 #define PORT 5000         // Server Port
@@ -35,7 +36,7 @@ int currentStatus;
 OneWire ourWire(TemperaturePin); // Establish temperature pin as bus for OneWire communication. 
 DallasTemperature temperatureSensor(&ourWire); // Instantiate DallasTemperature library.
 EthernetClient client;
-int readResponse(String*);
+//int readResponse(String*);
 void write(const char*);
 const char* host = IP;
 int port = PORT;
@@ -105,40 +106,159 @@ void loop()
   {
     case NOTSTARTED:
       Serial.println("Asking for new starting commands");
-      currentStatus = checkForStart();
+      //currentStatus = checkForStart();
       break;
       
     case STARTED:
       Serial.println("Try send data to server");
-      sendDataToServer();
+      retrieveTemperature();
+      
+      // Sleep for 30 seconds and resend data
+      delay(30000);
       break;
     
     case OPEN:
-      Serial.println("Opening valve");
       openValve();
       while(calculateFlow())
       {
         continue;
       }
+      saveTotalLitres();
       closeValve();
       break;
 
+    case CLOSE:
+      //stopProcess();
+
     case STOP:
       Serial.println("Stopping mashing process");
+      currentStatus = NOTSTARTED;
       break;
   }
 
-  currentStatus = checkCurrentStatus();
+  checkStatus();
+  delay(30000);
 
 }
 
+void saveTotalLitres()
+{
+  sendDataToServer("mililitres", totalMilliLitres, "/insert/mililitres/");
+}
+
+void retrieveTemperature()
+{
+  temperatureSensor.requestTemperatures(); // Get sensor ready
+  double temperature = temperatureSensor.getTempCByIndex(0);
+  Serial.print(temperature); // Read temperature in Celsius
+  Serial.println(" ºC degrees");
+
+  sendDataToServer("temperature", temperature, "/insert/temperature/");
+}
 
 void openValve()
 {
+   Serial.println("Opening valve");
 }
 
 void closeValve()
 {
+   Serial.println("Closing valve");
+}
+
+/*int checkCurrentStatus()
+{
+  Serial.println("Check current status");
+  StaticJsonBuffer<50> jsonBuffer;  
+  char json[256];
+  
+  // create and format json object to send to server
+  JsonObject& root = jsonBuffer.createObject();
+  root["id_process"] = id_process;
+  root["source"] = "mashing";
+  root.printTo(json, sizeof(json));
+  Serial.println(json); 
+
+  String response= "";
+  //String response = request("POST", "/retrieve/last_command/", json);
+  request("POST", "/retrieve/last_command/", json, &response);
+  delay(1000);
+  Serial.println("Response body from server: ");
+  Serial.println(response);
+
+  Serial.print("freeMemory()=");
+  Serial.println(freeRam());
+  StaticJsonBuffer<50> jsonBuffer1;
+  JsonObject& root1 = jsonBuffer1.parseObject(response);
+  currentStatus = root1["cmd"];
+
+  Serial.print("freeMemory()=");
+  Serial.println(freeRam());
+  
+  delay(6000);
+  return currentStatus;
+}*/
+
+int freeRam() 
+{
+  extern int __heap_start, *__brkval; 
+  int v; 
+  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
+}
+
+///
+/// This function check on server for the latest start event and returns true in case of new event. 
+/// in other case returns false.
+///
+void checkStatus()
+{
+  StaticJsonBuffer<50> jsonBuffer;
+  
+  char json[256];
+  
+  // create and format json object to send to server
+  JsonObject& root = jsonBuffer.createObject();
+  root["id"] = id_process;
+  root["cmd"] = currentStatus;
+  root["source"] = "mashing";
+  root.printTo(json, sizeof(json));
+  Serial.println(json); 
+
+  String response = "";
+  //String response = request("POST", "/check/status/", json);
+  request("POST", "/check/status/", json, &response);
+  delay(1000);
+  Serial.println("Response body from server: ");
+  Serial.println(response);
+  
+  StaticJsonBuffer<50> jsonBuffer1;
+  JsonObject& root1 = jsonBuffer1.parseObject(response);
+  id_process = root1["res"];
+  currentStatus = root1["cmd"];
+
+}
+
+///
+/// This funtion send data collected to server when there is a mashing process in progress
+///
+void sendDataToServer(String data, double value, const char* url)
+{
+  StaticJsonBuffer<200> jsonBuffer;
+  char json[256]; 
+    
+  // create and format json object to send to server
+  JsonObject& root = jsonBuffer.createObject();
+  root["id_process"] = id_process;
+  root["value"] = value;
+  root["data"] = data;
+  root["source"] = "mashing";
+  root["type"] = "data";
+  root.printTo(json, sizeof(json));  
+  Serial.println(json);
+
+  String response;
+  //String response = request("POST", "/insert/temperature/", json);
+  request("POST", url, json, &response);   
 }
 
 // Calculate flow and evaluate if flow has been stopped. Returns true when liquid is flowing, false when conditions met to consider that flow has been stopped.
@@ -206,101 +326,10 @@ bool calculateFlow()
   return noFlowCounter < 9;
 }
 
-int checkCurrentStatus()
-{
-  StaticJsonBuffer<50> jsonBuffer;  
-  char json[256];
-  
-  // create and format json object to send to server
-  JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = id_process;
-  root["source"] = "mashing";
-  root.printTo(json, sizeof(json));
-  Serial.println(json); 
-  
-  String response = request("POST", "/retrieve/last_command/", json);
-  delay(1000);
-  Serial.println("Response body from server: ");
-  Serial.println(response);
-  
-  StaticJsonBuffer<50> jsonBuffer1;
-  JsonObject& root1 = jsonBuffer1.parseObject(response);
-  currentStatus = root1["command"];
 
-  delay(6000);
-  return currentStatus;
-}
 
-///
-/// This function check on server for the latest start event and returns true in case of new event. 
-/// in other case returns false.
-///
-bool checkForStart()
-{
-  StaticJsonBuffer<20> jsonBuffer;
-  
-  char json[256];
-  
-  // create and format json object to send to server
-  JsonObject& root = jsonBuffer.createObject();
-  //root["id_process"] = id_process;
-  root["source"] = "mashing";
-  root.printTo(json, sizeof(json));
-  Serial.println(json); 
-  
-  String response = request("POST", "/retrieve/last_starting_event/", json);
-  delay(1000);
-  Serial.println("Response body from server: ");
-  Serial.println(response);
-  
-  StaticJsonBuffer<50> jsonBuffer1;
-  JsonObject& root1 = jsonBuffer1.parseObject(response);
-  id_process = root1["result"];
-
-  Serial.println("Id process: ");
-  Serial.println(id_process);
-
-  int startCommandReceived = id_process == 0 ? NOTSTARTED: STARTED;
-  
-  return startCommandReceived;
-}
-
-///
-/// This funtion send data collected to server when there is a mashing process in progress
-///
-void sendDataToServer()
-{
-  StaticJsonBuffer<200> jsonBuffer;
-  char json[256];
-
-  temperatureSensor.requestTemperatures(); // Get sensor ready
-  double temperature = temperatureSensor.getTempCByIndex(0);
-  Serial.print(temperature); // Read temperature in Celsius
-  Serial.println(" ºC degrees");
- 
-  //delay(6000); //Se provoca un lapso de 1 segundo antes de la próxima lectura
-  
-  // create and format json object to send to server
-  JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = id_process;
-  root["value"] = temperature;
-  root["data"] = "temperature";
-  root["source"] = "mashing";
-  root["type"] = "data";
-  root.printTo(json, sizeof(json));  
-  Serial.println(json);
-
-  String response = request("POST", "/insert/temperature/", json);
-  Serial.println("SENDDATA:: Response body from server: ");
-  Serial.println(response);
-   
-  
-  // Sleep for 60 seconds and resend data
-  delay(30000);
-}
-
-String request(const char* method, const char* path,
-                  const char* body)
+int request(const char* method, const char* path,
+                  const char* body, String* response)
 {
   
   if(client.connect(host, port)== 1){
@@ -344,7 +373,7 @@ String request(const char* method, const char* path,
     //make sure you write all those bytes.
     delay(500);
 
-    String statusCode = readResponse();
+    int statusCode = readResponse(response);
   
     //cleanup
     num_headers = 0;
@@ -352,20 +381,22 @@ String request(const char* method, const char* path,
     delay(100);
     
     return statusCode;
-  }else{
+  }
+  else
+  {
     Serial.print("RestClient Connection failed\n");
     return "Connection failed";
   }
 }
 
-String readResponse() {
-  
+int readResponse(String* response) 
+{ 
   boolean currentLineIsBlank = true;
   boolean httpBody = false;
   boolean inStatus = false;
 
   char statusCode[4];
-  String jsonResponse = "";
+  //String jsonResponse = "";
   int i = 0;
   int code = 0;
 
@@ -373,7 +404,8 @@ String readResponse() {
   while (client.available()) {
     
     char c = client.read();
-    //Serial.print(c);
+    Serial.print(c);
+    delay(10);
   
     if(c == ' ' && !inStatus)
     {
@@ -391,8 +423,12 @@ String readResponse() {
   
     if(httpBody && code== 200)
     {
-      jsonResponse += c;
-      //Serial.print(c);
+      if (c != '\n') 
+      {
+        //jsonResponse += c;
+        response->concat(c);
+        //Serial.print(*response);
+      }
     }
     else
     {
@@ -410,9 +446,12 @@ String readResponse() {
       }
     }
   }
-  
-  jsonResponse += '\0';
+
+  //Serial.println(jsonResponse);
+  //jsonResponse += '\0';
+  //Serial.println(jsonResponse);
   delay(1500);
-  
-  return jsonResponse;
+  //Serial.println(jsonResponse);
+  //return jsonResponse;
+  return code;
 }
