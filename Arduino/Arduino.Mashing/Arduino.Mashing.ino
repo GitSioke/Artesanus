@@ -12,8 +12,15 @@
 #define IP "192.168.1.46"  // Server IP
 #define PORT 5000         // Server Port
 #define TemperaturePin 4 // Temperature data pin
+
+#define NOTSTARTED 0 
+#define STARTED 1
+#define OPEN 2
+#define CLOSE 3
+#define STOP 4
  
 
+int currentStatus;
 
 //#define HTTP_DEBUG // Uncomment for debugging purposes
 
@@ -54,6 +61,7 @@ float flowRate;
 unsigned int flowMilliLitres;
 unsigned long totalMilliLitres;
 unsigned long oldTime;
+unsigned int noFlowCounter;
 
 void setup() 
 {
@@ -84,28 +92,144 @@ void setup()
   flowMilliLitres   = 0;
   totalMilliLitres  = 0;
   oldTime           = 0;
-
-  // The Hall-effect sensor is connected to pin 2 which uses interrupt 0.
-  // Configured to trigger on a FALLING state change (transition from HIGH
-  // state to LOW state)
-  attachInterrupt(sensorInterrupt, pulseCounter, FALLING);
+  noFlowCounter     = 0;
+  currentStatus = NOTSTARTED;
 }
 
 bool first = false;
 void loop() 
 {    
+  
   // Check if the process is in progress or if is going to start
-  if (_started || checkForStart())
+  switch (currentStatus)
   {
-    Serial.println("Try send data to server");
-    sendDataToServer();
+    case NOTSTARTED:
+      Serial.println("Asking for new starting commands");
+      currentStatus = checkForStart();
+      break;
+      
+    case STARTED:
+      Serial.println("Try send data to server");
+      sendDataToServer();
+      break;
+    
+    case OPEN:
+      Serial.println("Opening valve");
+      openValve();
+      while(calculateFlow())
+      {
+        continue;
+      }
+      closeValve();
+      break;
+
+    case STOP:
+      Serial.println("Stopping mashing process");
+      break;
   }
 
-  Serial.println("Going to sleep");
-  // Delay 30 seconds, and restart cheking if new start command was launched.
-  delay(60000);
+  currentStatus = checkCurrentStatus();
+
 }
 
+
+void openValve()
+{
+}
+
+void closeValve()
+{
+}
+
+// Calculate flow and evaluate if flow has been stopped. Returns true when liquid is flowing, false when conditions met to consider that flow has been stopped.
+bool calculateFlow()
+{
+ 
+ if((millis() - oldTime) > 1000)    // Only process counters once per second
+  { 
+    // Because this loop may not complete in exactly 1 second intervals we calculate
+    // the number of milliseconds that have passed since the last execution and use
+    // that to scale the output. We also apply the calibrationFactor to scale the output
+    // based on the number of pulses per second per units of measure (litres/minute in
+    // this case) coming from the sensor.
+    flowRate = ((1000.0 / (millis() - oldTime)) * pulseCount) / calibrationFactor;
+    
+    // Note the time this processing pass was executed. Note that because we've
+    // disabled interrupts the millis() function won't actually be incrementing right
+    // at this point, but it will still return the value it was set to just before
+    // interrupts went away.
+    oldTime = millis();
+    
+    // Divide the flow rate in litres/minute by 60 to determine how many litres have
+    // passed through the sensor in this 1 second interval, then multiply by 1000 to
+    // convert to millilitres.
+    flowMilliLitres = (flowRate / 60) * 1000;
+
+    if (flowMilliLitres == 0)
+    {
+      // There is no increase, could be a stopping flow
+      noFlowCounter++;      
+    }
+    else
+    {
+      // Liquid is flowing
+      noFlowCounter = 0;  
+    }
+    
+    // Add the millilitres passed in this second to the cumulative total
+    totalMilliLitres += flowMilliLitres;
+      
+    unsigned int frac;
+    
+    // Print the flow rate for this second in litres / minute
+    Serial.print("Flow rate: ");
+    Serial.print(int(flowRate));  // Print the integer part of the variable
+    Serial.print(".");             // Print the decimal point
+    // Determine the fractional part. The 10 multiplier gives us 1 decimal place.
+    frac = (flowRate - int(flowRate)) * 10;
+    Serial.print(frac, DEC) ;      // Print the fractional part of the variable
+    Serial.print("L/min");
+    // Print the number of litres flowed in this second
+    Serial.print("  Current Liquid Flowing: ");             // Output separator
+    Serial.print(flowMilliLitres);
+    Serial.print("mL/Sec");
+
+    // Print the cumulative total of litres flowed since starting
+    Serial.print("  Output Liquid Quantity: ");             // Output separator
+    Serial.print(totalMilliLitres);
+    Serial.println("mL"); 
+
+    // Reset the pulse counter so we can start incrementing again
+    pulseCount = 0;
+  }
+
+  return noFlowCounter < 9;
+}
+
+int checkCurrentStatus()
+{
+  StaticJsonBuffer<50> jsonBuffer;  
+  char json[256];
+  
+  // create and format json object to send to server
+  JsonObject& root = jsonBuffer.createObject();
+  root["id_process"] = id_process;
+  root["source"] = "mashing";
+  root.printTo(json, sizeof(json));
+  Serial.println(json); 
+  
+  String response = request("POST", "/retrieve/last_command/", json);
+  delay(1000);
+  Serial.println("Response body from server: ");
+  Serial.println(response);
+  
+  StaticJsonBuffer<50> jsonBuffer1;
+  JsonObject& root1 = jsonBuffer1.parseObject(response);
+  currentStatus = root1["command"];
+
+  delay(6000);
+  return currentStatus;
+}
 
 ///
 /// This function check on server for the latest start event and returns true in case of new event. 
@@ -114,7 +238,6 @@ void loop()
 bool checkForStart()
 {
   StaticJsonBuffer<20> jsonBuffer;
-  Serial.println("Asking for new START commands");
   
   char json[256];
   
@@ -137,9 +260,8 @@ bool checkForStart()
   Serial.println("Id process: ");
   Serial.println(id_process);
 
-  bool startCommandReceived = id_process == -1 ? false: true;
-  _started = startCommandReceived;
-
+  int startCommandReceived = id_process == 0 ? NOTSTARTED: STARTED;
+  
   return startCommandReceived;
 }
 
@@ -160,7 +282,7 @@ void sendDataToServer()
   
   // create and format json object to send to server
   JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = "1";
+  root["id_process"] = id_process;
   root["value"] = temperature;
   root["data"] = "temperature";
   root["source"] = "mashing";
@@ -168,13 +290,13 @@ void sendDataToServer()
   root.printTo(json, sizeof(json));  
   Serial.println(json);
 
-  String response = request("POST", "/insert/events/", json);
+  String response = request("POST", "/insert/temperature/", json);
   Serial.println("SENDDATA:: Response body from server: ");
   Serial.println(response);
    
   
   // Sleep for 60 seconds and resend data
-  delay(10000);
+  delay(30000);
 }
 
 String request(const char* method, const char* path,
@@ -293,13 +415,4 @@ String readResponse() {
   delay(1500);
   
   return jsonResponse;
-}
-
-/*
-Interrupt Service Routine
- */
-void pulseCounter()
-{
-  // Increment the pulse counter
-  pulseCount++;
 }
