@@ -55,7 +55,7 @@ byte sensorPin       = 2;
 
 // The hall-effect flow sensor outputs approximately 4.5 pulses per second per
 // litre/minute of flow. Default: 4.5
-float calibrationFactor = 5.705;
+float calibrationFactor = 5.8;
 
 volatile byte pulseCount;  
 float flowRate;
@@ -106,11 +106,10 @@ void loop()
   {
     case NOTSTARTED:
       Serial.println("Asking for new starting commands");
-      //currentStatus = checkForStart();
       break;
       
     case STARTED:
-      Serial.println("Try send data to server");
+      Serial.println("Try send temperature to server");
       retrieveTemperature();
       
       // Sleep for 30 seconds and resend data
@@ -119,10 +118,12 @@ void loop()
     
     case OPEN:
       openValve();
-      while(calculateFlow())
+      while(noFlowCounter < 9)
       {
-        continue;
+        calculateFlow();
       }
+      
+      noFlowCounter = 0;
       saveTotalLitres();
       closeValve();
       break;
@@ -164,46 +165,6 @@ void openValve()
 void closeValve()
 {
    Serial.println("Closing valve");
-}
-
-/*int checkCurrentStatus()
-{
-  Serial.println("Check current status");
-  StaticJsonBuffer<50> jsonBuffer;  
-  char json[256];
-  
-  // create and format json object to send to server
-  JsonObject& root = jsonBuffer.createObject();
-  root["id_process"] = id_process;
-  root["source"] = "mashing";
-  root.printTo(json, sizeof(json));
-  Serial.println(json); 
-
-  String response= "";
-  //String response = request("POST", "/retrieve/last_command/", json);
-  request("POST", "/retrieve/last_command/", json, &response);
-  delay(1000);
-  Serial.println("Response body from server: ");
-  Serial.println(response);
-
-  Serial.print("freeMemory()=");
-  Serial.println(freeRam());
-  StaticJsonBuffer<50> jsonBuffer1;
-  JsonObject& root1 = jsonBuffer1.parseObject(response);
-  currentStatus = root1["cmd"];
-
-  Serial.print("freeMemory()=");
-  Serial.println(freeRam());
-  
-  delay(6000);
-  return currentStatus;
-}*/
-
-int freeRam() 
-{
-  extern int __heap_start, *__brkval; 
-  int v; 
-  return (int) &v - (__brkval == 0 ? (int) &__heap_start : (int) __brkval); 
 }
 
 ///
@@ -262,11 +223,15 @@ void sendDataToServer(String data, double value, const char* url)
 }
 
 // Calculate flow and evaluate if flow has been stopped. Returns true when liquid is flowing, false when conditions met to consider that flow has been stopped.
-bool calculateFlow()
+void calculateFlow()
 {
- 
- if((millis() - oldTime) > 1000)    // Only process counters once per second
+
+  if((millis() - oldTime) > 1000)    // Only process counters once per second
   { 
+    // Disable the interrupt while calculating flow rate and sending the value to
+    // the host
+    detachInterrupt(sensorInterrupt);
+        
     // Because this loop may not complete in exactly 1 second intervals we calculate
     // the number of milliseconds that have passed since the last execution and use
     // that to scale the output. We also apply the calibrationFactor to scale the output
@@ -321,9 +286,10 @@ bool calculateFlow()
 
     // Reset the pulse counter so we can start incrementing again
     pulseCount = 0;
+    
+    // Enable the interrupt again now that we've finished sending output
+    attachInterrupt(sensorInterrupt, pulseCounter, FALLING);
   }
-
-  return noFlowCounter < 9;
 }
 
 
@@ -454,4 +420,13 @@ int readResponse(String* response)
   //Serial.println(jsonResponse);
   //return jsonResponse;
   return code;
+}
+
+/*
+Interrupt Service Routine
+ */
+void pulseCounter()
+{
+  // Increment the pulse counter
+  pulseCount++;
 }
