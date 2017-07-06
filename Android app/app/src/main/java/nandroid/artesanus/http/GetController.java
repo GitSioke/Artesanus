@@ -27,8 +27,7 @@ public class GetController extends HTTPController
     @Override
     protected String doInBackground(String... params) {
 
-        RequestBody body = RequestBody.create(JSON, params[1]);
-        Request request = new Request.Builder()
+       Request request = new Request.Builder()
                 .url(_url+params[0])
                 .build();
         try (Response response = client.newCall(request).execute())
@@ -38,12 +37,15 @@ public class GetController extends HTTPController
         }
         catch (HttpRequest.HttpRequestException exception)
         {
-            return null;
+            return "";
         }
         catch (IOException ex)
         {
-
-            return null;
+            return "";
+        }
+        catch(Exception e)
+        {
+            return "";
         }
     }
 

@@ -98,10 +98,6 @@ public class NewBeerCraftingActivity extends MenuActivity
                         String json = (gson.toJson(brew));
 
                         // Send post request
-                        //GetController controller = new GetController();
-                        //controller.setIP(PreferenceManager.
-                          //      getDefaultSharedPreferences(v.getContext()).getString("ip_address", "192.168.1.40"));
-                        //controller.execute("/insert_brew", json);
                         new PostController(NewBeerCraftingActivity.this).execute("/insert_brew", json);
                     }
                 }
