@@ -144,7 +144,7 @@ void loop()
 
 void saveTotalLitres()
 {
-  sendDataToServer("mililitres", totalMilliLitres, "/insert/mililitres/");
+  sendDataToServer("millilitres", totalMilliLitres, "/insert/millilitres/");
 }
 
 void retrieveTemperature()
