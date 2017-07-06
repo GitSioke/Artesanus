@@ -28,7 +28,7 @@ public class Brew
 
     private List<Hop> hops;
 
-    private List<BrewProcess> brewProcesses;
+    private List<BrewProcess> processes;
 
     public int getLitres() {
         return litres;
@@ -79,11 +79,11 @@ public class Brew
     }
 
     public List<BrewProcess> getProcesses() {
-        return brewProcesses;
+        return processes;
     }
 
     public void setProcesses(List<BrewProcess> brewProcesses) {
-        this.brewProcesses = brewProcesses;
+        this.processes = brewProcesses;
     }
 
 

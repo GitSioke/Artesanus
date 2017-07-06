@@ -20,6 +20,10 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.jjoe64.graphview.series.DataPoint;
+import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -33,6 +37,10 @@ import nandroid.artesanus.common.Cereal;
 import nandroid.artesanus.common.Event;
 import nandroid.artesanus.common.Heat;
 import nandroid.artesanus.common.Hop;
+import nandroid.artesanus.common.SharedPreferencesHelper;
+import nandroid.artesanus.http.GetController;
+import nandroid.artesanus.http.HTTPController;
+import nandroid.artesanus.http.IAsyncHttpResponse;
 import nandroid.artesanus.http.PostController;
 import nandroid.artesanus.fragments.AddHeatFragment;
 import nandroid.artesanus.listener.OnCerealAddedListener;
@@ -41,7 +49,8 @@ import nandroid.artesanus.listener.OnHopAddedListener;
 public class NewBeerCraftingActivity extends MenuActivity
         implements OnCerealAddedListener,
         OnHopAddedListener,
-        AddHeatFragment.AddHeatListener
+        AddHeatFragment.AddHeatListener,
+        IAsyncHttpResponse
 {
     // Debugging
     private static final String TAG = "NewBeerCraftingActivity";
@@ -60,6 +69,9 @@ public class NewBeerCraftingActivity extends MenuActivity
         setContentView(R.layout.activity_new_crafting);
 
         getSupportActionBar().setTitle(getResources().getString(R.string.title_activity_newcrafting));
+
+        //TODO Remove
+        HTTPController.setIP(SharedPreferencesHelper.getIPAddressPreference(this));
 
         // Get the ViewPager and set it's PagerAdapter so that it can display items
         ViewPager viewPager = (ViewPager) findViewById(R.id.viewpager);
@@ -86,18 +98,11 @@ public class NewBeerCraftingActivity extends MenuActivity
                         String json = (gson.toJson(brew));
 
                         // Send post request
-                        PostController controller = new PostController();
-                        controller.setIP(PreferenceManager.
-                                getDefaultSharedPreferences(v.getContext()).getString("ip_address", "192.168.1.40"));
-                        controller.execute("/insert_brew", json);
-
-                        // Start Monitoring activity
-                        Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
-                        intent.putExtra("id_crafting", brew.getId());
-                        intent.putExtra("id_mashing", brew.getProcesses().get(0).getId());
-                        intent.putExtra("id_boiling", brew.getProcesses().get(1).getId());
-                        intent.putExtra("id_fermentation", brew.getProcesses().get(2).getId());
-                        startActivity(intent);
+                        //GetController controller = new GetController();
+                        //controller.setIP(PreferenceManager.
+                          //      getDefaultSharedPreferences(v.getContext()).getString("ip_address", "192.168.1.40"));
+                        //controller.execute("/insert_brew", json);
+                        new PostController(NewBeerCraftingActivity.this).execute("/insert_brew", json);
                     }
                 }
         );
@@ -202,6 +207,7 @@ public class NewBeerCraftingActivity extends MenuActivity
                 .source("mashing")
                 .type("command")
                 .message("start")
+                .time(date)
                 .build();
         List<Event> eventList = new ArrayList<Event>();
         eventList.add(startEvent);
@@ -209,6 +215,7 @@ public class NewBeerCraftingActivity extends MenuActivity
         BrewProcess mashingProc = new BrewProcess.Builder()
                 .type("mashing")
                 .events(eventList)
+                .startTime(date)
                 .build();
         BrewProcess boilingProc = new BrewProcess.Builder()
                 .type("boiling")
@@ -224,5 +231,31 @@ public class NewBeerCraftingActivity extends MenuActivity
         brew.setProcesses(brewProcessList);
 
         return brew;
+    }
+
+    @Override
+    public void ProcessFinish(String output) {
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(output).getAsJsonObject();
+
+        try
+        {
+            int idCrafting = obj.get("id_crafting").getAsInt();
+            int idMashing = obj.get("id_mashing").getAsInt();
+            int idFermentation = obj.get("id_fermentation").getAsInt();
+            int idBoiling = obj.get("id_boiling").getAsInt();
+
+            Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
+            intent.putExtra("id_crafting", idCrafting);
+            intent.putExtra("id_mashing", idMashing);
+            intent.putExtra("id_boiling", idBoiling);
+            intent.putExtra("id_fermentation", idFermentation);
+            startActivity(intent);
+        }
+        catch (Exception ex)
+        {
+            if(D) Log.e(TAG, ex.getMessage());
+        }
+
     }
 }

@@ -15,6 +15,12 @@ import okhttp3.Response;
 public class PostController extends HTTPController
 {
 
+    public IAsyncHttpResponse delegate = null;
+
+    public PostController(IAsyncHttpResponse delegate){
+        this.delegate = delegate;
+    }
+
     @Override
     protected String doInBackground(String... params) {
 
@@ -37,5 +43,11 @@ public class PostController extends HTTPController
             return null;
         }
     }
+
+    @Override
+    protected void onPostExecute(String result) {
+        delegate.ProcessFinish(result);
+    }
+
 
 }

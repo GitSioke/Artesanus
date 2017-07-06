@@ -75,8 +75,7 @@ public class TimerService extends IntentService implements IAsyncHttpResponse {
                         builder.setDateFormat("yyyy-MM-dd HH:mm:ss");
                         Gson gson = builder.create();
                         String json = gson.toJson("");
-                        PostController controller = new PostController();
-                        controller.execute("/retrieve/last_anomalous_event/", json);
+                        new PostController(TimerService.this).execute("/retrieve/last_anomalous_event/", json);
                     }
                 }
             }

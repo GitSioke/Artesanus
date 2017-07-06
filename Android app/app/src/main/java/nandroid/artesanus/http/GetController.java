@@ -16,16 +16,20 @@ public class GetController extends HTTPController
 {
     public IAsyncHttpResponse delegate = null;
 
+    public IIsOpenValveAsyncHttpResponse _isOpenValveDelegate = null;
+
     public GetController(IAsyncHttpResponse delegate){
         this.delegate = delegate;
     }
+
+    public GetController(){};
+
     @Override
     protected String doInBackground(String... params) {
 
         RequestBody body = RequestBody.create(JSON, params[1]);
         Request request = new Request.Builder()
                 .url(_url+params[0])
-                .get()
                 .build();
         try (Response response = client.newCall(request).execute())
         {
@@ -38,6 +42,7 @@ public class GetController extends HTTPController
         }
         catch (IOException ex)
         {
+
             return null;
         }
     }

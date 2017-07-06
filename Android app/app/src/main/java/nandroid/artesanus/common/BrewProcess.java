@@ -1,5 +1,6 @@
 package nandroid.artesanus.common;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -14,15 +15,13 @@ public class BrewProcess
 
     private String type;
 
-    private long startTime;
+    private Date startTime;
 
-    private long endTime;
+    private Date endTime;
 
     private List<Event> events;
 
-    public int getId() {
-        return id;
-    }
+    public int getId() { return id; }
 
     public void setId(int id) {
         this.id = id;
@@ -44,19 +43,19 @@ public class BrewProcess
         this.type = type;
     }
 
-    public long getStartTime() {
+    public Date getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(int startTime) {
+    public void setStartTime(Date startTime) {
         this.startTime = startTime;
     }
 
-    public long getEndTime() {
+    public Date getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(int endTime) {
+    public void setEndTime(Date endTime) {
         this.endTime = endTime;
     }
 
@@ -75,9 +74,9 @@ public class BrewProcess
 
         private String type;
 
-        private long startTime;
+        private Date startTime;
 
-        private long endTime;
+        private Date endTime;
 
         private List<Event> events;
 
@@ -86,13 +85,13 @@ public class BrewProcess
             return this;
         }
 
-        public Builder endTime(long endTime)
+        public Builder endTime(Date endTime)
         {
             this.endTime = endTime;
             return this;
         }
 
-        public Builder startTime(long startTime)
+        public Builder startTime(Date startTime)
         {
             this.startTime = startTime;
             return this;

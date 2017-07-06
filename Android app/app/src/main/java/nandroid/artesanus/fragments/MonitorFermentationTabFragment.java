@@ -92,8 +92,8 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
 
 
                 String json = gson.toJson(event);
-                PostController controller = new PostController();
-                controller.execute("/insert/last_density/fermentation/", json);
+                new PostController(MonitorFermentationTabFragment.this)
+                        .execute("/insert/last_density/fermentation/", json);
 
                 // Show to user the operation has been performed
                 StringBuilder strBuild = new StringBuilder()

@@ -88,5 +88,8 @@
     <string name="cereal_removed">Se eliminó el cereal</string>
     <string name="hop_removed">El lúpulo fue eliminado</string>
     <string name="event_background">Evento en</string>
+    <string name="litres_measure">mL</string>
+    <string name="is_open">Abierto</string>
+    <string name="is_closed">Cerrado</string>
 
 </resources>

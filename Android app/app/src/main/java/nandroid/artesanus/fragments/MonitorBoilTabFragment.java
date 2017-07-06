@@ -81,7 +81,7 @@ public class MonitorBoilTabFragment extends Fragment implements IAsyncHttpRespon
     {
         // Get all events related to process and brew crafting from server
         String json = "";
-        new GetController(this).execute("/retrieve/events/"+_idProcess, json);
+        //new GetController(this).execute("/retrieve/events/"+_idProcess, json);
     }
 
     public synchronized void onResume() {

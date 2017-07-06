@@ -13,18 +13,19 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import nandroid.artesanus.common.BTConstants;
+import nandroid.artesanus.common.Event;
 import nandroid.artesanus.gui.R;
 import nandroid.artesanus.messages.MessageInfo;
 
 /**
  * This is the log adapter for tab fragments
  */
-public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClickListener
+public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListener
 {
-    private static ArrayList<MessageInfo> dataSet;
+    private static ArrayList<Event> dataSet;
     Context mContext;
 
-    public LogAdapter(ArrayList<MessageInfo> data, Context context)
+    public LogAdapter(ArrayList<Event> data, Context context)
     {
         super(context, R.layout.list_row_log, data);
         this.dataSet = data;
@@ -43,7 +44,7 @@ public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClic
     {
         int position = (Integer)v.getTag();
         Object object = getItem(position);
-        MessageInfo dataModel= (MessageInfo)object;
+        Event dataModel= (Event)object;
     }
 
     private int lastPosition = -1;
@@ -52,7 +53,7 @@ public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClic
     public View getView(final int position, View convertView, ViewGroup parent) {
 
         // Get the data item for this position
-        MessageInfo dataModel = getItem(position);
+        Event dataModel = getItem(position);
         // Check if an existing view is being reused, otherwise inflate the view
         final ViewHolder viewHolder; // view lookup cache stored in tag
 
@@ -75,11 +76,11 @@ public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClic
         }
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        viewHolder.txtDate.setText(formatter.format(dataModel.getDate()));
-        viewHolder.txtInfo.setText(dataModel.getInformation());
+        viewHolder.txtDate.setText(formatter.format(dataModel.getTime()));
+        viewHolder.txtInfo.setText(dataModel.getMessage());
 
         // Set text color depends on the priority of the received message.
-        switch(dataModel.getPriority())
+        /*switch(dataModel.getPriority())
         {
             case BTConstants.LOW_PRIORITY:
                 viewHolder.txtInfo.setTextColor(ContextCompat.getColor(mContext, R.color.black));
@@ -90,7 +91,7 @@ public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClic
             case BTConstants.HIGH_PRIORITY:
                 viewHolder.txtInfo.setTextColor(ContextCompat.getColor(mContext, R.color.red));
                 break;
-        }
+        }*/
 
         // Return the completed view to render on screen
         return convertView;
@@ -103,12 +104,12 @@ public class LogAdapter extends ArrayAdapter<MessageInfo> implements View.OnClic
         }
     }
 
-    public void add(MessageInfo msg)
+    public void add(Event msg)
     {
         dataSet.add(msg);
     }
 
-    public void remove(MessageInfo msg)
+    public void remove(Event msg)
     {
         dataSet.remove(msg);
     }
