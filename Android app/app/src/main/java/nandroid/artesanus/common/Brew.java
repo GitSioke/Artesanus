@@ -10,7 +10,7 @@ import java.util.List;
 public class Brew
 {
 
-    private String Id;
+    private String id;
 
     private Date startDate;
 
@@ -89,11 +89,11 @@ public class Brew
 
 
     public String getId() {
-        return Id;
+        return id;
     }
 
     public void setId(String id) {
-        Id = id;
+        this.id = id;
     }
 
     public Date getStartDate() {

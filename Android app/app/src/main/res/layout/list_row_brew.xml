@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:padding="5dip" >
+    android:padding="5dip"
+    android:id="@+id/list_row_brew_main_rv">
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

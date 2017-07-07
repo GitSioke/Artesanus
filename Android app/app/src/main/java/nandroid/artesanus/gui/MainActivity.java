@@ -1,11 +1,8 @@
 package nandroid.artesanus.gui;
 
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -13,6 +10,8 @@ import android.widget.ListView;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
@@ -20,17 +19,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 import nandroid.artesanus.adapter.BrewListAdapter;
-import nandroid.artesanus.adapter.LogAdapter;
 import nandroid.artesanus.common.Brew;
-import nandroid.artesanus.common.Event;
 import nandroid.artesanus.common.SharedPreferencesHelper;
 import nandroid.artesanus.fragments.RSBlurFragment;
 import nandroid.artesanus.http.GetController;
 import nandroid.artesanus.http.HTTPController;
 import nandroid.artesanus.http.IAsyncHttpResponse;
+import nandroid.artesanus.http.IRetrieveBrewsAsyncHttpResponse;
+import nandroid.artesanus.http.RetrieveBrewsGetController;
+import nandroid.artesanus.listener.OnBrewSelectedListener;
 
 public class MainActivity extends MenuActivity
-    implements IAsyncHttpResponse
+    implements IAsyncHttpResponse,
+        OnBrewSelectedListener,
+        IRetrieveBrewsAsyncHttpResponse
 {
     // Debugging
     private static final String TAG = "MainActivity";
@@ -51,6 +53,7 @@ public class MainActivity extends MenuActivity
 
         ArrayList<Brew> msgBrewList = new ArrayList<Brew>();
         _brewAdapter  = new BrewListAdapter(msgBrewList, this);
+        _brewAdapter.setListener(this);
         _brewListView = (ListView)findViewById(R.id.brews_lv);
         _brewListView.setAdapter(_brewAdapter);
 
@@ -68,7 +71,7 @@ public class MainActivity extends MenuActivity
     public void onStart()
     {
         super.onStart();
-        new GetController(this).execute("/retrieve/brews/");
+        new RetrieveBrewsGetController(this).execute("/retrieve/brews/");
         if(D) Log.e(TAG, "++ ON START ++");
     }
     @Override
@@ -101,7 +104,38 @@ public class MainActivity extends MenuActivity
     @Override
     public void ProcessFinish(String output)
     {
+        JsonParser parser = new JsonParser();
+        JsonObject obj = parser.parse(output).getAsJsonObject();
 
+        try {
+            int idCrafting = obj.get("id_crafting").getAsInt();
+            int idMashing = obj.get("id_mashing").getAsInt();
+            int idFermentation = obj.get("id_fermentation").getAsInt();
+            int idBoiling = obj.get("id_boiling").getAsInt();
+
+            Intent intent = new Intent(getBaseContext(), MonitoringActivity.class);
+            intent.putExtra("id_crafting", idCrafting);
+            intent.putExtra("id_mashing", idMashing);
+            intent.putExtra("id_boiling", idBoiling);
+            intent.putExtra("id_fermentation", idFermentation);
+            startActivity(intent);
+        }
+        catch (Exception ex)
+        {
+            if(D) Log.e(TAG, ex.getMessage());
+        }
+
+    }
+
+    @Override
+    public void onBrewSelected(Brew brewSelected)
+    {
+        new GetController(this).execute("/retrieve/subprocesses/id/"+brewSelected.getId());
+    }
+
+    @Override
+    public void ProcessRetrieveBrewsResponse(String output)
+    {
         GsonBuilder builder = new GsonBuilder();
         builder.setDateFormat("yyyy-MM-dd HH:mm:ss"); // String format in database
         Gson gson = builder.create();

@@ -16,7 +16,8 @@ public class IsOpenValveGetController extends GetController
 {
     public IIsOpenValveAsyncHttpResponse delegate = null;
 
-    public IsOpenValveGetController(IIsOpenValveAsyncHttpResponse delegate){
+    public IsOpenValveGetController(IIsOpenValveAsyncHttpResponse delegate)
+    {
         this.delegate = delegate;
     }
 
