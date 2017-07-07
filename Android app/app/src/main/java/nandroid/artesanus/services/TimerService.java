@@ -63,7 +63,8 @@ public class TimerService extends IntentService implements IAsyncHttpResponse {
             public void run() {
                 while(true)
                 {
-                    try {
+                    try
+                    {
                         Thread.sleep(6000);
                     } catch (InterruptedException e) {
                         e.printStackTrace();

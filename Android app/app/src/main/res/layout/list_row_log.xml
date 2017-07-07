@@ -20,6 +20,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/lv_row_log_info_text"
             android:paddingLeft="5dp"
+            android:textColor="@color/black"
             android:text="Esto es una prueba del texto que podria salir aqui y podria ser bastante largo por lo que necesitamos tener mucho cuidado"
             ></TextView>
 

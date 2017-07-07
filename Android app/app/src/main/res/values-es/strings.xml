@@ -82,5 +82,19 @@
     <string name="add_button">Añadir</string>
     <string name="heat_added_with">Se añadió un escalón de temperatura a %1dºC</string>
     <string name="main_menu_credits">Créditos</string>
+    <string name="cereals_added">Se han añadido los cereales</string>
+    <string name="hops_added">Se han añadido los lúpulos</string>
+    <string name="heat_removed">Se ha eliminado el escalón de calor</string>
+    <string name="cereal_removed">Se eliminó el cereal</string>
+    <string name="hop_removed">El lúpulo fue eliminado</string>
+    <string name="event_background">Evento en</string>
+    <string name="litres_measure">mL</string>
+    <string name="is_open">Abierto</string>
+    <string name="is_closed">Cerrado</string>
+    <string name="communication_error">Hubo un error en la comunicación. Comprueba que la conexión funcione correctamente.</string>
+    <string name="command_start">El proceso ha sido iniciado</string>
+    <string name="command_open_valve">La válvula se ha abierto</string>
+    <string name="command_close_valve">La válvula se ha cerrado</string>
+    <string name="command_stop">El proceso ha finalizado</string>
 
 </resources>

@@ -174,6 +174,10 @@ public class MonitorFermentationTabFragment extends Fragment implements IAsyncHt
         catch (Exception ex)
         {
             if(D) Log.e(TAG, ex.getMessage());
+            Snackbar.make(getView(),
+                getResources().getString(R.string.communication_error),
+                Snackbar.LENGTH_LONG)
+                .show();
         }
     }
 }

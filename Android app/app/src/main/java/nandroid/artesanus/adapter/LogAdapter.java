@@ -22,6 +22,7 @@ import nandroid.artesanus.messages.MessageInfo;
  */
 public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListener
 {
+    private static String PACKAGE_NAME;
     private static ArrayList<Event> dataSet;
     Context mContext;
 
@@ -59,6 +60,8 @@ public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListe
 
         final View result;
 
+        PACKAGE_NAME = mContext.getPackageName();
+
         if (convertView == null) {
 
             viewHolder = new ViewHolder();
@@ -77,7 +80,11 @@ public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListe
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         viewHolder.txtDate.setText(formatter.format(dataModel.getTime()));
-        viewHolder.txtInfo.setText(dataModel.getMessage());
+
+        // We format the command received from database
+        String identifier = "command_" + dataModel.getMessage();
+        int resId = mContext.getResources().getIdentifier(identifier, "string", PACKAGE_NAME);
+        viewHolder.txtInfo.setText(mContext.getResources().getString(resId));
 
         // Set text color depends on the priority of the received message.
         /*switch(dataModel.getPriority())

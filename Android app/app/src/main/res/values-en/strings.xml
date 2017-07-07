@@ -82,5 +82,18 @@
     <string name="add_button">Add</string>
     <string name="heat_added_with">A heat step was add with %1dºC</string>
     <string name="main_menu_credits">Credits</string>
-
+    <string name="cereals_added">Cereals were added</string>
+    <string name="hops_added">Hops were added</string>
+    <string name="heat_removed">Heat step was removed</string>
+    <string name="cereal_removed">Cereal was removed</string>
+    <string name="hop_removed">Hop was removed</string>
+    <string name="event_background">Event from </string>
+    <string name="litres_measure">mL</string>
+    <string name="is_open">Open</string>
+    <string name="is_closed">Close</string>
+    <string name="communication_error">There was a communication error. Check your connection works fine and try again.</string>
+    <string name="command_start">Process has been started</string>
+    <string name="command_open_valve">The valve has been opened</string>
+    <string name="command_close_valve">The valve has been closed</string>
+    <string name="command_stop">The process has been finished</string>
 </resources>

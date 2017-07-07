@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -38,6 +39,7 @@ import nandroid.artesanus.http.IAsyncHttpResponse;
 import nandroid.artesanus.gui.R;
 import nandroid.artesanus.http.IIsOpenValveAsyncHttpResponse;
 import nandroid.artesanus.http.IsOpenValveGetController;
+import nandroid.artesanus.http.PostController;
 
 /**
  * This class is the fragment that manage the mashing tab in monitoring activity
@@ -59,7 +61,6 @@ public class MonitorMashingTabFragment extends Fragment
     private static final String TAG = "MonitorMashingTabFragment";
     private static final boolean D = true;
     private TextView _txtViewValveValue;
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -127,16 +128,16 @@ public class MonitorMashingTabFragment extends Fragment
     private void RequestData(TimerTask timerTask)
     {
         // Get all events related to process and brew crafting from server
-        //String eventsJSON = "{\"type\":\"data\",\"data\":\"temperature\"}";
-        //new PostController(this).execute("/retrieve/events/"+_idProcess, eventsJSON);
+        String eventsJSON = "{\"type\":\"data\",\"data\":\"temperature\"}";
+        new PostController(this).execute("/retrieve/events/"+_idProcess, eventsJSON);
 
         // Get millilitres from
-        //String millilitresJSON = "{\"type\":\"data\",\"data\":\"millilitres\"}";
-        //new PostController(this).execute("/retrieve/events/"+_idProcess, millilitresJSON);
+        String millilitresJSON = "{\"type\":\"data\",\"data\":\"millilitres\"}";
+        new PostController(this).execute("/retrieve/events/"+_idProcess, millilitresJSON);
 
         //Get commands
-        //String commandsJSON = "{\"type\":\"command\"}";
-        //new PostController(this).execute("/retrieve/events/"+_idProcess, commandsJSON);
+        String commandsJSON = "{\"type\":\"command\"}";
+        new PostController(this).execute("/retrieve/events/"+_idProcess, commandsJSON);
 
         new IsOpenValveGetController(this).execute("/is_valve_open/"+_idProcess, "");
     }
@@ -190,6 +191,7 @@ public class MonitorMashingTabFragment extends Fragment
                 }
                 else if (firstEvent.getType() != null && firstEvent.getType().equals("command"))
                 {
+                    logAdapter.clear();
                     // Update log list
                     for (Event msg : events)
                     {
@@ -202,7 +204,11 @@ public class MonitorMashingTabFragment extends Fragment
         }
         catch (Exception ex)
         {
-                if(D) Log.e(TAG, ex.getMessage());
+            if(D) Log.e(TAG, ex.getMessage());
+            Snackbar.make(getView(),
+                    getResources().getString(R.string.communication_error),
+                    Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 
@@ -232,6 +238,10 @@ public class MonitorMashingTabFragment extends Fragment
         catch (Exception ex)
         {
             if(D) Log.e(TAG, ex.getMessage());
+            Snackbar.make(getView(),
+                    getResources().getString(R.string.communication_error),
+                    Snackbar.LENGTH_LONG)
+                    .show();
         }
     }
 

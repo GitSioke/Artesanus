@@ -37,15 +37,15 @@ public class GetController extends HTTPController
         }
         catch (HttpRequest.HttpRequestException exception)
         {
-            return "";
+            return null;
         }
         catch (IOException ex)
         {
-            return "";
+            return null;
         }
         catch(Exception e)
         {
-            return "";
+            return null;
         }
     }
 

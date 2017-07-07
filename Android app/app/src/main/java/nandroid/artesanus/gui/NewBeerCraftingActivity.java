@@ -5,6 +5,7 @@ import android.os.Bundle;
 
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.view.ViewPager;
@@ -230,12 +231,12 @@ public class NewBeerCraftingActivity extends MenuActivity
     }
 
     @Override
-    public void ProcessFinish(String output) {
+    public void ProcessFinish(String output)
+    {
         JsonParser parser = new JsonParser();
-        JsonObject obj = parser.parse(output).getAsJsonObject();
-
         try
         {
+            JsonObject obj = parser.parse(output).getAsJsonObject();
             int idCrafting = obj.get("id_crafting").getAsInt();
             int idMashing = obj.get("id_mashing").getAsInt();
             int idFermentation = obj.get("id_fermentation").getAsInt();
@@ -251,6 +252,10 @@ public class NewBeerCraftingActivity extends MenuActivity
         catch (Exception ex)
         {
             if(D) Log.e(TAG, ex.getMessage());
+            Snackbar.make(findViewById(R.id.ly_coordinator),
+                    getResources().getString(R.string.communication_error),
+                    Snackbar.LENGTH_LONG)
+                    .show();
         }
 
     }
