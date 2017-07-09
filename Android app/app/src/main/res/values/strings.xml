@@ -96,5 +96,6 @@
     <string name="command_open_valve">La válvula se ha abierto</string>
     <string name="command_close_valve">La válvula se ha cerrado</string>
     <string name="command_stop">El proceso ha finalizado</string>
+    <string name="monitor_graph_legend">Temperatura</string>
 
 </resources>
