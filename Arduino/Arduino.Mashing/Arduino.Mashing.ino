@@ -10,9 +10,10 @@
 #include <DallasTemperature.h>
 #include <MemoryFree.h>
 
-#define IP "192.168.1.46"  // Server IP
+//#define IP "192.168.1.46"  // Server IP
+#define IP "192.168.0.110"  // Server IP
 #define PORT 5000         // Server Port
-#define TemperaturePin 4 // Temperature data pin
+#define TemperaturePin 6 // Temperature data pin
 
 #define NOTSTARTED 0 
 #define STARTED 1
@@ -53,9 +54,11 @@ const char* sourceCode = "mashing";
 byte sensorInterrupt = 0;  // 0 = digital pin 2
 byte sensorPin       = 2;
 
+int solenoidPin = 4;
+
 // The hall-effect flow sensor outputs approximately 4.5 pulses per second per
 // litre/minute of flow. Default: 4.5
-float calibrationFactor = 5.8;
+float calibrationFactor = 20;
 
 volatile byte pulseCount;  
 float flowRate;
@@ -88,6 +91,10 @@ void setup()
   pinMode(sensorPin, INPUT);
   digitalWrite(sensorPin, HIGH);
 
+  // put your setup code here, to run once:
+  pinMode(solenoidPin, OUTPUT);
+  digitalWrite(solenoidPin, LOW); //Sets the pin as an output
+
   pulseCount        = 0;
   flowRate          = 0.0;
   flowMilliLitres   = 0;
@@ -95,6 +102,7 @@ void setup()
   oldTime           = 0;
   noFlowCounter     = 0;
   currentStatus = NOTSTARTED;
+
 }
 
 bool first = false;
@@ -144,7 +152,7 @@ void loop()
 
 void saveTotalLitres()
 {
-  sendDataToServer("millilitres", totalMilliLitres, "/insert/millilitres/");
+  sendDataToServer("millilitres", 203, "/insert/millilitres/");
 }
 
 void retrieveTemperature()
@@ -159,12 +167,14 @@ void retrieveTemperature()
 
 void openValve()
 {
-   Serial.println("Opening valve");
+   Serial.println("Opening valve"); 
+   digitalWrite(solenoidPin, HIGH);    //Switch Solenoid ON
 }
 
 void closeValve()
 {
    Serial.println("Closing valve");
+   digitalWrite(solenoidPin, LOW);    //Switch Solenoid ON
 }
 
 ///
@@ -237,6 +247,8 @@ void calculateFlow()
     // that to scale the output. We also apply the calibrationFactor to scale the output
     // based on the number of pulses per second per units of measure (litres/minute in
     // this case) coming from the sensor.
+    
+    
     flowRate = ((1000.0 / (millis() - oldTime)) * pulseCount) / calibrationFactor;
     
     // Note the time this processing pass was executed. Note that because we've
