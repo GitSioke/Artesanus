@@ -28,14 +28,6 @@ android:stretchMode="columnWidth">
         android:layout_height="match_parent">
     </ScrollView>
 
-    <android.support.design.widget.FloatingActionButton
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/monitoring_floating_end"
-        android:src="@drawable/ic_done_white_18dp"
-        android:layout_gravity="bottom|end"/>
-
-
 </android.support.design.widget.CoordinatorLayout>
 
 

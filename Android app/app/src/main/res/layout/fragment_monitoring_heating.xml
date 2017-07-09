@@ -1,30 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/parent_rv">
 
         <RelativeLayout
             android:id="@+id/fermenter_relative_ly_primary"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingTop="20dp"
-            android:paddingLeft="10dp"
-            android:layout_alignParentTop="true"
             android:layout_alignParentStart="true"
-            android:layout_marginBottom="10dp">
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="10dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="20dp">
 
             <TextView
                 android:id="@+id/monitor_main_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="10"
-                android:textSize="40dp"
                 android:layout_alignParentTop="true"
-                android:layout_toRightOf="@+id/temperature_icon"/>
+                android:layout_toRightOf="@+id/temperature_icon"
+                android:text="-"
+                android:textSize="40dp" />
 
             <TextView
                 android:id="@+id/monitor_main_measure"
@@ -38,43 +40,78 @@
                 android:id="@+id/temperature_icon"
                 android:layout_width="40dp"
                 android:layout_height="40dp"
-                android:src="@drawable/ic_thermometer"
-                android:layout_alignBottom="@+id/monitor_main_value"/>
+                android:layout_alignBottom="@+id/monitor_main_value"
+                android:src="@drawable/ic_thermometer" />
 
         </RelativeLayout>
 
+
         <RelativeLayout
-            android:id="@+id/fermenter_relative_ly_secondary"
-            android:layout_width="match_parent"
+            android:id="@+id/fermenter_relative_ly_millilitres"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/fermenter_relative_ly_primary"
-            android:layout_marginLeft="10dp">
+            android:layout_marginLeft="10dp"
+            android:layout_alignParentRight="true"
+            android:paddingTop="20dp">
 
             <ImageView
-                android:id="@+id/density_icon"
+                android:id="@+id/litres_icon"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:maxWidth="50dp"
+                android:src="@drawable/barrel_64"
+                android:layout_toLeftOf="@+id/monitor_millilitres_value"
+                android:layout_marginRight="10dp"
+                />
+
+            <TextView
+                android:id="@+id/monitor_millilitres_value"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="5dp"
+                android:text="-"
+                android:textSize="40dp"
+                android:layout_alignParentTop="true"
+                android:layout_toLeftOf="@+id/monitor_millilitres_measure"
+                />
+            <!--android:layout_toLefttOf="@+id/monitor_millilitres_measue"-->
+            <!--android:layout_toStartOf="@+id/monitor_millilitres_measue" -->
+
+
+            <TextView
+                android:id="@+id/monitor_millilitres_measure"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="15dp"
+                android:text="@string/litres_measure"
+                android:textSize="40dp"
+                android:layout_alignParentRight="true"/>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/fermenter_relative_ly_valve"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_below="@+id/fermenter_relative_ly_millilitres"
+            android:layout_alignParentLeft="true">
+
+            <ImageView
+                android:id="@+id/valve_icon"
                 android:layout_width="50dp"
                 android:layout_height="wrap_content"
                 android:maxWidth="50dp"
-                android:layout_alignBottom="@+id/monitor_second_value"
-                android:src="@drawable/ic_densimeter" />
+                android:src="@drawable/valve_black"
+                android:layout_marginLeft="5dp"/>
 
             <TextView
-                android:id="@+id/monitor_second_value"
+                android:id="@+id/monitor_valve_value"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/density_icon"
-                android:text="10"
+                android:layout_toRightOf="@+id/valve_icon"
+                android:layout_marginRight="15dp"
+                android:text="-"
                 android:textSize="40dp" />
-
-            <TextView
-                android:id="@+id/monitor_second_measure"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_toRightOf="@+id/monitor_second_value"
-                android:text="@string/density_measure"
-                android:textSize="30dp"
-                android:layout_alignBottom="@+id/monitor_second_value"/>
         </RelativeLayout>
 
         <com.jjoe64.graphview.GraphView
@@ -82,8 +119,9 @@
             android:layout_width="match_parent"
             android:layout_height="250dp"
             android:layout_marginBottom="25dp"
-            android:layout_below="@+id/fermenter_relative_ly_secondary"
-            android:layout_marginLeft="15dp"/>
+            android:layout_below="@+id/fermenter_relative_ly_valve"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"/>
 
         <LinearLayout
             android:layout_width="wrap_content"

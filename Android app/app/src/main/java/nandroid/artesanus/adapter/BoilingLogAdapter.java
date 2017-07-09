@@ -1,8 +1,6 @@
 package nandroid.artesanus.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
-import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,21 +10,19 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
-import nandroid.artesanus.common.BTConstants;
 import nandroid.artesanus.common.Event;
 import nandroid.artesanus.gui.R;
-import nandroid.artesanus.messages.MessageInfo;
 
 /**
  * This is the log adapter for tab fragments
  */
-public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListener
+public class BoilingLogAdapter extends ArrayAdapter<Event> implements View.OnClickListener
 {
     private static String PACKAGE_NAME;
     private static ArrayList<Event> dataSet;
     Context mContext;
 
-    public LogAdapter(ArrayList<Event> data, Context context)
+    public BoilingLogAdapter(ArrayList<Event> data, Context context)
     {
         super(context, R.layout.list_row_log, data);
         this.dataSet = data;
@@ -101,7 +97,7 @@ public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListe
         }*/
 
         // Return the completed view to render on screen
-        return convertView;
+        return result;
     }
 
     public void remove(int position)
@@ -116,8 +112,23 @@ public class LogAdapter extends ArrayAdapter<Event> implements View.OnClickListe
         dataSet.add(msg);
     }
 
+//    public void clear()
+//    {
+//        dataSet.clear();
+//    }
+
     public void remove(Event msg)
     {
         dataSet.remove(msg);
+    }
+
+    @Override
+    public int getCount() {
+        int count = 0;
+        if (dataSet != null)
+        {
+            count = dataSet.size();
+        }
+        return count;
     }
 }

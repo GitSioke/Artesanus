@@ -13,8 +13,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
@@ -22,17 +22,19 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.jjoe64.graphview.GraphView;
+import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
 import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.lang.reflect.Type;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import nandroid.artesanus.adapter.LogAdapter;
+import nandroid.artesanus.adapter.MashingLogAdapter;
 import nandroid.artesanus.common.Event;
 import nandroid.artesanus.gui.MonitoringActivity;
 import nandroid.artesanus.http.IAsyncHttpResponse;
@@ -48,7 +50,7 @@ public class MonitorMashingTabFragment extends Fragment
         implements IAsyncHttpResponse,
         IIsOpenValveAsyncHttpResponse
 {
-    private LogAdapter logAdapter;
+    private MashingLogAdapter logAdapter;
     private ListView logListView;
     private TextView _txtViewPrimaryValue;
     private TextView _txtViewMillilitresValue;
@@ -56,6 +58,7 @@ public class MonitorMashingTabFragment extends Fragment
     private GraphView _graph;
     private LineGraphSeries<DataPoint> _dataPoints;
     private Handler _handler;
+    private RelativeLayout _containerLayout;
 
     // Debugging
     private static final String TAG = "MonitorMashingTabFragment";
@@ -73,11 +76,12 @@ public class MonitorMashingTabFragment extends Fragment
     {
         View view  = inflater.inflate( R.layout.fragment_monitoring_mashing, container, false);
 
+        _containerLayout = (RelativeLayout)view.findViewById(R.id.parent_rv);
         MonitoringActivity act = (MonitoringActivity)getActivity();
         _idProcess = act.GetIdMashing();
 
         ArrayList<Event> msgInfoList = new ArrayList<Event>();
-        logAdapter  = new LogAdapter(msgInfoList, getContext());
+        logAdapter  = new MashingLogAdapter(msgInfoList, getContext());
         logListView = (ListView)view.findViewById(R.id.monitoring_log_lv);
         logListView.setAdapter(logAdapter);
 
@@ -86,7 +90,7 @@ public class MonitorMashingTabFragment extends Fragment
         _txtViewValveValue = (TextView)view.findViewById(R.id.monitor_valve_value);
 
         _graph = (GraphView)view.findViewById(R.id.graph);
-        ConfigureGraphView();
+        //ConfigureGraphView();
 
         Timer timer = new Timer();
         TimerTask myTask = new TimerTask() {
@@ -96,38 +100,66 @@ public class MonitorMashingTabFragment extends Fragment
                 RequestData(this);
             }
         };
+        timer.schedule(myTask, 1000, 30000);
 
-        timer.schedule(myTask, 30000, 30000);
+        /*Timer timer2 = new Timer();
+        TimerTask myTask2 = new TimerTask() {
+            @Override
+            public void run() {
+                // Ask for data every 30 secs
+                RequestCommands(this);
+            }
+        };
+        timer2.schedule(myTask2, 2000, 30000);
+
+        Timer timer3 = new Timer();
+        TimerTask myTask3 = new TimerTask() {
+            @Override
+            public void run() {
+                // Ask for data every 30 secs
+                RequestOpenValve(this);
+            }
+        };
+        timer.schedule(myTask3, 4000, 30000);
+
+        Timer timer4 = new Timer();
+        TimerTask myTask4 = new TimerTask() {
+            @Override
+            public void run() {
+                // Ask for data every 30 secs
+                RequestMillilitres(this);
+            }
+        };
+        timer.schedule(myTask4, 6000, 30000);*/
+
+        _dataPoints = new LineGraphSeries<>();
+
+        ConfigureGraphView();
+
 
         return view;
     }
 
     private void ConfigureGraphView()
     {
-        _dataPoints = new LineGraphSeries<>();
+
         _dataPoints.setColor(Color.RED);
-        _dataPoints.setDataPointsRadius(10);
-        _dataPoints.setThickness(3);
-        _dataPoints.setDataPointsRadius(2);
-        _dataPoints.setTitle("Temperature");
+        _dataPoints.setThickness(10);
+        _dataPoints.setTitle(getString(R.string.monitor_graph_legend));
+        _graph.addSeries(_dataPoints);
 
         _graph.getGridLabelRenderer().setHumanRounding(false);
-        _graph.addSeries(_dataPoints);
-        _graph.getGridLabelRenderer().setLabelFormatter(new DateAsXAxisLabelFormatter(getActivity()));
-        _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
-        _graph.getViewport().setMinY(0);
-        _graph.getViewport().setMaxY(100);
-        _graph.getViewport().setScrollable(true); // enables horizontal scrolling
-        _graph.getViewport().setScrollableY(true); // enables vertical scrolling
-        _graph.getViewport().setScalable(true); // enables horizontal zooming and scrolling
-        _graph.getViewport().setScalableY(true); // enables vertical zooming and scrolling
-        _graph.getViewport().setBorderColor(Color.MAGENTA);
-
+        _graph.getGridLabelRenderer().setNumHorizontalLabels(4);
+        _graph.getGridLabelRenderer().setLabelFormatter(
+                new DateAsXAxisLabelFormatter(getActivity(),
+                        new SimpleDateFormat("HH:mm:ss")));
+        _graph.getLegendRenderer().setVisible(true);
+        _graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.BOTTOM);
+        _graph.onDataChanged(false,false);
     }
 
     private void RequestData(TimerTask timerTask)
     {
-        // Get all events related to process and brew crafting from server
         String eventsJSON = "{\"type\":\"data\",\"data\":\"temperature\"}";
         new PostController(this).execute("/retrieve/events/"+_idProcess, eventsJSON);
 
@@ -142,21 +174,26 @@ public class MonitorMashingTabFragment extends Fragment
         new IsOpenValveGetController(this).execute("/is_valve_open/"+_idProcess, "");
     }
 
+    private void RequestMillilitres(TimerTask timerTask)
+    {
+        // Get millilitres from
+        String millilitresJSON = "{\"type\":\"data\",\"data\":\"millilitres\"}";
+        new PostController(this).execute("/retrieve/events/"+_idProcess, millilitresJSON);
+    }
+
+    private void RequestCommands(TimerTask timerTask)
+    {
+
+    }
+
+    private void RequestOpenValve(TimerTask timerTask)
+    {
+        new IsOpenValveGetController(this).execute("/is_valve_open/"+_idProcess, "");
+    }
+
     public synchronized void onResume() {
         super.onResume();
     }
-
-
-    public void onMsgreceived(ArrayList<Event> msgs)
-    {
-        for (Event msg : msgs)
-        {
-            logAdapter.add(msg);
-        }
-
-        logListView.setAdapter(logAdapter);
-    }
-
 
     @SuppressLint("LongLogTag")
     @Override
@@ -175,14 +212,26 @@ public class MonitorMashingTabFragment extends Fragment
                 Event firstEvent = events.get(0);
                 if (firstEvent.getData() != null && firstEvent.getData().equals("temperature")) {
                     _txtViewPrimaryValue.setText(String.valueOf(events.get(events.size() - 1).getValue()));
-                    for (Event event : events) {
-                        if (event != null) {
-                            _dataPoints.appendData(new DataPoint(event.getTime(), event.getValue()), true, events.size());
+
+                    if (events.size()>1)
+                    {
+                        DataPoint values[] = new DataPoint[events.size()];
+                        int pos = 0;
+                        for (Event event : events) {
+                            if (event != null)
+                            {
+                                values[pos] = (new DataPoint(event.getTime().getTime(), event.getValue()));
+                                pos++;
+                            }
                         }
+
+                        _dataPoints.resetData(values);
+
+                        _graph.getViewport().setMaxX(events.get(events.size() - 1).getTime().getTime());
+                        _graph.getViewport().setMinX(events.get(0).getTime().getTime());
+                        _graph.getViewport().setXAxisBoundsManual(true);
                     }
-                    _graph.getViewport().setMaxX(events.get(events.size() - 1).getTime().getTime());
-                    _graph.getViewport().setMinX(events.get(0).getTime().getTime());
-                    _graph.getViewport().setXAxisBoundsManual(true);
+
                 }
                 else if (firstEvent.getData() != null && firstEvent.getData().equals("millilitres"))
                 {

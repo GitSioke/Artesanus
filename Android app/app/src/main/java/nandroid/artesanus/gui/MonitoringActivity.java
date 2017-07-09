@@ -51,24 +51,13 @@ public class MonitoringActivity extends MenuActivity {
         TabLayout tabLayout = (TabLayout) findViewById(R.id.monitoring_tabs);
         tabLayout.setupWithViewPager(viewPager);
 
-        FloatingActionButton button = (FloatingActionButton) findViewById(R.id.monitoring_floating_end);
-        button.setOnClickListener(
-                new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        Intent intent = new Intent(getBaseContext(), MenuActivity.class);
-                        startActivity(intent);
-                    }
-                }
-        );
-
-        Intent intentService = new Intent(this, TimerService.class);
+        //Intent intentService = new Intent(this, TimerService.class);
 
         // Code to define and initialize myData here
 
         //intentService.putExtra("someData", myData);
         //intentService.putExtra("resReceiver", theReceiver);
-        startService(intentService);
+        //startService(intentService);
     }
 
     @Override
