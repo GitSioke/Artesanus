@@ -10,8 +10,8 @@
 #include <DallasTemperature.h>
 #include <MemoryFree.h>
 
-//#define IP "192.168.1.46"  // Server IP
-#define IP "192.168.0.110"  // Server IP
+#define IP "192.168.1.46"  // Server IP
+//define IP "192.168.0.110"  // Server IP
 #define PORT 5000         // Server Port
 #define TemperaturePin 6 // Temperature data pin
 
@@ -126,7 +126,7 @@ void loop()
     
     case OPEN:
       openValve();
-      while(noFlowCounter < 9)
+      while(noFlowCounter < 40)
       {
         calculateFlow();
       }
@@ -152,7 +152,7 @@ void loop()
 
 void saveTotalLitres()
 {
-  sendDataToServer("millilitres", 203, "/insert/millilitres/");
+  sendDataToServer("millilitres", 197, "/insert/millilitres/");
 }
 
 void retrieveTemperature()

@@ -26,7 +26,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_toRightOf="@+id/temperature_icon"
                 android:text="-"
-                android:textSize="40dp" />
+                android:textSize="35dp" />
 
             <TextView
                 android:id="@+id/monitor_main_measure"
@@ -34,12 +34,12 @@
                 android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/monitor_main_value"
                 android:text="@string/degrees_symbol"
-                android:textSize="40dp" />
+                android:textSize="35dp" />
 
             <ImageView
                 android:id="@+id/temperature_icon"
-                android:layout_width="40dp"
-                android:layout_height="40dp"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
                 android:layout_alignBottom="@+id/monitor_main_value"
                 android:src="@drawable/ic_thermometer" />
 
@@ -70,7 +70,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="5dp"
             android:text="-"
-            android:textSize="40dp"
+            android:textSize="30dp"
             android:layout_alignParentTop="true"
             android:layout_toLeftOf="@+id/monitor_millilitres_measure"
             />
@@ -84,7 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_marginRight="15dp"
             android:text="@string/litres_measure"
-            android:textSize="40dp"
+            android:textSize="25dp"
             android:layout_alignParentRight="true"/>
     </RelativeLayout>
 
@@ -99,7 +99,7 @@
             <ImageView
                 android:id="@+id/valve_icon"
                 android:layout_width="50dp"
-                android:layout_height="wrap_content"
+                android:layout_height="50dp"
                 android:maxWidth="50dp"
                 android:src="@drawable/valve_black"
                 android:layout_marginLeft="5dp"/>
@@ -111,7 +111,7 @@
                 android:layout_toRightOf="@+id/valve_icon"
                 android:layout_marginRight="15dp"
                 android:text="-"
-                android:textSize="40dp" />
+                android:textSize="35dp" />
         </RelativeLayout>
 
     <com.jjoe64.graphview.GraphView

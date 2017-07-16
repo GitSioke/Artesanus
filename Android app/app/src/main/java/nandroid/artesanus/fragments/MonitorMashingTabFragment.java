@@ -21,6 +21,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
+import com.jjoe64.graphview.DefaultLabelFormatter;
 import com.jjoe64.graphview.GraphView;
 import com.jjoe64.graphview.LegendRenderer;
 import com.jjoe64.graphview.helper.DateAsXAxisLabelFormatter;
@@ -28,8 +29,12 @@ import com.jjoe64.graphview.series.DataPoint;
 import com.jjoe64.graphview.series.LineGraphSeries;
 
 import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -90,7 +95,11 @@ public class MonitorMashingTabFragment extends Fragment
         _txtViewValveValue = (TextView)view.findViewById(R.id.monitor_valve_value);
 
         _graph = (GraphView)view.findViewById(R.id.graph);
-        //ConfigureGraphView();
+        _dataPoints = new LineGraphSeries<>();
+        Calendar cal = Calendar.getInstance();
+        Date date = cal.getTime();
+        _dataPoints.appendData(new DataPoint(date, 30), true, 30);
+        ConfigureGraphView();
 
         Timer timer = new Timer();
         TimerTask myTask = new TimerTask() {
@@ -132,11 +141,6 @@ public class MonitorMashingTabFragment extends Fragment
         };
         timer.schedule(myTask4, 6000, 30000);*/
 
-        _dataPoints = new LineGraphSeries<>();
-
-        ConfigureGraphView();
-
-
         return view;
     }
 
@@ -156,6 +160,10 @@ public class MonitorMashingTabFragment extends Fragment
         _graph.getLegendRenderer().setVisible(true);
         _graph.getLegendRenderer().setAlign(LegendRenderer.LegendAlign.BOTTOM);
         _graph.onDataChanged(false,false);
+        _graph.getGridLabelRenderer()
+                .setPadding(60);
+        _graph.getGridLabelRenderer()
+                .setHighlightZeroLines(false);
     }
 
     private void RequestData(TimerTask timerTask)
@@ -226,11 +234,12 @@ public class MonitorMashingTabFragment extends Fragment
                         }
 
                         _dataPoints.resetData(values);
-
+                        _dataPoints.setBackgroundColor(0xFFFFFF);
+                        _graph.getGridLabelRenderer().setNumHorizontalLabels(3);
                         _graph.getViewport().setMaxX(events.get(events.size() - 1).getTime().getTime());
                         _graph.getViewport().setMinX(events.get(0).getTime().getTime());
                         _graph.getViewport().setXAxisBoundsManual(true);
-                    }
+                   }
 
                 }
                 else if (firstEvent.getData() != null && firstEvent.getData().equals("millilitres"))

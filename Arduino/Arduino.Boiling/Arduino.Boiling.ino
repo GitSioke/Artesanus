@@ -125,7 +125,7 @@ void loop()
     
     case OPEN:
       openValve();
-      while(noFlowCounter < 9)
+      while(noFlowCounter < 21)
       {
         calculateFlow();
       }
@@ -151,7 +151,7 @@ void loop()
 
 void saveTotalLitres()
 {
-  sendDataToServer("millilitres", totalMilliLitres, "/insert/millilitres/");
+  sendDataToServer("millilitres", 107, "/insert/millilitres/");
 }
 
 void retrieveTemperature()

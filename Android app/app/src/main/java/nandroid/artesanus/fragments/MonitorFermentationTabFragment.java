@@ -75,10 +75,6 @@ public class MonitorFermentationTabFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-
-
-
-
         View view  = inflater.inflate( R.layout.fragment_monitoring_fermenter, container, false);
 
         final ImageView imgDensityButton = (ImageView)view.findViewById(R.id.monitor_add_density_icon);

@@ -28,6 +28,22 @@
         </activity>
 
         <activity
+            android:name="nandroid.artesanus.gui.DeviceListActivity"
+            android:label="@string/title_activity_device_list"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".SplashActivity"
+            android:label="@string/title_activity_splash"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:noHistory="true">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN" />
+            <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
             android:name=".MainActivity"
             android:label="@string/menu_title"
             android:exported="true">
@@ -38,39 +54,22 @@
             <!--</intent-filter>-->
         </activity>
 
-        <activity android:name=".MonitoringActivity"
-            android:label="@string/monitor_title">
+        <activity
+            android:name="nandroid.artesanus.gui.NewBeerCraftingActivity"
+            android:label="@string/title_activity_newcrafting">
             <!--<intent-filter>-->
                 <!--<action android:name="android.intent.action.MAIN" />-->
-
                 <!--<category android:name="android.intent.category.LAUNCHER" />-->
             <!--</intent-filter>-->
         </activity>
 
-        <activity
-            android:name="nandroid.artesanus.gui.DeviceListActivity"
-            android:label="@string/title_activity_device_list"
-            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".MonitoringActivity"
+            android:label="@string/monitor_title">
+            <!--<intent-filter>-->
+            <!--<action android:name="android.intent.action.MAIN" />-->
 
-        <activity
-            android:name="nandroid.artesanus.gui.NewBeerCraftingActivity"
-            android:label="@string/title_activity_newcrafting">
-            <!--<intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>-->
-        </activity>
-
-        <activity
-            android:name=".SplashActivity"
-            android:label="@string/title_activity_splash"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:noHistory="true">
-            <intent-filter>
-                            <action android:name="android.intent.action.MAIN" />
-
-                            <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            <!--<category android:name="android.intent.category.LAUNCHER" />-->
+            <!--</intent-filter>-->
         </activity>
 
         <service
